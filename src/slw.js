@@ -1,7 +1,13 @@
+// @flow
+
+let ___
+
 // SUPER LIAM WORLD(tm)
 // totally not stolen from an-ok-squirrel.
 // this is a fair use of the name as specified
 // in NANALAND RULES NUMBER #99
+
+const trimLines = require('trim-lines')
 
 class SLW {
   constructor() {
@@ -28,15 +34,11 @@ class SLW {
     this.tileSize = 30
 
     this.activeLevel = {
-      tiles: (
-        '************\n'+
-        '************\n'+
-        '************\n'+
-        '*******DDDDD\n'+
-        'DDDDD*****D*\n'+
-        '****D*****DD\n'+
-        '****D*******'
-      )
+      tiles: trimLines`-------------
+                       ------=------
+                       -----===-----
+                       ----=====----
+                       =============`
     }
   }
 
@@ -82,7 +84,9 @@ class SLW {
     ctx.fillRect(pRendX, pRendY, 30, 30)
 
     console.log(
-      // 'Looped tiles:', (viewEndX - viewStartX) * (viewEndY - viewStartY),
-      'Drawn tiles:', drawnTiles)
+      // 'Looped tiles:', (viewEndX - viewStartX) * (viewEndY - viewStartY)
+    )
   }
 }
+
+module.exports = SLW

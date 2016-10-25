@@ -1,0 +1,31 @@
+{
+  "name": "slw",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "babel-plugin-syntax-flow": "^6.13.0",
+    "babel-plugin-transform-flow-strip-types": "^6.14.0",
+    "babel-plugin-transform-runtime": "^6.15.0",
+    "babel-plugin-typecheck": "^3.9.0",
+    "babel-preset-latest": "^6.16.0",
+    "babelify": "^7.3.0",
+    "browserify": "^13.1.0",
+    "cssnano": "^3.7.6",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^2.0.0",
+    "gulp-util": "^3.0.7",
+    "jeet": "^6.1.5",
+    "normalize.css": "^5.0.0",
+    "postcss": "^5.2.4",
+    "postcss-import": "^8.1.2",
+    "rucksack-css": "^0.8.6",
+    "uber-watchify": "^3.6.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "vinyl-transform": "^1.0.0"
+  },
+  "dependencies": {
+    "trim-lines": "^1.0.0"
+  }
+}
