@@ -14,15 +14,16 @@ class SLW {
     this.keys = {}
 
     this.canvas = document.createElement('canvas')
-    this.canvas.width = 150
-    this.canvas.height = 150
-    this.canvas.style.border = '1px solid black'
+    this.canvas.width = 256
+    this.canvas.height = 256
+
     this.canvas.addEventListener('keydown', evt => {
       this.keys[evt.keyCode] = true
     })
     this.canvas.addEventListener('keyup', evt => {
       this.keys[evt.keyCode] = false
     })
+
     this.canvas.setAttribute('tabindex', 1)
 
     this.playerX = 0
@@ -34,11 +35,22 @@ class SLW {
     this.tileSize = 30
 
     this.activeLevel = {
-      tiles: trimLines`-------------
-                       ------=------
-                       -----===-----
-                       ----=====----
-                       =============`
+      tiles: trimLines`--------------------
+                       --------------------
+                       --------------------
+                       --------------------
+                       --------------------
+                       --------------------
+                       --------------------
+                       --------------------
+                       --------------------
+                       --------------------
+                       --------------------
+                       ----------=?=-------
+                       ------=-------------
+                       -----===------------
+                       ----=====-----------
+                       =================---`
     }
   }
 
@@ -49,39 +61,41 @@ class SLW {
 
   getDrawnPosition(tileX, tileY) {
     // Fill in the blanks!
-    return [___, ___]
+    return [tileX * 16, tileY * 16]
   }
 
   drawLevelTiles() {
+    const rows = this.activeLevel.tiles.split('\n')
+
     const ctx = this.canvas.getContext('2d')
 
     // Fill in the blanks!
-    const viewStartX = ___
-    const viewStartY = ___
-    const viewEndX = ___
-    const viewEndY = ___
+    const viewStartX = 0
+    const viewStartY = 0
+    const viewEndX = 16
+    const viewEndY = 16
 
     for (let y = viewStartY; y < viewEndY; y++) {
       for (let x = viewStartX; x < viewEndX; x++) {
         let row = rows[y] || ''
         let tile = row[x] || ''
 
-        if (tile === 'D') {
+        if (tile === '-') {
           ctx.fillStyle = 'red'
-        } else if (tile === '*') {
+        } else if (tile === '=') {
           ctx.fillStyle = 'green'
         } else {
           ctx.fillStyle = 'orange'
         }
 
         const [rendX, rendY] = this.getDrawnPosition(x, y)
-        ctx.fillRect(rendX, rendY, 30, 30)
+        ctx.fillRect(rendX, rendY, 16, 16)
       }
     }
 
     ctx.fillStyle = 'blue'
     const [pRendX, pRendY] = this.getDrawnPosition(this.playerX, this.playerY)
-    ctx.fillRect(pRendX, pRendY, 30, 30)
+    ctx.fillRect(pRendX, pRendY, 16, 16)
 
     console.log(
       // 'Looped tiles:', (viewEndX - viewStartX) * (viewEndY - viewStartY)
