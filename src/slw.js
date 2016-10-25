@@ -1,3 +1,5 @@
+// @flow
+
 // SUPER LIAM WORLD(tm)
 // totally not stolen from an-ok-squirrel.
 // this is a fair use of the name as specified
@@ -8,3 +10,5 @@ class SLW {
     this.canvas = document.createElement('canvas')
   }
 }
+
+module.exports = SLW
