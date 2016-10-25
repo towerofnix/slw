@@ -61,7 +61,16 @@ class SLW {
 
   getDrawnPosition(tileX, tileY) {
     // Fill in the blanks!
-    return [tileX * 16, tileY * 16]
+    return [Math.floor(tileX * 16), Math.floor(tileY * 16)]
+  }
+
+  getTilePosition(tile) {
+    switch(tile) {
+      case '-': return [2, 0]
+      case '?': return [1, 0]
+      case '=': return [0, 0]
+      default:  return [0, 0]
+    }
   }
 
   drawLevelTiles() {
@@ -77,25 +86,18 @@ class SLW {
 
     for (let y = viewStartY; y < viewEndY; y++) {
       for (let x = viewStartX; x < viewEndX; x++) {
-        let row = rows[y] || ''
+        let row = rows[y] || []
         let tile = row[x] || ''
 
-        if (tile === '-') {
-          ctx.fillStyle = 'red'
-        } else if (tile === '=') {
-          ctx.fillStyle = 'green'
-        } else {
-          ctx.fillStyle = 'orange'
-        }
-
         const [rendX, rendY] = this.getDrawnPosition(x, y)
-        ctx.fillRect(rendX, rendY, 16, 16)
+        const [tileX, tileY] = this.getTilePosition(tile)
+        ctx.drawImage(this.tileset, tileX * 16, tileY * 16, 16, 16, rendX, rendY, 16, 16)
       }
     }
 
     ctx.fillStyle = 'blue'
     const [pRendX, pRendY] = this.getDrawnPosition(this.playerX, this.playerY)
-    ctx.fillRect(pRendX, pRendY, 16, 16)
+    ctx.fillRect(pRendX, pRendY, 16, 32)
 
     console.log(
       // 'Looped tiles:', (viewEndX - viewStartX) * (viewEndY - viewStartY)

@@ -3,8 +3,6 @@
 body {
   background black
   color white
-
-  cursor hidden
 }
 
 canvas {
@@ -12,10 +10,18 @@ canvas {
   height 256px
 
   image-rendering pixelated
-  pointer-events none
+  outline none
 
   position absolute
   top 50%
   left 50%
   transform translate(-50%, -50%)
+
+  opacity 0.5
+  cursor pointer
+
+  &:focus {
+    opacity 1
+    cursor none
+  }
 }
