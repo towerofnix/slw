@@ -32,7 +32,9 @@ class SLW {
     this.cameraX = 0
     this.cameraY = 0
 
+    // Generally this should probably be 1:1
     this.tileSize = 16
+    this.textureSize = 16
 
     this.activeLevel = {
       tiles: trimLines`--------------------
@@ -94,8 +96,11 @@ class SLW {
 
         const [rendX, rendY] = this.getDrawnPosition(x, y)
         const [tileX, tileY] = this.getTilePosition(tile)
-        ctx.drawImage(this.tileset,
-          tileX * 16, tileY * 16, 16, 16,
+        ctx.drawImage(
+          this.tileset,
+          tileX * this.textureSize, tileY * this.textureSize,
+          this.textureSize, this.textureSize,
+
           rendX, rendY, this.tileSize, this.tileSize)
       }
     }
