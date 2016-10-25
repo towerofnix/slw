@@ -32,8 +32,6 @@ window.addEventListener('load', e => {
       if (game.keys[40]) {
         game.playerY += 0.1
       }
-
-      console.log(game)
     })()
   }
 

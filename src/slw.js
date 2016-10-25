@@ -32,7 +32,7 @@ class SLW {
     this.cameraX = 0
     this.cameraY = 0
 
-    this.tileSize = 30
+    this.tileSize = 16
 
     this.activeLevel = {
       tiles: trimLines`--------------------
@@ -61,7 +61,10 @@ class SLW {
 
   getDrawnPosition(tileX, tileY) {
     // Fill in the blanks!
-    return [Math.floor(tileX * 16), Math.floor(tileY * 16)]
+    return [
+      Math.floor(tileX * this.tileSize),
+      Math.floor(tileY * this.tileSize)
+    ]
   }
 
   getTilePosition(tile) {
@@ -91,7 +94,9 @@ class SLW {
 
         const [rendX, rendY] = this.getDrawnPosition(x, y)
         const [tileX, tileY] = this.getTilePosition(tile)
-        ctx.drawImage(this.tileset, tileX * 16, tileY * 16, 16, 16, rendX, rendY, 16, 16)
+        ctx.drawImage(this.tileset,
+          tileX * 16, tileY * 16, 16, 16,
+          rendX, rendY, this.tileSize, this.tileSize)
       }
     }
 
