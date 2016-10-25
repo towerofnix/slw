@@ -5,6 +5,8 @@
 // this is a fair use of the name as specified
 // in NANALAND RULES NUMBER #99
 
+const trimLines = require('trim-lines')
+
 class SLW {
   constructor() {
     this.canvas = document.createElement('canvas')
@@ -13,13 +15,11 @@ class SLW {
     this.playerY = 0
 
     this.activeLevel = {
-      tiles: (
-        '************\n'+
-        '************\n'+
-        '************\n'+
-        '*******DDDDD\n'+
-        'DDDDD*****D*'
-      )
+      tiles: trimLines`-------------
+                       ------=------
+                       -----===-----
+                       ----=====----
+                       =============`
     }
   }
 
