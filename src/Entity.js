@@ -89,7 +89,7 @@ export default class Entity {
     if (DEBUG) {
       // Draw the bounding box.
       ctx.fillStyle = this.color
-      ctx.fillRect(this.left, this.top, this.w, this.h + 1)
+      ctx.fillRect(this.left, this.top, this.w + 1, this.h + 1)
     }
   }
 
