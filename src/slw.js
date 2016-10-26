@@ -78,6 +78,7 @@ class SLW {
 
   getTilePosition(tile) {
     switch(tile) {
+      case '@': return [0, 1]
       case '-': return [2, 0]
       case '?': return [1, 0]
       case '=': return [0, 0]
@@ -114,14 +115,18 @@ class SLW {
 
     ctx.fillStyle = 'blue'
     const [pRendX, pRendY] = this.getDrawnPosition(this.playerX, this.playerY)
+    const [pTileX, pTileY] = this.getTilePosition('@')
     // ctx.fillRect(pRendX, pRendY, 16, 32)
     ctx.drawImage(
-      this.tileset, 64, 64, this.textureSize, this.textureSize,
+      this.tileset,
+      pTileX * this.textureSize, pTileY * this.textureSize,
+      this.textureSize, this.textureSize,
+
       pRendX, pRendY, this.tileSize, this.tileSize)
 
-    console.log(
-      // 'Looped tiles:', (viewEndX - viewStartX) * (viewEndY - viewStartY)
-    )
+    /*console.log(
+      'Looped tiles:', (viewEndX - viewStartX) * (viewEndY - viewStartY)
+    )*/
   }
 
   inputMovement() {
