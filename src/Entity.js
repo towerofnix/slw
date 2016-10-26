@@ -6,11 +6,7 @@ const DEBUG = true
 import SLW from './SLW'
 import Tile from './Tile'
 
-function sign(n: number) {
-  if(n > 0) return 1
-  if(n < 0) return -1
-  return 0
-}
+import { sign } from './util'
 
 export default class Entity {
   // Position, absolute (not tileX/Y!)
@@ -151,28 +147,10 @@ export class Player extends Entity {
       this.xv += sign(this.xv) * -0.5
     }
 
-    if (/*this.grounded && */game.keys[32]) {
-      // fly
+    if (this.grounded && game.keys[32]) {
+      // jump
       this.yv = -4
     }
-
-    /*
-    if (this.grounded) {
-      // If the player isn't moving up (e.g. jumping), set the player's Y
-      // velocity to 0.
-      if (this.yv > 0) {
-        this.yv = 0
-      }
-
-      // Move the player to the top of the block they're currently standing on.
-      // This will probably need to be removed in the future to deal with
-      // sloped blocks, but that's all complicated and lovely stuff that we
-      // aren't going to be dealing with for now! :)
-      this.yv = Math.floor(this.yv)
-    } else {
-      this.yv += 1
-    }
-    */
 
     this.xv = Math.min(this.xv,  3)
     this.xv = Math.max(this.xv, -3)
@@ -184,7 +162,6 @@ export class Player extends Entity {
   }
 
   get grounded(): boolean {
-    // TODO
-    return false // Tile.at(this.x / 16, this.y / 16).solid
+    return Tile.at([this.x / 16, this.bottom / 16 + 0.1]).solid
   }
 }

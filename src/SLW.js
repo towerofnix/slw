@@ -13,13 +13,23 @@ import Tile from './Tile'
 import { Player } from './Entity'
 
 export default class SLW {
+  // Map to store key-pressed data in.
   keys: Object
+
+  // Canvas used to display the game on.
   canvas: HTMLCanvasElement
 
+  // Player object - the character that walks around the screen using the
+  // user's input as controls.
   player: Player
+
+  // Camera object - where the camera is.
   camera: Position
 
+  // Level object, to contain information about the currently active level.
   activeLevel: { tiles: string }
+
+  // A basic tileset image to grab tile textures from.
   tileset: Image
 
   constructor() {
@@ -65,6 +75,7 @@ export default class SLW {
     }
   }
 
+  // Clears the game canvas.
   canvasClear() {
     const ctx = this.canvas.getContext('2d')
 
@@ -72,6 +83,8 @@ export default class SLW {
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
   }
 
+  // Gets the drawn position of a given tile position. For example, assuming
+  // that the tile size is 16, getDrawnPosition([0, 2]) would become [0, 32].
   getDrawnPosition([tileX, tileY]: Position): Position {
     return [
       Math.floor(tileX * Tile.size),
@@ -79,6 +92,7 @@ export default class SLW {
     ]
   }
 
+  // Draws all of the active level's tiles.
   drawLevelTiles() {
     const rows = this.activeLevel.tiles.split('\n')
     const ctx = this.canvas.getContext('2d')
