@@ -10,7 +10,7 @@ let ___
 type Position = [number, number]
 
 const trimLines = require('trim-lines')
-import Tile from './tile'
+import Tile from './Tile'
 
 export default class SLW {
   constructor() {

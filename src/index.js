@@ -1,6 +1,6 @@
 // @flow
 
-import SLW from './slw'
+import SLW from './SLW'
 
 window.addEventListener('load', e => {
   let tileset = new Image
