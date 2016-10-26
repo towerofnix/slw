@@ -119,6 +119,16 @@ export default class Entity {
 
     return collision
   }
+
+  // Whether or not the entity is on the ground or not.
+  get grounded(): boolean {
+    // Check if either the tile below the player to the LEFT or the tile below
+    // the player to the RIGHT is solid.
+    return (
+      Tile.at([Math.floor(this.x / 16), this.bottom / 16 + 0.1]).solid ||
+      Tile.at([Math.ceil(this.x / 16), this.bottom / 16 + 0.1]).solid
+    )
+  }
 }
 
 export class Player extends Entity {
@@ -159,9 +169,5 @@ export class Player extends Entity {
     this.yv += 0.25 // TODO actual gravity
 
     super.update(game)
-  }
-
-  get grounded(): boolean {
-    return Tile.at([this.x / 16, this.bottom / 16 + 0.1]).solid
   }
 }
