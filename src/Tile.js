@@ -1,5 +1,7 @@
 // @flow
 
+type Position = [number, number]
+
 export default class Tile {
   // human-readable name
   name: string
@@ -10,14 +12,32 @@ export default class Tile {
   // true if objects should collide with this tile
   solid: boolean
 
-  constructor(properties: Object) {
-    for(let key of Object.keys(properties)) {
-      this[key] = properties[key]
-    }
+  constructor(props: Object) {
+    this.name = props.name || 'Unknown'
+    this.position = props.position
+    this.solid = props.solid || false
+  }
+
+  static size: number
+
+  // Get a Tile from its String representation.
+  static get(str: string): Tile {
+    let tile = tilemap.get(str)
+
+    if(tile) return tile
+    else throw new RangeError('Tile ' + str + ' not found.')
+  }
+
+  // Get a Tile from its Position in the activeLevel.
+  static at([tileX: number, tileY: number]): Tile {
+    const rows = window.game.activeLevel.tiles.split('\n')
+    const tile = rows[Math.floor(tileY)][Math.floor(tileX)]
+
+    return Tile.get(tile)
   }
 }
 
-export const tilemap = new Map([
+export const tilemap: Map <string, Tile> = new Map([
   ['=', new Tile({
     name: 'Solid Block',
     position: [0, 0],
@@ -33,12 +53,7 @@ export const tilemap = new Map([
   ['-', new Tile({
     name: 'Air',
     position: [2, 0],
-    solid: false,
   })],
 ])
 
-// Get a Tile from its String representation.
-Tile.get = (str: string): Tile => tilemap.get(str)
-
-// Tiles are 16x16px.
 Tile.size = 16

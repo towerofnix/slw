@@ -1,5 +1,3 @@
-// @flow
-
 import SLW from './SLW'
 
 window.addEventListener('load', e => {
@@ -23,8 +21,8 @@ window.addEventListener('load', e => {
           game.canvasClear()
           game.drawLevelTiles()
 
-          game.inputMovement()
-          game.doMovement()
+          game.player.update(game)
+          game.player.draw(game)
       //     didTick = true
       //   }
       // } else {

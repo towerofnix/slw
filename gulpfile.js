@@ -125,9 +125,6 @@ function buildJs(resolve, watch=false) {
   b.transform(require('babelify').configure({
     presets: 'latest',
     plugins: [
-      'transform-runtime',
-      'typecheck',
-      'syntax-flow',
       'transform-flow-strip-types'
     ],
   }))
