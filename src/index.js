@@ -1,6 +1,6 @@
 // @flow
 
-const SLW = require('./slw')
+import SLW from './slw'
 
 window.addEventListener('load', e => {
   let tileset = new Image

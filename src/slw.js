@@ -7,9 +7,12 @@ let ___
 // this is a fair use of the name as specified
 // in NANALAND RULES NUMBER #99
 
-const trimLines = require('trim-lines')
+type Position = [number, number]
 
-class SLW {
+const trimLines = require('trim-lines')
+import Tile from './tile'
+
+export default class SLW {
   constructor() {
     this.keys = {}
 
@@ -39,7 +42,7 @@ class SLW {
     this.cameraY = 0
 
     // Generally this should probably be 1:1
-    this.tileSize = 16
+    this.tileSize = Tile.size
     this.textureSize = 16
 
     this.activeLevel = {
@@ -68,21 +71,18 @@ class SLW {
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
   }
 
-  getDrawnPosition(tileX, tileY) {
-    // Fill in the blanks!
+  getDrawnPosition([tileX: number, tileY: number]): Position {
     return [
       Math.floor(tileX * this.tileSize),
       Math.floor(tileY * this.tileSize)
     ]
   }
 
-  getTilePosition(tile) {
-    switch(tile) {
-      case '-': return [2, 0]
-      case '?': return [1, 0]
-      case '=': return [0, 0]
-      default:  return [0, 0]
-    }
+  getTileAtPosition([tileX: number, tileY: number]): Tile {
+    const rows = this.activeLevel.tiles.split('\n')
+    const tile = rows[tileY][tileX]
+
+    return Tile.get(tile)
   }
 
   drawLevelTiles() {
@@ -101,8 +101,8 @@ class SLW {
         let row = rows[y] || []
         let tile = row[x] || ''
 
-        const [rendX, rendY] = this.getDrawnPosition(x, y)
-        const [tileX, tileY] = this.getTilePosition(tile)
+        const [rendX, rendY] = this.getDrawnPosition([x, y])
+        const [tileX, tileY] = Tile.get(tile).position
         ctx.drawImage(
           this.tileset,
           tileX * this.textureSize, tileY * this.textureSize,
@@ -113,7 +113,7 @@ class SLW {
     }
 
     ctx.fillStyle = 'blue'
-    const [pRendX, pRendY] = this.getDrawnPosition(this.playerX, this.playerY)
+    const [pRendX, pRendY] = this.getDrawnPosition([this.playerX, this.playerY])
     // ctx.fillRect(pRendX, pRendY, 16, 32)
     ctx.drawImage(
       this.tileset, 64, 64, this.textureSize, this.textureSize,
@@ -143,8 +143,8 @@ class SLW {
     const rows = this.activeLevel.tiles.split('\n')
     const rowBelow = rows[Math.floor(this.playerY) + 1]
     return rowBelow && (
-      rowBelow[Math.floor(this.playerX)] === '=' ||
-      rowBelow[Math.ceil(this.playerX)] === '='
+      Tile.get(rowBelow[Math.floor(this.playerX)]).solid
+   || Tile.get(rowBelow[Math.ceil(this.playerX)]).solid
     )
   }
 
@@ -170,5 +170,3 @@ class SLW {
     this.playerY += this.playerYV
   }
 }
-
-module.exports = SLW
