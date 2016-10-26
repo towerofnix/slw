@@ -26,11 +26,15 @@ class SLW {
 
     this.canvas.setAttribute('tabindex', 1)
 
+    // Player position in tiles.
     this.playerX = 0
-    this.playerY = 0
+    this.playerY = 6
+
+    // Player velocity in tiles per tick.
     this.playerXV = 0
     this.playerYV = 0
 
+    // Camera position, probably to be done later
     this.cameraX = 0
     this.cameraY = 0
 
@@ -109,8 +113,11 @@ class SLW {
     }
 
     ctx.fillStyle = 'blue'
-    const [pRendX, pRendY] = [this.playerX, this.playerY]
-    ctx.fillRect(pRendX, pRendY, 16, 32)
+    const [pRendX, pRendY] = this.getDrawnPosition(this.playerX, this.playerY)
+    // ctx.fillRect(pRendX, pRendY, 16, 32)
+    ctx.drawImage(
+      this.tileset, 64, 64, this.textureSize, this.textureSize,
+      pRendX, pRendY, this.tileSize, this.tileSize)
 
     console.log(
       // 'Looped tiles:', (viewEndX - viewStartX) * (viewEndY - viewStartY)
@@ -118,75 +125,49 @@ class SLW {
   }
 
   inputMovement() {
-    // x-input
-
     if (this.keys[39]) {
-      if(this.playerXV <= 0.5) this.playerXV += 0.1
+      this.playerXV = 0.15
     }
 
     if (this.keys[37]) {
-      if(this.playerXV >= -0.5) this.playerXV -= 0.1
+      this.playerXV = -0.15
     }
 
-    this.playerXV = this.playerXV * 0.75
-
-    // y-input
-
-    if (this.keys[38]) {
-      this.playerYV -= 1
+    if (this.playerOnGround && this.keys[32]) {
+      console.log('boing!')
+      this.playerYV = -0.3
     }
+  }
 
-    this.playerYV += 0.5
+  get playerOnGround() {
+    const rows = this.activeLevel.tiles.split('\n')
+    const rowBelow = rows[Math.floor(this.playerY) + 1]
+    return rowBelow && (
+      rowBelow[Math.floor(this.playerX)] === '=' ||
+      rowBelow[Math.ceil(this.playerX)] === '='
+    )
   }
 
   doMovement() {
-    const rows = this.activeLevel.tiles.split('\n')
-    let edge
-
-    // x-movement
-    if (this.playerXV > 0) edge = this.playerX
-    if (this.playerXV < 0) edge = this.playerX + this.tileSize
-    if (this.playerXV !== 0) {
-      /*
-      let intersects = Math.ceil((edge + this.playerXV) / 16)
-      let last = (edge + this.playerXV) % 16 // TODO?
-      let newPosition = this.playerX
-
-      for(let i = 0; i < intersects; i++) {
-        let tile = rows[this.playerY][i]
-
-        if(tile === '-') {
-          // TODO use a collision map
-          newPosition += 1//this.tileSize
-        }
+    if (this.playerOnGround) {
+      // If the player isn't moving up (e.g. jumping), set the player's Y
+      // velocity to 0.
+      if (this.playerYV > 0) {
+        this.playerYV = 0
       }
 
-      console.log(this.playerX)
-
-      this.playerX = newPosition + last
-      */
-
-      this.playerX += this.playerXV
+      // Move the player to the top of the block they're currently standing on.
+      // This will probably need to be removed in the future to deal with
+      // sloped blocks, but that's all complicated and lovely stuff that we
+      // aren't going to be dealing with for now! :)
+      this.playerY = Math.floor(this.playerY)
+    } else {
+      this.playerYV += 0.01
     }
 
-    // y-movement
-    if (this.playerYV > 0) edge = this.playerY
-    if (this.playerYV < 0) edge = this.playerY + this.tileSize
-    if (this.playerYV !== 0) {
-      let intersects = Math.ceil((edge + this.playerYV) / 16)
-      let last = (edge + this.playerYV) % 16 // TODO?
-      let i
-
-      for(i = Math.floor(this.playerY); i < this.playerY + intersects; i++) {
-        let tile = rows[i][Math.floor(this.playerX)]
-
-        if(tile !== '-') {
-          break
-        }
-      }
-
-      this.playerY = i //* this.tileSize
-    }
+    this.playerXV *= 0.8
+    this.playerX += this.playerXV
+    this.playerY += this.playerYV
   }
 }
 
