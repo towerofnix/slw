@@ -28,6 +28,8 @@ class SLW {
 
     this.playerX = 0
     this.playerY = 0
+    this.playerXV = 0
+    this.playerYV = 0
 
     this.cameraX = 0
     this.cameraY = 0
@@ -46,13 +48,14 @@ class SLW {
                        --------------------
                        --------------------
                        --------------------
-                       --------------------
+                       =-------------------
                        --------------------
                        ----------=?=-------
                        ------=-------------
                        -----===------------
-                       ----=====-----------
-                       =================---`
+                       ----=====----===----
+                       =================---
+                       ====================`
     }
   }
 
@@ -106,12 +109,84 @@ class SLW {
     }
 
     ctx.fillStyle = 'blue'
-    const [pRendX, pRendY] = this.getDrawnPosition(this.playerX, this.playerY)
+    const [pRendX, pRendY] = [this.playerX, this.playerY]
     ctx.fillRect(pRendX, pRendY, 16, 32)
 
     console.log(
       // 'Looped tiles:', (viewEndX - viewStartX) * (viewEndY - viewStartY)
     )
+  }
+
+  inputMovement() {
+    // x-input
+
+    if (this.keys[39]) {
+      if(this.playerXV <= 0.5) this.playerXV += 0.1
+    }
+
+    if (this.keys[37]) {
+      if(this.playerXV >= -0.5) this.playerXV -= 0.1
+    }
+
+    this.playerXV = this.playerXV * 0.75
+
+    // y-input
+
+    if (this.keys[38]) {
+      this.playerYV -= 1
+    }
+
+    this.playerYV += 0.5
+  }
+
+  doMovement() {
+    const rows = this.activeLevel.tiles.split('\n')
+    let edge
+
+    // x-movement
+    if (this.playerXV > 0) edge = this.playerX
+    if (this.playerXV < 0) edge = this.playerX + this.tileSize
+    if (this.playerXV !== 0) {
+      /*
+      let intersects = Math.ceil((edge + this.playerXV) / 16)
+      let last = (edge + this.playerXV) % 16 // TODO?
+      let newPosition = this.playerX
+
+      for(let i = 0; i < intersects; i++) {
+        let tile = rows[this.playerY][i]
+
+        if(tile === '-') {
+          // TODO use a collision map
+          newPosition += 1//this.tileSize
+        }
+      }
+
+      console.log(this.playerX)
+
+      this.playerX = newPosition + last
+      */
+
+      this.playerX += this.playerXV
+    }
+
+    // y-movement
+    if (this.playerYV > 0) edge = this.playerY
+    if (this.playerYV < 0) edge = this.playerY + this.tileSize
+    if (this.playerYV !== 0) {
+      let intersects = Math.ceil((edge + this.playerYV) / 16)
+      let last = (edge + this.playerYV) % 16 // TODO?
+      let i
+
+      for(i = Math.floor(this.playerY); i < this.playerY + intersects; i++) {
+        let tile = rows[i][Math.floor(this.playerX)]
+
+        if(tile !== '-') {
+          break
+        }
+      }
+
+      this.playerY = i //* this.tileSize
+    }
   }
 }
 
