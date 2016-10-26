@@ -4,6 +4,8 @@
 
 Blah blah contribution info for new people here.
 
+Instructions to install and build and whatever are in the readme file.
+
 ## People developing the project
 
 Important things.
