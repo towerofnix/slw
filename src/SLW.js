@@ -33,7 +33,7 @@ export default class SLW {
 
   entities: Array <Entity>
 
-  constructor(levelid: string, tileset: Image) {
+  constructor(levelid: string, tileset: Image, entityImages: Object <Image>) {
     this.keys = {}
     this.entities = []
 
@@ -53,7 +53,7 @@ export default class SLW {
 
     this.player = new Player(this, 16, 16)
     this.camera = [0, 0]
-    this.level = new Level(this, levelid, tileset)
+    this.level = new Level(this, levelid, tileset, entityImages)
     this.tick = 0
 
     // Call create() on the Level Tiles

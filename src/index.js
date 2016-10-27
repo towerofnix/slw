@@ -2,9 +2,14 @@ import SLW from './SLW'
 
 window.addEventListener('load', e => {
   let tileset = new Image
+  let entity_tileset = {}
 
   tileset.onload = () => {
-    const game = new SLW('1-1', tileset)
+    if (!(Object.keys(entity_tileset).every(img => entity_tileset[img].complete))) {
+      requestAnimationFrame(tileset.onload);
+      return;
+    }
+    const game = new SLW('1-1', tileset, entity_tileset)
 
     window.game = game // debug only pls
     document.body.appendChild(game.canvas)
@@ -30,5 +35,7 @@ window.addEventListener('load', e => {
     })()
   }
 
+  entity_tileset.Player new Image
+  entity_tileset.Player.src = 'liam.png'
   tileset.src = 'tileset.png'
 })
