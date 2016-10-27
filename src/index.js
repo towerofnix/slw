@@ -22,6 +22,7 @@ window.addEventListener('load', e => {
         game.player.update()
         game.cameraUpdate()
         game.level.update()
+        game.entityUpdate()
 
         game.canvasClear()
         game.draw()

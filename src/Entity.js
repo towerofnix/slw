@@ -1,7 +1,7 @@
 // @flow
 
-// show bounding boxes, among other things
-const DEBUG = true
+const DEBUG = true // show bounding boxes
+const GRAVITY = 0.25
 
 import SLW from './SLW'
 import Tile from './Tile'
@@ -190,7 +190,28 @@ export class Player extends Entity {
     this.xv = Math.max(this.xv, -3)
     this.yv = Math.min(this.yv,  4)
 
-    this.yv += 0.25 // TODO actual gravity
+    this.yv += GRAVITY
+
+    // actually move:
+    super.update()
+  }
+}
+
+export class Goomba extends Entity {
+  constructor(game: SLW, x: number = 0, y:number = 0) {
+    super(game)
+
+    this.x = x
+    this.y = y
+
+    this.w = 16
+    this.h = 16
+
+    this.xv = 1
+  }
+
+  update() {
+    // TODO goombas walk and then turn around when they bump into something
 
     // actually move:
     super.update()

@@ -9,7 +9,7 @@ type Position = [number, number]
 
 import Tile from './Tile'
 import Level from './Level'
-import { Player } from './Entity'
+import { Entity, Player } from './Entity'
 
 export default class SLW {
   // Map to store key-pressed data in.
@@ -31,8 +31,11 @@ export default class SLW {
   // Amount of draw()s called since we started.
   tick: number
 
+  entities: Array <Entity>
+
   constructor(levelid: string, tileset: Image) {
     this.keys = {}
+    this.entities = []
 
     this.canvas = document.createElement('canvas')
     this.canvas.width = 256
@@ -78,7 +81,12 @@ export default class SLW {
     this.camera[1] += this.player.y - this.canvas.height / 2 - this.camera[1]
   }
 
-  // Draw. Draw all the things.
+  // Update all the entities.
+  entityUpdate() {
+    this.entities.forEach(e => e.update())
+  }
+
+  // Draw all the things.
   draw() {
     const ctx = this.canvas.getContext('2d')
     if (!(ctx instanceof CanvasRenderingContext2D)) return
@@ -86,8 +94,9 @@ export default class SLW {
     // scroll
     ctx.translate(Math.floor(-this.camera[0]), Math.floor(-this.camera[1]))
 
-    this.player.draw()
     this.level.draw()
+    this.player.draw()
+    this.entities.forEach(e => e.draw())
 
     // unscroll
     ctx.translate(Math.floor(this.camera[0]), Math.floor(this.camera[1]))

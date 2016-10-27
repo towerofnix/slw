@@ -1,7 +1,7 @@
 // @flow
 
 import SLW from './SLW'
-import { Entity, Player } from './Entity'
+import { Entity, Player, Goomba } from './Entity'
 
 type Position = [number, number]
 
@@ -218,7 +218,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
   ['@', class extends Tile {
     constructor(game) {
       super(game, {
-        name: 'Player Starting Point',
+        name: 'Player',
         position: [0, 0],
       })
     }
@@ -229,6 +229,29 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       this.game.player.x = x
       this.game.player.y = y - this.game.player.h + Tile.size - 1 // directly
                                                                   // on top
+
+      // replace this tile with Air
+      const tile = new (Tile.get('-'))(this.game)
+      this.game.level.replaceTile([this.x, this.y], tile)
+    }
+  }],
+
+  ['G', class extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Goomba',
+        position: [0, 0],
+      })
+    }
+
+    onCreate() {
+      // place a goomba here
+      let goomba = new Goomba(this.game)
+      const [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
+      goomba.x = x
+      goomba.y = y - goomba.h + Tile.size - 1 // directly on top
+
+      this.game.entities.push(goomba)
 
       // replace this tile with Air
       const tile = new (Tile.get('-'))(this.game)
