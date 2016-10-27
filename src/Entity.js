@@ -213,6 +213,8 @@ export class Goomba extends Entity {
   update() {
     // TODO goombas walk and then turn around when they bump into something
 
+    this.yv += GRAVITY
+
     // actually move:
     super.update()
   }
