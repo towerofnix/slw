@@ -149,21 +149,16 @@ export class Entity {
     const entities = []
 
     for (let entity of this.game.entities) {
-      if (this.left < entity.left && entity.left < this.right &&
-          this.top < entity.top && entity.top < this.bottom) {
+      // Don't detect itself!
+      if (entity === this) continue
+
+      if (this.left <= entity.left && entity.left <= this.right &&
+          this.top <= entity.top && entity.top <= this.bottom) {
         entities.push(entity)
       }
     }
 
     return entities
-  }
-
-  collidesWithEntity(entity: Entity): boolean {
-
-    return (
-      ((entity.left > this.left) && (entity.left < this.right)) ||
-      ((entity.right > this.left) && (entity.right < this.right))
-    )
   }
 
   // Whether or not the entity is on the ground or not.
