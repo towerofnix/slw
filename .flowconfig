@@ -7,3 +7,6 @@ src
 
 [options]
 unsafe.enable_getters_and_setters=true
+module.file_ext=.toml
+module.file_ext=.js
+module.file_ext=.json

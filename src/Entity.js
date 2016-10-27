@@ -87,13 +87,12 @@ export default class Entity {
         this.y -= v
         this.yv = 0
 
-        for (let relative of [+0.3, -0.3]) {
-          const tileAbove = this.game.level.tileAt([
-            Math.round(this.x / Tile.size + relative, this.top / Tile.size - 1),
-            this.top / Tile.size - 1
-          ])
+        const tileAboveX = Math.round(this.left / Tile.size)
+        const tileAboveY = this.top / Tile.size - 1
+        const tileAbove = this.game.level.tileAt([tileAboveX, tileAboveY])
 
-          tileAbove.onAirPunched(tileAbove)
+        if (tileAbove.onAirPunched) {
+          tileAbove.onAirPunched()
         }
       }
     }
@@ -111,7 +110,7 @@ export default class Entity {
 
     if (this.sprite) {
       // Draw the sprite image (if there is one).
-
+      let pos = this.sprite.position || [0, 0]
     }
   }
 
@@ -121,14 +120,6 @@ export default class Entity {
     let tileRight  = Math.floor(this.right  / Tile.size)
     let tileTop    = Math.floor(this.top    / Tile.size)
     let tileBottom = Math.floor(this.bottom / Tile.size)
-
-    const levelWidth  = this.game.level.w
-    const levelHeight = this.game.level.h
-
-    if (tileLeft < 0)             tileLeft = 0
-    if (tileRight > levelWidth)   tileRight = levelWidth
-    if (tileTop < 0)              tileTop = 0
-    if (tileBottom > levelHeight) tileBottom = levelHeight
 
     let collision = false
     for (let x = tileLeft; x <= tileRight; x++) {
@@ -147,10 +138,8 @@ export default class Entity {
     // Check if either the tile below the player to the LEFT or the tile below
     // the player to the RIGHT is solid.
     return (
-      this.game.level.tileAt(
-        [Math.floor(this.x / 16), this.bottom / 16 + 0.1]).solid ||
-      this.game.level.tileAt(
-        [Math.ceil(this.x / 16), this.bottom / 16 + 0.1]).solid
+      this.game.level.tileAt([Math.floor(this.x / 16), this.bottom / 16 + 0.1]).solid ||
+      this.game.level.tileAt([Math.ceil(this.x / 16), this.bottom / 16 + 0.1]).solid
     )
   }
 }
@@ -177,6 +166,7 @@ export class Player extends Entity {
     }
 
     if (this.game.keys[37]) {
+      // xv
       this.xv -= 1
     }
 
@@ -196,9 +186,6 @@ export class Player extends Entity {
     this.yv = Math.min(this.yv,  4)
 
     this.yv += 0.25 // TODO actual gravity
-
-    // rendering:
-    this.sprite.sheet = new Image()
 
     // actually move:
     super.update()

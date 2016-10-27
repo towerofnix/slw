@@ -33,4 +33,5 @@ Also please run `flow` decently frequently because it might help you with issues
 * Tilesets:
   - [theundead101](http://www.mfgg.net/index.php?act=user&param=09&uid=13240)
   - Super Mario World (+ edits)
+  - [ArnuroMinigon](http://www.mfgg.net/index.php?act=resdb&param=02&c=1&id=33168) (currently unused)
 * Sprites: [UltLuigi](http://www.mfgg.net/index.php?act=user&param=01&uid=11191) (+ edits)

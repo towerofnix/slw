@@ -17,6 +17,7 @@
     "postcss": "^5.2.4",
     "postcss-import": "^8.1.2",
     "rucksack-css": "^0.8.6",
+    "stringify": "^5.1.0",
     "uber-watchify": "^3.6.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
@@ -24,6 +25,6 @@
   },
   "dependencies": {
     "pleasejs": "^0.4.2",
-    "trim-lines": "^1.0.0"
+    "toml": "^2.3.0"
   }
 }

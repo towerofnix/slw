@@ -106,7 +106,7 @@ function buildJs(resolve, watch=false) {
     if(watch) { util.log(
       util.colors.red('Error')
     + ' in plugin \''
-    + util.colors.cyan('build:css')
+    + util.colors.cyan('build:js')
     + '\'\n'
     + (err.codeFrame || '') + '\n' + e.message
     )
@@ -121,6 +121,8 @@ function buildJs(resolve, watch=false) {
 
   if(watch) var b = watchify(browserify(opts))
   else      var b = browserify(opts)
+
+  b.transform(require('stringify')(['.toml']))
 
   b.transform(require('babelify').configure({
     presets: 'latest',

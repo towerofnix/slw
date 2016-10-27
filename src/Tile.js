@@ -19,7 +19,9 @@ export default class Tile {
   y: number
   exists: boolean
 
-  constructor(props: Object = {}) {
+  constructor(game: SLW, props: Object = {}) {
+    this.game = game
+
     this.name = props.name || 'Unknown'
     this.position = props.position
     this.solid = props.solid || false
@@ -51,49 +53,57 @@ export default class Tile {
 
 export const tilemap: Map <string, Class<Tile>> = new Map([
   ['=', class extends Tile {
-    constructor() {
-      super({
-        name: 'Solid Block',
-        position: [0, 0],
+    constructor(game) {
+      super(game, {
+        name: 'Ground',
+        position: [4, 5],
         solid: true
       })
     }
 
     onCreate() {
-      // we need to look at the adjacient tiles to figure out
+      // we need to look at our adjacient tiles to figure out
       // how we should be displayed:
 
-      /*
       let topTile    = this.game.level.tileAt([this.x, this.y - 1])
       let bottomTile = this.game.level.tileAt([this.x, this.y + 1])
       let leftTile   = this.game.level.tileAt([this.x - 1, this.y])
       let rightTile  = this.game.level.tileAt([this.x + 1, this.y])
 
-      let top    = topTile.name === this.name
-      let bottom = bottomTile   === this.name
-      let left   = leftTile     === this.name
-      let right  = rightTile    === this.name
+      let top    = topTile.name    === this.name
+      let bottom = bottomTile.name === this.name
+      let left   = leftTile.name   === this.name
+      let right  = rightTile.name  === this.name
 
-      if(top && left && right && bottom) this.position = [6, 1]
-      if(!top && left && right && bottom) this.position = [5, 1]
-      if(!top && !left && right && bottom) this.position = [5, 0]
-      if(!top && left && !right && bottom) this.position = [5, 2]
+      let topLeftTile = this.game.level.tileAt([this.x - 1, this.y - 1])
+      let topRightTile = this.game.level.tileAt([this.x + 1, this.y - 1])
+
+      let topLeft = topLeftTile.name === this.name
+      let topRight = topRightTile.name === this.name
+
+      if(top && left && right && bottom) this.position = [1, 6]
+      if(!top && left && right && bottom) this.position = [1, 5]
+      if(!top && !left && right && bottom) this.position = [0, 5]
+      if(!top && left && !right && bottom) this.position = [2, 5]
+
+      if(top && left && right && bottom && !topLeft && !topRight)
+        this.position = [5, 5]
+
+      if(top && left && right && bottom && !topLeft && topRight)
+        this.position = [3, 6]
+
+      if(top && left && right && bottom && topLeft && !topRight)
+        this.position = [4, 6]
 
       if(!top && !left && !right && bottom) this.position = [3, 5]
-
-      // TODO add other states
-      console.log(topTile, leftTile, rightTile, bottomTile, this.position)
-      */
-
-      // Alex, this is bork!
     }
   }],
 
   ['?', class extends Tile {
     i: number
 
-    constructor() {
-      super({
+    constructor(game) {
+      super(game, {
         name: '? Block',
         position: [0, 4],
         solid: true
@@ -114,24 +124,15 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       new window.Audio('sound/smw_shell_ricochet.wav').play()
 
       if (this.game && this.x && this.y) {
-        const tile = new (Tile.get('x'))
+        const tile = new (Tile.get('x'))(this.game)
         this.game.level.replaceTile([this.x, this.y], tile)
       }
     }
   }],
 
-  ['-', class extends Tile {
-    constructor() {
-      super({
-        name: 'Air',
-        position: [2, 0],
-      })
-    }
-  }],
-
   ['x', class extends Tile {
-    constructor() {
-      super({
+    constructor(game) {
+      super(game, {
         name: '? Block (Used)',
         position: [4, 4],
         solid: true,
@@ -139,10 +140,10 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
   }],
 
-  [' ', class extends Tile {
-    constructor() {
-      super({
-        name: 'Void',
+  ['-', class extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Air',
         position: [0, 1],
       })
     }
@@ -151,8 +152,8 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
   ['0', class extends Tile {
     i: number
 
-    constructor() {
-      super({
+    constructor(game) {
+      super(game, {
         name: 'Coin',
         position: [0, 3],
       })
@@ -163,13 +164,102 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
 
     onUpdate() {
-      this.i += 0.025
+      this.i += 0.1
       if (this.i >= 4) this.i = 0
 
       this.position[0] = Math.max(Math.floor(this.i), 0)
     }
 
     // TODO touch() {}
+  }],
+
+  ['@', class extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Player Starting Point',
+        position: [0, 0],
+      })
+    }
+
+    onCreate() {
+      // place the player here
+      const [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
+      this.game.player.x = x
+      this.game.player.y = y - this.game.player.h + Tile.size - 1 // directly
+                                                                  // on top
+
+      // replace this tile with Air
+      const tile = new (Tile.get('-'))(this.game)
+      this.game.level.replaceTile([this.x, this.y], tile)
+    }
+  }],
+
+  ['>', class extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Camera Boundary (Left)',
+        position: [0, 0],
+        solid: true,
+      })
+    }
+
+    onUpdate() {
+      let dist = (this.x + 1) * Tile.size
+
+      if (this.game.camera[0] < dist)
+        this.game.camera[0] = dist
+    }
+  }],
+
+  ['<', class extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Camera Boundary (Right)',
+        position: [0, 0],
+        solid: true,
+      })
+    }
+
+    onUpdate() {
+      let dist = (this.x + 1) * Tile.size
+
+      if (this.game.camera[0] > dist)
+        this.game.camera[0] = dist
+    }
+  }],
+
+  ['^', class extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Camera Boundary (Bottom)',
+        position: [0, 0],
+        solid: true,
+      })
+    }
+
+    onUpdate() {
+      let dist = (this.y + 1) * Tile.size
+
+      if (this.game.camera[1] > dist)
+        this.game.camera[1] = dist
+    }
+  }],
+
+  ['v', class extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Camera Boundary (Top)',
+        position: [0, 0],
+        solid: true,
+      })
+    }
+
+    onUpdate() {
+      let dist = (this.y + 1) * Tile.size
+
+      if (this.game.camera[1] < dist)
+        this.game.camera[1] = dist
+    }
   }],
 ])
 

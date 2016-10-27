@@ -1,14 +1,17 @@
 // @flow
 
+const toml = require('toml')
+const levels = toml.parse(require('./levels.toml'))
+
 import SLW from './SLW'
 import Tile from './Tile'
 
 type Position = [number, number]
 
 export default class Level {
-  id: [number, number]
   game: SLW
 
+  meta: Object // see levels.toml
   tileset: Image
   tilemap: Array <Array <Tile>>
 
@@ -17,37 +20,36 @@ export default class Level {
 
   constructor(
     game: SLW,
-    id: [number, number] = [1, 1],
-    leveldata: string,
+    levelid: string,
     tileset: Image,
   ) {
-    this.id = id
     this.game = game
 
     this.tileset = tileset
+    this.meta = levels[levelid]
+
+    const leveldata = this.meta.tilemap
 
     // Convert tilemap into a 2D array of Tiles:
     this.tilemap = []
     let rows = leveldata.split('\n')
-    for (let y = 0; y < rows.length; y++) {
+    for (let y = 0; y < rows.length-1; y++) {
       this.tilemap[y] = []
       let row = rows[y]
       for (let x = 0; x < row.length; x++) {
-        let tile = new (Tile.get(row[x]))
+        let tile = new (Tile.get(row[x]))(this.game)
 
         tile.x = x
         tile.y = y
         tile.game = game
         tile.exists = true
 
-        tile.onCreate()
-
         this.tilemap[y].push(tile)
       }
     }
 
     this.w = rows.length
-    this.h = rows[0].length
+    this.h = rows[1].length
   }
 
   update() {
@@ -64,10 +66,10 @@ export default class Level {
     const ctx = this.game.canvas.getContext('2d')
     if (!(ctx instanceof CanvasRenderingContext2D)) return
 
-    const viewStartX = 0
-    const viewStartY = 0
-    const viewEndX = 16
-    const viewEndY = 16
+    const viewStartX = Math.floor(this.game.camera[0] / Tile.size)
+    const viewStartY = Math.floor(this.game.camera[1] / Tile.size)
+    const viewEndX = Math.ceil(this.game.camera[0] / Tile.size) + 16
+    const viewEndY = Math.ceil(this.game.camera[1] / Tile.size) + 16
 
     for (let y = viewStartY; y < viewEndY; y++) {
       for (let x = viewStartX; x < viewEndX; x++) {
@@ -95,9 +97,9 @@ export default class Level {
       if(typeof r === 'undefined') throw 'nope'
       return r
     } catch(e) {
-      // fallback to void tile
-      console.warn(`Level.at([${tileX}, ${tileY}]) failed to retrieve Tile`)
-      return new (Tile.get(' '))
+      // fallback to Air tile
+      //console.warn(`Level.tileAt([${tileX}, ${tileY}]): Failed to retrieve Tile`)
+      return new (Tile.get('-'))(this.game)
     }
   }
 

@@ -4,24 +4,7 @@ window.addEventListener('load', e => {
   let tileset = new Image
 
   tileset.onload = () => {
-    const game = new SLW(
-`--------------------
- --------------------
- --------------------
- --------------------
- ----------------===-
- -----00-------------
- ----0---------------
- ---0----===---------
- --------------------
- ==------------------
- --------------------
- =??-------=?=-------
- ------=-------------
- -----===------------
- ----=====----===----
- =================---
- ====================`, tileset)
+    const game = new SLW('1-1', tileset)
 
     window.game = game // debug only pls
     document.body.appendChild(game.canvas)
@@ -35,13 +18,13 @@ window.addEventListener('load', e => {
       requestAnimationFrame(render)
 
       if(document.hasFocus()) { // don't update if we're in devtools
-        game.canvasClear()
-
-        game.level.update()
-        game.level.draw()
-
+        // Very deliberate order:
         game.player.update()
-        game.player.draw()
+        game.cameraUpdate()
+        game.level.update()
+
+        game.canvasClear()
+        game.draw()
       }
     })()
   }

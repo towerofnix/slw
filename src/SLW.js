@@ -7,8 +7,6 @@
 
 type Position = [number, number]
 
-const trimLines = require('trim-lines')
-
 import Tile from './Tile'
 import Level from './Level'
 import { Player } from './Entity'
@@ -24,13 +22,16 @@ export default class SLW {
   // user's input as controls.
   player: Player
 
-  // Camera object - where the camera is. TODO make this a class
+  // Camera position. Used for scrolling.
   camera: Position
 
   // Level, to contain information about the currently active level.
   level: Level
 
-  constructor(leveldata: string, tileset: Image) {
+  // Amount of draw()s called since we started.
+  tick: number
+
+  constructor(levelid: string, tileset: Image) {
     this.keys = {}
 
     this.canvas = document.createElement('canvas')
@@ -48,13 +49,11 @@ export default class SLW {
     this.canvas.setAttribute('tabindex', '1')
 
     this.player = new Player(this, 16, 16)
-
-    // @TODO Camera:
     this.camera = [0, 0]
+    this.level = new Level(this, levelid, tileset)
+    this.tick = 0
 
-    this.level = new Level(this, [1, 1], trimLines(leveldata), tileset)
-
-    // Call create() on the Level tilemap
+    // Call create() on the Level Tiles
     for (let row of this.level.tilemap) {
       for (let tile of row) {
         tile.onCreate()
@@ -67,8 +66,34 @@ export default class SLW {
     const ctx = this.canvas.getContext('2d')
 
     if (ctx instanceof CanvasRenderingContext2D) {
-      ctx.fillStyle = '#f8e0b2'
+      ctx.fillStyle = '#A0D0F8'
       ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
     }
+  }
+
+  // Modify the camera position to reflect where the player is.
+  // Essentially, this is just scrolling.
+  cameraUpdate() {
+    this.camera[0] += this.player.x - this.canvas.width / 2 - this.camera[0]
+    this.camera[1] += this.player.y - this.canvas.height / 2 - this.camera[1]
+  }
+
+  // Draw. Draw all the things.
+  draw() {
+    const ctx = this.canvas.getContext('2d')
+    if (!(ctx instanceof CanvasRenderingContext2D)) return
+
+    // scroll
+    ctx.translate(Math.floor(-this.camera[0]), Math.floor(-this.camera[1]))
+
+    this.player.draw()
+    this.level.draw()
+
+    // unscroll
+    ctx.translate(Math.floor(this.camera[0]), Math.floor(this.camera[1]))
+
+    // TODO GUI
+
+    this.tick++
   }
 }
