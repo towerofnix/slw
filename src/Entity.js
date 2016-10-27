@@ -8,7 +8,7 @@ import Tile from './Tile'
 
 import { sign } from './util'
 
-export default class Entity {
+export class Entity {
   game: SLW
 
   // Position, absolute (not tileX/Y!)
@@ -71,7 +71,7 @@ export default class Entity {
 
     for (let i = 0; i < Math.abs(xv); i++) {
       this.x += v
-      if (this.collides) {
+      if (this.collides()) {
         this.x -= v
         this.xv = 0
       }
@@ -83,7 +83,7 @@ export default class Entity {
 
     for (let i = 0; i < Math.abs(yv); i++) {
       this.y += v
-      if (this.collides) {
+      if (this.collides()) {
         this.y -= v
         this.yv = 0
 
@@ -91,11 +91,11 @@ export default class Entity {
         const tileAboveY = this.top / Tile.size - 1
         const tileAbove = this.game.level.tileAt([tileAboveX, tileAboveY])
 
-        if (tileAbove.onAirPunched) {
-          tileAbove.onAirPunched()
-        }
+        tileAbove.onAirPunch()
       }
     }
+
+    this.collides(true).forEach(tile => tile.onTouch(this))
   }
 
   draw() {
@@ -115,22 +115,27 @@ export default class Entity {
   }
 
   // Are we currently intersecting any solid Tiles?
-  get collides(): boolean {
+  collides(shouldReturnTiles: boolean = false): any {
     let tileLeft   = Math.floor(this.left   / Tile.size)
     let tileRight  = Math.floor(this.right  / Tile.size)
     let tileTop    = Math.floor(this.top    / Tile.size)
     let tileBottom = Math.floor(this.bottom / Tile.size)
 
+    let tiles = []
     let collision = false
     for (let x = tileLeft; x <= tileRight; x++) {
       for (let y = tileTop; y <= tileBottom; y++) {
         let tile = this.game.level.tileAt([x, y])
 
-        if (tile.solid) collision = true
+        if (tile.solid) {
+          collision = true
+        }
+
+        tiles.push(tile)
       }
     }
 
-    return collision
+    return shouldReturnTiles ? tiles : collision
   }
 
   // Whether or not the entity is on the ground or not.
@@ -177,7 +182,7 @@ export class Player extends Entity {
 
     if (this.grounded && this.game.keys[32]) {
       // jump
-      this.yv = -4
+      this.yv = -4.5
       this.jumpSound.play()
     }
 

@@ -1,6 +1,8 @@
 // @flow
 
 import SLW from './SLW'
+import { Entity, Player } from './Entity'
+
 type Position = [number, number]
 
 export default class Tile {
@@ -47,8 +49,12 @@ export default class Tile {
   // Called every frame.
   onUpdate() {}
 
+  // Called if and when this Tile is colliding with an entity.
+  // (Won't work if { solid: true }!)
+  onTouch(by: Entity) {}
+
   // Air punched, e.g. hitting a question mark block.
-  onAirPunched() {}
+  onAirPunch() {}
 }
 
 export const tilemap: Map <string, Class<Tile>> = new Map([
@@ -77,14 +83,23 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
 
       let topLeftTile = this.game.level.tileAt([this.x - 1, this.y - 1])
       let topRightTile = this.game.level.tileAt([this.x + 1, this.y - 1])
+      let bottomLeftTile = this.game.level.tileAt([this.x - 1, this.y + 1])
+      let bottomRightTile = this.game.level.tileAt([this.x + 1, this.y + 1])
 
       let topLeft = topLeftTile.name === this.name
       let topRight = topRightTile.name === this.name
+      let bottomLeft = bottomLeftTile.name === this.name
+      let bottomRight = bottomRightTile.name === this.name
 
       if(top && left && right && bottom) this.position = [1, 6]
       if(!top && left && right && bottom) this.position = [1, 5]
       if(!top && !left && right && bottom) this.position = [0, 5]
       if(!top && left && !right && bottom) this.position = [2, 5]
+      if(top && !left && right && bottom) this.position = [0, 6]
+      if(top && !left && right && !bottom) this.position = [0, 7]
+      if(top && left && right && !bottom) this.position = [1, 7]
+      if(top && left && !right && !bottom) this.position = [2, 7]
+      if(top && left && !right && bottom) this.position = [2, 6]
 
       if(top && left && right && bottom && !topLeft && !topRight)
         this.position = [5, 5]
@@ -95,7 +110,27 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       if(top && left && right && bottom && topLeft && !topRight)
         this.position = [4, 6]
 
+      if(top && left && right && bottom && !bottomLeft)
+        this.position = [6, 6]
+
+      if(top && left && right && bottom && !bottomRight)
+        this.position = [5, 6]
+
+      if(!top && left && right && bottom && !bottomRight)
+        this.position = [8, 5]
+
+      if(!top && left && right && bottom && !bottomLeft)
+        this.position = [7, 5]
+
+      if(top && left && right && !bottom && !topLeft && !topRight)
+        this.position = [6, 7]
+
+      if(!top && !left && right && !bottom) this.position = [3, 7]
+      if(left && right && !bottom && !top) this.position = [4, 7]
+      if(left && !right && !bottom && !top) this.position = [5, 7]
       if(!top && !left && !right && bottom) this.position = [3, 5]
+
+      // TODO
     }
   }],
 
@@ -170,7 +205,14 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       this.position[0] = Math.max(Math.floor(this.i), 0)
     }
 
-    // TODO touch() {}
+    onTouch() {
+      // TODO add 1 to coins
+      // TODO play sound
+
+      // replace this tile with Air
+      const tile = new (Tile.get('-'))(this.game)
+      this.game.level.replaceTile([this.x, this.y], tile)
+    }
   }],
 
   ['@', class extends Tile {
@@ -240,6 +282,8 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     onUpdate() {
       let dist = (this.y + 1) * Tile.size
 
+      console.log(this.game.camera[1], dist)
+
       if (this.game.camera[1] > dist)
         this.game.camera[1] = dist
     }
@@ -259,6 +303,20 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
 
       if (this.game.camera[1] < dist)
         this.game.camera[1] = dist
+    }
+  }],
+
+  ['#', class extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Death Zone',
+        position: [0, 0],
+      })
+    }
+
+    onTouch(by: Entity) {
+      // TODO destroy it
+      if(by instanceof Player) console.warn('you are ded')
     }
   }],
 ])
