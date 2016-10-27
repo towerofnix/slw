@@ -125,8 +125,8 @@ export const tilemap: Map <string, Tile> = new Map([
   })],
 
   ['x', new Tile({
-    name: 'Punched ? Block',
-    position: [3, 0],
+    name: '? Block (Used)',
+    position: [4, 4],
     solid: true,
   })],
 
