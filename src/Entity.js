@@ -103,9 +103,9 @@ export class Entity {
 
     if (this.sprite) {
       // Draw the sprite image (if there is one).
-      let pos = [0, 0] // Animate for later
+      let pos = [1, 0] // Animate for later
       ctx,drawImage(this.sprite,
-        pos[0], pos[1], w, h,
+        w * pos[0], h * pos[1], w, h,
         this.x, this.y, w, h
       );
     }
