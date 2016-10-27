@@ -19,6 +19,7 @@ export default class Tile {
 
   x: number
   y: number
+
   exists: boolean
 
   constructor(game: SLW, props: Object = {}) {
@@ -313,12 +314,10 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
 
     onUpdate() {
+      // WHY DOESN'T THIS WORK
       let dist = (this.y + 1) * Tile.size
 
-      console.log(this.game.camera[1], dist)
-
-      if (this.game.camera[1] > dist)
-        this.game.camera[1] = dist
+      this.game.camera[1] = Math.min(this.game.camera[1], dist)
     }
   }],
 
@@ -332,7 +331,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
 
     onUpdate() {
-      let dist = (this.y + 1) * Tile.size
+      let dist = (this.y) * Tile.size
 
       if (this.game.camera[1] < dist)
         this.game.camera[1] = dist
