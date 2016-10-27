@@ -9,6 +9,8 @@ import Tile from './Tile'
 import { sign } from './util'
 
 export default class Entity {
+  game: SLW
+
   // Position, absolute (not tileX/Y!)
   x: number
   y: number
@@ -39,7 +41,9 @@ export default class Entity {
     return Math.floor(this.x + this.w)
   }
 
-  constructor() {
+  constructor(game: SLW) {
+    this.game = game
+
     this.x = 0
     this.y = 0
 
@@ -81,12 +85,10 @@ export default class Entity {
 
         const tileAboveX = Math.round(this.left / Tile.size)
         const tileAboveY = this.top / Tile.size - 1
-        const tileAbove = Tile.at([tileAboveX, tileAboveY])
+        const tileAbove = this.game.level.tileAt([tileAboveX, tileAboveY])
 
-        if (tileAbove.interaction.airPunched) {
-          tileAbove.interaction.airPunched.apply({
-            x: tileAboveX, y: tileAboveY, player: this
-          })
+        if (tileAbove.on.airPunched) {
+          tileAbove.on.airPunched.apply(tileAbove)
         }
       }
     }
@@ -110,8 +112,8 @@ export default class Entity {
     let tileTop    = Math.floor(this.top    / Tile.size)
     let tileBottom = Math.floor(this.bottom / Tile.size)
 
-    const levelWidth  = window.game.activeLevel.tiles.split('\n')[0].length - 1
-    const levelHeight = window.game.activeLevel.tiles.split('\n').length    - 1
+    const levelWidth  = this.game.level.w
+    const levelHeight = this.game.level.h
 
     if (tileLeft < 0)             tileLeft = 0
     if (tileRight > levelWidth)   tileRight = levelWidth
@@ -121,7 +123,7 @@ export default class Entity {
     let collision = false
     for (let x = tileLeft; x <= tileRight; x++) {
       for (let y = tileTop; y <= tileBottom; y++) {
-        let tile = Tile.at([x, y])
+        let tile = this.game.level.tileAt([x, y])
 
         if (tile.solid) collision = true
       }
@@ -135,8 +137,8 @@ export default class Entity {
     // Check if either the tile below the player to the LEFT or the tile below
     // the player to the RIGHT is solid.
     return (
-      Tile.at([Math.floor(this.x / 16), this.bottom / 16 + 0.1]).solid ||
-      Tile.at([Math.ceil(this.x / 16), this.bottom / 16 + 0.1]).solid
+      this.game.level.tileAt([Math.floor(this.x / 16), this.bottom / 16 + 0.1]).solid ||
+      this.game.level.tileAt([Math.ceil(this.x / 16), this.bottom / 16 + 0.1]).solid
     )
   }
 }
@@ -144,8 +146,8 @@ export default class Entity {
 export class Player extends Entity {
   jumpSound: window.Audio
 
-  constructor(x: number = 0, y:number = 0) {
-    super()
+  constructor(game: SLW, x: number = 0, y:number = 0) {
+    super(game)
 
     this.x = x
     this.y = y

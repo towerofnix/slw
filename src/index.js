@@ -4,8 +4,26 @@ window.addEventListener('load', e => {
   let tileset = new Image
 
   tileset.onload = () => {
-    const game = new SLW
-    window.game = game
+    const game = new SLW(
+`--------------------
+ --------------------
+ --------------------
+ --------------------
+ ----------------===-
+ --------------------
+ --------------------
+ --------===---------
+ --------------------
+ ==------------------
+ --------------------
+ ----------=?=-------
+ ------=-------------
+ -----===------------
+ ----=====----===----
+ =================---
+ ====================`, tileset)
+
+    window.game = game // debug only pls
     document.body.appendChild(game.canvas)
 
     game.tileset = tileset
@@ -16,18 +34,15 @@ window.addEventListener('load', e => {
     !(function render() {
       requestAnimationFrame(render)
 
-      // if (game.keys[32]) {
-      //   if (!didTick) {
-          game.canvasClear()
-          game.drawLevelTiles()
+      if(document.hasFocus()) { // don't update if we're in devtools
+        game.canvasClear()
 
-          game.player.update(game)
-          game.player.draw(game)
-      //     didTick = true
-      //   }
-      // } else {
-      //   didTick = false
-      // }
+        game.level.update()
+        game.level.draw()
+
+        game.player.update(game)
+        game.player.draw(game)
+      }
     })()
   }
 

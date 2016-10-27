@@ -143,7 +143,7 @@ function buildJs(resolve, watch=false) {
       .pipe(source(out_file))
       .pipe(buffer())
       .pipe(sourcemaps.init({ loadMaps: true }))
-      .pipe(require('gulp-uglify')())
+      .pipe(require('gulp-uglify')({ mangle: false }))
       .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(out_dir))
   }

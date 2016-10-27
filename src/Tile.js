@@ -1,8 +1,11 @@
 // @flow
 
+import SLW from './SLW'
 type Position = [number, number]
 
 export default class Tile {
+  game: ?SLW
+
   // Human-readable name
   name: string
 
@@ -12,17 +15,31 @@ export default class Tile {
   // true if objects should collide with this tile
   solid: boolean
 
-  // Various interaction functions
-  interaction: {
+  x: ?number
+  y: ?number
+  exists: boolean
+
+  // Various interaction/event functions
+  on: {
+    // Called when this Tile comes into existence, e.g. the level loads.
+    create: Function,
+
+    // Called if and when this Tile is replaced with another.
+    destroy: Function,
+
+    // Called every frame.
+    update: Function,
+
     // Air punched, e.g. hitting a question mark block.
-    airPunched: Function
+    airPunched: Function,
   }
 
   constructor(props: Object) {
     this.name = props.name || 'Unknown'
     this.position = props.position
     this.solid = props.solid || false
-    this.interaction = props.interaction || {}
+    this.on = props.on || {}
+    this.exists = false
   }
 
   static size: number
@@ -35,6 +52,7 @@ export default class Tile {
     else throw new RangeError('Tile ' + str + ' not found.')
   }
 
+  /*
   // Get a Tile from its Position in the activeLevel.
   static at([tileX: number, tileY: number]): Tile {
     const rows = window.game.activeLevel.tiles.split('\n')
@@ -42,8 +60,7 @@ export default class Tile {
 
     return Tile.get(tile)
   }
-
-  onAirPunched() {}
+  */
 }
 
 export const tilemap: Map <string, Tile> = new Map([
@@ -57,12 +74,12 @@ export const tilemap: Map <string, Tile> = new Map([
     name: '? Block',
     position: [1, 0],
     solid: true,
-    interaction: {
+    on: {
       airPunched() {
         new window.Audio('sound/smw_shell_ricochet.wav').play()
-        window.game.placeTile([this.x, this.y], 'x')
+        this.game.level.replaceTile([this.x, this.y], Tile.get('x'))
       }
-    }
+    },
   })],
 
   ['-', new Tile({
@@ -73,8 +90,13 @@ export const tilemap: Map <string, Tile> = new Map([
   ['x', new Tile({
     name: 'Punched ? Block',
     position: [3, 0],
-    solid: true
+    solid: true,
   })],
+
+  [' ', new Tile({
+    name: 'Void',
+    position: [0, 1],
+  })]
 ])
 
 Tile.size = 16
