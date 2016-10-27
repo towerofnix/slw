@@ -58,23 +58,64 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
         solid: true
       })
     }
+
+    onCreate() {
+      // we need to look at the adjacient tiles to figure out
+      // how we should be displayed:
+
+      /*
+      let topTile    = this.game.level.tileAt([this.x, this.y - 1])
+      let bottomTile = this.game.level.tileAt([this.x, this.y + 1])
+      let leftTile   = this.game.level.tileAt([this.x - 1, this.y])
+      let rightTile  = this.game.level.tileAt([this.x + 1, this.y])
+
+      let top    = topTile.name === this.name
+      let bottom = bottomTile   === this.name
+      let left   = leftTile     === this.name
+      let right  = rightTile    === this.name
+
+      if(top && left && right && bottom) this.position = [6, 1]
+      if(!top && left && right && bottom) this.position = [5, 1]
+      if(!top && !left && right && bottom) this.position = [5, 0]
+      if(!top && left && !right && bottom) this.position = [5, 2]
+
+      if(!top && !left && !right && bottom) this.position = [3, 5]
+
+      // TODO add other states
+      console.log(topTile, leftTile, rightTile, bottomTile, this.position)
+      */
+
+      // Alex, this is bork!
+    }
   }],
 
   ['?', class extends Tile {
+    i: number
+
     constructor() {
       super({
         name: '? Block',
-        position: [1, 0],
+        position: [0, 4],
         solid: true
       })
+    }
+
+    onCreate() {
+      this.i = 0
+    }
+
+    onUpdate() {
+      this.i += 0.1
+      if(this.i >= 4) this.i = 0
+      this.position[0] = Math.max(Math.floor(this.i), 0)
     }
 
     onAirPunched() {
       new window.Audio('sound/smw_shell_ricochet.wav').play()
 
       if (this.game && this.x && this.y) {
-        const tile = new Tile.get('x')
-        // this.game.level.replaceTile([this.x, this.y], tile)
+        const tile = new (Tile.get('x'))
+        this.game.level.replaceTile([this.x, this.y], tile)
       }
     }
   }],
@@ -91,8 +132,8 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
   ['x', class extends Tile {
     constructor() {
       super({
-        name: 'Punched ? Block',
-        position: [3, 0],
+        name: '? Block (Used)',
+        position: [4, 4],
         solid: true,
       })
     }
@@ -105,6 +146,30 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
         position: [0, 1],
       })
     }
+  }],
+
+  ['0', class extends Tile {
+    i: number
+
+    constructor() {
+      super({
+        name: 'Coin',
+        position: [0, 3],
+      })
+    }
+
+    onCreate() {
+      this.i = 0
+    }
+
+    onUpdate() {
+      this.i += 0.025
+      if (this.i >= 4) this.i = 0
+
+      this.position[0] = Math.max(Math.floor(this.i), 0)
+    }
+
+    // TODO touch() {}
   }],
 ])
 

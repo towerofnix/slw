@@ -91,7 +91,9 @@ export default class Level {
     tileY = Math.floor(tileY)
 
     try {
-      return this.tilemap[tileY][tileX]
+      let r = this.tilemap[tileY][tileX]
+      if(typeof r === 'undefined') throw 'nope'
+      return r
     } catch(e) {
       // fallback to void tile
       console.warn(`Level.at([${tileX}, ${tileY}]) failed to retrieve Tile`)
