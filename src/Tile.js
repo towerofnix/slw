@@ -155,7 +155,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       this.position[0] = Math.max(Math.floor(this.i), 0)
     }
 
-    onAirPunched() {
+    onAirPunch() {
       new window.Audio('sound/smw_shell_ricochet.wav').play()
 
       if (this.game && this.x && this.y) {
