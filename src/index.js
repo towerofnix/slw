@@ -35,7 +35,7 @@ window.addEventListener('load', e => {
     })()
   }
 
-  entity_tileset.Player new Image
+  entity_tileset.Player = new Image
   entity_tileset.Player.src = 'liam.png'
   tileset.src = 'tileset.png'
 })
