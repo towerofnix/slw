@@ -33,16 +33,14 @@ export default class Level {
       this.tilemap[y] = []
       let row = rows[y]
       for (let x = 0; x < row.length; x++) {
-        let tile = Tile.get(row[x])
-
-        console.log(x, y, tile)
+        let tile = new (Tile.get(row[x]))
 
         tile.x = x
         tile.y = y
         tile.game = game
         tile.exists = true
 
-        if (tile.on.create) tile.on.create.apply(tile)
+        tile.onCreate()
 
         this.tilemap[y].push(tile)
       }
@@ -56,7 +54,7 @@ export default class Level {
     // Call update() on the tilemap's Tiles
     for (let row of this.tilemap) {
       for (let tile of row) {
-        if (tile.on.update) tile.on.update.apply(tile)
+        tile.onUpdate()
       }
     }
   }
@@ -73,10 +71,10 @@ export default class Level {
 
     for (let y = viewStartY; y < viewEndY; y++) {
       for (let x = viewStartX; x < viewEndX; x++) {
-        let tile = this.tileAt([x, y])
-
+        const tile = this.tileAt([x, y])
         const [rendX, rendY] = this.getAbsolutePosition([x, y])
         const [tileX, tileY] = tile.position
+
         ctx.drawImage(
           this.tileset,
           tileX * Tile.size, tileY * Tile.size,
@@ -97,7 +95,7 @@ export default class Level {
     } catch(e) {
       // fallback to void tile
       console.warn(`Level.at([${tileX}, ${tileY}]) failed to retrieve Tile`)
-      return Tile.get(' ')
+      return new (Tile.get(' '))
     }
   }
 
@@ -109,10 +107,10 @@ export default class Level {
 
     let oldTile = this.tileAt([tileX, tileY])
     oldTile.exists = false
-    if (oldTile.on.create) oldTile.on.create.apply(oldTile)
+    oldTile.onDestroy()
 
     this.tilemap[tileY][tileX] = newTile
-    if (newTile.on.create) newTile.on.create.apply(oldTile)
+    newTile.onCreate()
 
     return newTile
   }

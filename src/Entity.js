@@ -83,12 +83,13 @@ export default class Entity {
         this.y -= v
         this.yv = 0
 
-        const tileAboveX = Math.round(this.left / Tile.size)
-        const tileAboveY = this.top / Tile.size - 1
-        const tileAbove = this.game.level.tileAt([tileAboveX, tileAboveY])
+        for (let relative of [+0.3, -0.3]) {
+          const tileAbove = this.game.level.tileAt([
+            Math.round(this.x / Tile.size + relative, this.top / Tile.size - 1),
+            this.top / Tile.size - 1
+          ])
 
-        if (tileAbove.on.airPunched) {
-          tileAbove.on.airPunched.apply(tileAbove)
+          tileAbove.onAirPunched(tileAbove)
         }
       }
     }
@@ -137,8 +138,10 @@ export default class Entity {
     // Check if either the tile below the player to the LEFT or the tile below
     // the player to the RIGHT is solid.
     return (
-      this.game.level.tileAt([Math.floor(this.x / 16), this.bottom / 16 + 0.1]).solid ||
-      this.game.level.tileAt([Math.ceil(this.x / 16), this.bottom / 16 + 0.1]).solid
+      this.game.level.tileAt(
+        [Math.floor(this.x / 16), this.bottom / 16 + 0.1]).solid ||
+      this.game.level.tileAt(
+        [Math.ceil(this.x / 16), this.bottom / 16 + 0.1]).solid
     )
   }
 }
@@ -164,7 +167,6 @@ export class Player extends Entity {
     }
 
     if (game.keys[37]) {
-      // xv
       this.xv -= 1
     }
 

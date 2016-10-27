@@ -4,7 +4,7 @@ import SLW from './SLW'
 type Position = [number, number]
 
 export default class Tile {
-  game: ?SLW
+  game: SLW
 
   // Human-readable name
   name: string
@@ -15,88 +15,97 @@ export default class Tile {
   // true if objects should collide with this tile
   solid: boolean
 
-  x: ?number
-  y: ?number
+  x: number
+  y: number
   exists: boolean
 
-  // Various interaction/event functions
-  on: {
-    // Called when this Tile comes into existence, e.g. the level loads.
-    create: Function,
-
-    // Called if and when this Tile is replaced with another.
-    destroy: Function,
-
-    // Called every frame.
-    update: Function,
-
-    // Air punched, e.g. hitting a question mark block.
-    airPunched: Function,
-  }
-
-  constructor(props: Object) {
+  constructor(props: Object = {}) {
     this.name = props.name || 'Unknown'
     this.position = props.position
     this.solid = props.solid || false
-    this.on = props.on || {}
     this.exists = false
   }
 
   static size: number
 
-  // Get a Tile from its String representation.
-  static get(str: string): Tile {
+  // Get a Tile class from its String representation.
+  static get(str: string): Class<Tile> {
     let tile = tilemap.get(str)
 
     if(tile) return tile
     else throw new RangeError('Tile ' + str + ' not found.')
   }
 
-  /*
-  // Get a Tile from its Position in the activeLevel.
-  static at([tileX: number, tileY: number]): Tile {
-    const rows = window.game.activeLevel.tiles.split('\n')
-    const tile = rows[Math.floor(tileY)][Math.floor(tileX)]
+  // Called when this Tile comes into existence, e.g. the level loads.
+  onCreate() {}
 
-    return Tile.get(tile)
-  }
-  */
+  // Called if and when this Tile is replaced with another.
+  onDestroy() {}
+
+  // Called every frame.
+  onUpdate() {}
+
+  // Air punched, e.g. hitting a question mark block.
+  onAirPunched() {}
 }
 
-export const tilemap: Map <string, Tile> = new Map([
-  ['=', new Tile({
-    name: 'Solid Block',
-    position: [0, 0],
-    solid: true,
-  })],
+export const tilemap: Map <string, Class<Tile>> = new Map([
+  ['=', class extends Tile {
+    constructor() {
+      super({
+        name: 'Solid Block',
+        position: [0, 0],
+        solid: true
+      })
+    }
+  }],
 
-  ['?', new Tile({
-    name: '? Block',
-    position: [1, 0],
-    solid: true,
-    on: {
-      airPunched() {
-        new window.Audio('sound/smw_shell_ricochet.wav').play()
-        this.game.level.replaceTile([this.x, this.y], Tile.get('x'))
+  ['?', class extends Tile {
+    constructor() {
+      super({
+        name: '? Block',
+        position: [1, 0],
+        solid: true
+      })
+    }
+
+    onAirPunched() {
+      new window.Audio('sound/smw_shell_ricochet.wav').play()
+
+      if (this.game && this.x && this.y) {
+        const tile = new Tile.get('x')
+        // this.game.level.replaceTile([this.x, this.y], tile)
       }
-    },
-  })],
+    }
+  }],
 
-  ['-', new Tile({
-    name: 'Air',
-    position: [2, 0],
-  })],
+  ['-', class extends Tile {
+    constructor() {
+      super({
+        name: 'Air',
+        position: [2, 0],
+      })
+    }
+  }],
 
-  ['x', new Tile({
-    name: 'Punched ? Block',
-    position: [3, 0],
-    solid: true,
-  })],
+  ['x', class extends Tile {
+    constructor() {
+      super({
+        name: 'Punched ? Block',
+        position: [3, 0],
+        solid: true,
+      })
+    }
+  }],
 
-  [' ', new Tile({
-    name: 'Void',
-    position: [0, 1],
-  })]
+  [' ', class extends Tile {
+    constructor() {
+      super({
+        name: 'Void',
+        position: [0, 1],
+      })
+    }
+  }],
 ])
 
 Tile.size = 16
