@@ -65,16 +65,53 @@ export default class Tile {
 
 export const tilemap: Map <string, Tile> = new Map([
   ['=', new Tile({
-    name: 'Solid Block',
+    name: 'Ground',
     position: [0, 0],
     solid: true,
+    on: {
+      create() {
+        // we need to look at the adjacient tiles to figure out
+        // how we should be displayed:
+
+        let topTile    = this.game.level.tileAt([this.x, this.y - 1])
+        let bottomTile = this.game.level.tileAt([this.x, this.y + 1])
+        let leftTile   = this.game.level.tileAt([this.x - 1, this.y])
+        let rightTile  = this.game.level.tileAt([this.x + 1, this.y])
+
+        let top    = topTile.name === this.name
+        let bottom = bottomTile   === this.name
+        let left   = leftTile     === this.name
+        let right  = rightTile    === this.name
+
+        if(top && left && right && bottom) this.position = [6, 1]
+        if(!top && left && right && bottom) this.position = [5, 1]
+        if(!top && !left && right && bottom) this.position = [5, 0]
+        if(!top && left && !right && bottom) this.position = [5, 2]
+
+        if(!top && !left && !right && bottom) this.position = [3, 5]
+
+        // TODO add other states
+        console.log(topTile, leftTile, rightTile, bottomTile, this.position)
+      }
+    }
   })],
 
   ['?', new Tile({
     name: '? Block',
-    position: [1, 0],
+    position: [0, 4],
     solid: true,
     on: {
+      create() {
+        this.i = 0
+      },
+
+      update() {
+        this.i += 0.1
+        if(this.i >= 4) this.i = 0
+
+        this.position[0] = Math.max(Math.floor(this.i), 0)
+      },
+
       airPunched() {
         new window.Audio('sound/smw_shell_ricochet.wav').play()
         this.game.level.replaceTile([this.x, this.y], Tile.get('x'))
@@ -96,7 +133,26 @@ export const tilemap: Map <string, Tile> = new Map([
   [' ', new Tile({
     name: 'Void',
     position: [0, 1],
-  })]
+  })],
+
+  ['0', new Tile({
+    name: 'Coin',
+    position: [0, 3],
+    on: {
+      create() {
+        this.i = 0
+      },
+
+      update() {
+        this.i += 0.025
+        if(this.i >= 4) this.i = 0
+
+        this.position[0] = Math.max(Math.floor(this.i), 0)
+      },
+
+      // TODO touch() {}
+    }
+  })],
 ])
 
 Tile.size = 16

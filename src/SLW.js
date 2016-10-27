@@ -53,6 +53,13 @@ export default class SLW {
     this.camera = [0, 0]
 
     this.level = new Level(this, [1, 1], trimLines(leveldata), tileset)
+
+    // Call create() on the Level tilemap
+    for (let row of this.level.tilemap) {
+      for (let tile of row) {
+        if (tile.on.create) tile.on.create.apply(tile)
+      }
+    }
   }
 
   // Clears the game canvas.

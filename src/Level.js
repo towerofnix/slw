@@ -35,14 +35,10 @@ export default class Level {
       for (let x = 0; x < row.length; x++) {
         let tile = Tile.get(row[x])
 
-        console.log(x, y, tile)
-
         tile.x = x
         tile.y = y
         tile.game = game
         tile.exists = true
-
-        if (tile.on.create) tile.on.create.apply(tile)
 
         this.tilemap[y].push(tile)
       }
@@ -93,7 +89,9 @@ export default class Level {
     tileY = Math.floor(tileY)
 
     try {
-      return this.tilemap[tileY][tileX]
+      let r = this.tilemap[tileY][tileX]
+      if(typeof r === 'undefined') throw 'nope'
+      return r
     } catch(e) {
       // fallback to void tile
       console.warn(`Level.at([${tileX}, ${tileY}]) failed to retrieve Tile`)
