@@ -101,13 +101,6 @@ export class Entity {
     const ctx = this.game.canvas.getContext('2d')
     if (!(ctx instanceof CanvasRenderingContext2D)) return
 
-    if (DEBUG) {
-      // Draw the bounding box (if in DEBUG mode).
-      ctx.strokeStyle = this.color
-      ctx.lineWidth = 3
-      ctx.strokeRect(this.left, this.top, this.w + 1, this.h + 1)
-    }
-
     if (this.sprite) {
       // Draw the sprite image (if there is one).
       let pos = [0, 0] // Animate for later
@@ -115,6 +108,13 @@ export class Entity {
         pos[0], pos[1], w, h,
         this.x, this.y, w, h
       );
+    }
+
+    if (DEBUG) {
+      // Draw the bounding box (if in DEBUG mode).
+      ctx.strokeStyle = this.color
+      ctx.lineWidth = 3
+      ctx.strokeRect(this.left, this.top, this.w + 1, this.h + 1)
     }
   }
 
