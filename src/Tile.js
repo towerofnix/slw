@@ -187,11 +187,15 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
   ['0', class extends Tile {
     i: number
 
+    coinSound: window.Audio
+
     constructor(game) {
       super(game, {
         name: 'Coin',
         position: [0, 3],
       })
+
+      this.coinSound = new window.Audio('sound/smw_coin.wav')
     }
 
     onCreate() {
@@ -207,11 +211,11 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
 
     onTouch() {
       // TODO add 1 to coins
-      // TODO play sound
 
       // replace this tile with Air
       const tile = new (Tile.get('-'))(this.game)
       this.game.level.replaceTile([this.x, this.y], tile)
+      this.coinSound.play()
     }
   }],
 
