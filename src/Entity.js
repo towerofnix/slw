@@ -95,7 +95,13 @@ export class Entity {
       }
     }
 
-    this.collides(true).forEach(tile => tile.onTouch(this))
+    for (let tile of this.collides(true)) {
+      tile.onTouch(this)
+    }
+
+    for (let entity of this.entityCollides()) {
+      entity.onTouch(this)
+    }
   }
 
   draw() {
@@ -138,6 +144,28 @@ export class Entity {
     return shouldReturnTiles ? tiles : collision
   }
 
+  // What entities are we touching?
+  entityCollides(): Array <Entity> {
+    const entities = []
+
+    for (let entity of this.game.entities) {
+      if (this.left < entity.left && entity.left < this.right &&
+          this.top < entity.top && entity.top < this.bottom) {
+        entities.push(entity)
+      }
+    }
+
+    return entities
+  }
+
+  collidesWithEntity(entity: Entity): boolean {
+
+    return (
+      ((entity.left > this.left) && (entity.left < this.right)) ||
+      ((entity.right > this.left) && (entity.right < this.right))
+    )
+  }
+
   // Whether or not the entity is on the ground or not.
   get grounded(): boolean {
     // Check if either the tile below the player to the LEFT or the tile below
@@ -147,6 +175,9 @@ export class Entity {
       this.game.level.tileAt([Math.ceil(this.x / 16), this.bottom / 16 + 0.1]).solid
     )
   }
+
+  // Called when another entity touches this entity.
+  onTouch() {}
 }
 
 export class Player extends Entity {
@@ -198,7 +229,7 @@ export class Player extends Entity {
 }
 
 export class Goomba extends Entity {
-  constructor(game: SLW, x: number = 0, y:number = 0) {
+  constructor(game: SLW, x: number = 0, y: number = 0) {
     super(game)
 
     this.x = x
@@ -214,8 +245,33 @@ export class Goomba extends Entity {
     // TODO goombas walk and then turn around when they bump into something
 
     this.yv += GRAVITY
-
-    // actually move:
     super.update()
   }
 }
+
+export class Powerup extends Entity {
+  constructor(game: SLW, x: number = 0, y: number = 0, xv: number = 1) {
+    super(game)
+
+    this.x = x
+    this.y = y
+
+    this.w = 16
+    this.h = 16
+
+    this.xv = xv
+  }
+
+  update() {
+    this.yv += GRAVITY * 0.7
+    super.update()
+  }
+
+  onTouch() {
+    this.game.entities.splice(this.game.entities.indexOf(this), 1)
+
+    // TODO Powerups
+  }
+}
+
+export class Mushroom extends Powerup {}

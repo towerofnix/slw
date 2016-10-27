@@ -1,7 +1,7 @@
 // @flow
 
 import SLW from './SLW'
-import { Entity, Player, Goomba } from './Entity'
+import { Entity, Player, Goomba, Mushroom } from './Entity'
 
 type Position = [number, number]
 
@@ -161,6 +161,12 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       if (this.game && this.x && this.y) {
         const tile = new (Tile.get('x'))(this.game)
         this.game.level.replaceTile([this.x, this.y], tile)
+
+        const [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
+        let shroom = new Mushroom(this.game, x, 0)
+        shroom.y = y - shroom.h - 1
+        shroom.yv = -1.5
+        this.game.entities.push(shroom)
       }
     }
   }],
