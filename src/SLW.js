@@ -120,4 +120,14 @@ export default class SLW {
       }
     }
   }
+
+  // Place a tile at a specific position.
+  // @TODO: should this be in Tile?
+  placeTile([tileX: number, tileY: number]: Position, type: string) {
+    const rows = this.activeLevel.tiles.split('\n')
+    const newRow = rows[tileY].split('')
+    newRow[tileX] = type
+    rows[tileY] = newRow.join('')
+    this.activeLevel.tiles = rows.join('\n')
+  }
 }

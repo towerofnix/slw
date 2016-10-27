@@ -3,19 +3,26 @@
 type Position = [number, number]
 
 export default class Tile {
-  // human-readable name
+  // Human-readable name
   name: string
 
-  // absolute [x, y] position in tileset.png
+  // Absolute [x, y] position in tileset.png
   position: Position
 
   // true if objects should collide with this tile
   solid: boolean
 
+  // Various interaction functions
+  interaction: {
+    // Air punched, e.g. hitting a question mark block.
+    airPunched: Function
+  }
+
   constructor(props: Object) {
     this.name = props.name || 'Unknown'
     this.position = props.position
     this.solid = props.solid || false
+    this.interaction = props.interaction || {}
   }
 
   static size: number
@@ -35,6 +42,8 @@ export default class Tile {
 
     return Tile.get(tile)
   }
+
+  onAirPunched() {}
 }
 
 export const tilemap: Map <string, Tile> = new Map([
@@ -48,11 +57,23 @@ export const tilemap: Map <string, Tile> = new Map([
     name: '? Block',
     position: [1, 0],
     solid: true,
+    interaction: {
+      airPunched() {
+        new window.Audio('sound/smw_shell_ricochet.wav').play()
+        window.game.placeTile([this.x, this.y], 'x')
+      }
+    }
   })],
 
   ['-', new Tile({
     name: 'Air',
     position: [2, 0],
+  })],
+
+  ['x', new Tile({
+    name: 'Punched ? Block',
+    position: [3, 0],
+    solid: true
   })],
 ])
 

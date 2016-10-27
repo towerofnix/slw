@@ -78,6 +78,16 @@ export default class Entity {
       if (this.collides) {
         this.y -= v
         this.yv = 0
+
+        const tileAboveX = Math.round(this.left / Tile.size)
+        const tileAboveY = this.top / Tile.size - 1
+        const tileAbove = Tile.at([tileAboveX, tileAboveY])
+
+        if (tileAbove.interaction.airPunched) {
+          tileAbove.interaction.airPunched.apply({
+            x: tileAboveX, y: tileAboveY, player: this
+          })
+        }
       }
     }
   }
