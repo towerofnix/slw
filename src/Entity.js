@@ -132,6 +132,8 @@ export default class Entity {
 }
 
 export class Player extends Entity {
+  jumpSound: window.Audio
+
   constructor(x: number = 0, y:number = 0) {
     super()
 
@@ -140,6 +142,8 @@ export class Player extends Entity {
 
     this.w = 16
     this.h = 24
+
+    this.jumpSound = new window.Audio('sound/smw_jump.wav')
   }
 
   update(game: SLW) {
@@ -160,6 +164,7 @@ export class Player extends Entity {
     if (this.grounded && game.keys[32]) {
       // jump
       this.yv = -4
+      this.jumpSound.play()
     }
 
     this.xv = Math.min(this.xv,  3)
