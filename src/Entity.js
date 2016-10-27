@@ -24,6 +24,10 @@ export default class Entity {
   h: number // height
 
   color: string // "rgba(r, g, b, a)"
+  sprite: {
+    sheet: Image,
+    position: Position,
+  }
 
   get top(): number {
     return Math.floor(this.y)
@@ -58,7 +62,7 @@ export default class Entity {
     this.color = `rgba(${c.r}, ${c.g}, ${c.b}, 0.75)`
   }
 
-  update(game: SLW) {
+  update() {
     let v: number = 0
 
     // x:
@@ -95,14 +99,19 @@ export default class Entity {
     }
   }
 
-  draw(game: SLW) {
-    const ctx = game.canvas.getContext('2d')
+  draw() {
+    const ctx = this.game.canvas.getContext('2d')
     if (!(ctx instanceof CanvasRenderingContext2D)) return
 
     if (DEBUG) {
-      // Draw the bounding box.
+      // Draw the bounding box (if in DEBUG mode).
       ctx.fillStyle = this.color
       ctx.fillRect(this.left, this.top, this.w + 1, this.h + 1)
+    }
+
+    if (this.sprite) {
+      // Draw the sprite image (if there is one).
+
     }
   }
 
@@ -161,21 +170,22 @@ export class Player extends Entity {
     this.jumpSound = new window.Audio('sound/smw_jump.wav')
   }
 
-  update(game: SLW) {
-    if (game.keys[39]) {
+  update() {
+    // input:
+    if (this.game.keys[39]) {
       this.xv += 1
     }
 
-    if (game.keys[37]) {
+    if (this.game.keys[37]) {
       this.xv -= 1
     }
 
-    if (!game.keys[39] && !game.keys[37]) {
+    if (!this.game.keys[39] && !this.game.keys[37]) {
       // slow down
       this.xv += sign(this.xv) * -0.5
     }
 
-    if (this.grounded && game.keys[32]) {
+    if (this.grounded && this.game.keys[32]) {
       // jump
       this.yv = -4
       this.jumpSound.play()
@@ -187,6 +197,10 @@ export class Player extends Entity {
 
     this.yv += 0.25 // TODO actual gravity
 
-    super.update(game)
+    // rendering:
+    this.sprite.sheet = new Image()
+
+    // actually move:
+    super.update()
   }
 }

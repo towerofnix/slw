@@ -40,8 +40,8 @@ window.addEventListener('load', e => {
         game.level.update()
         game.level.draw()
 
-        game.player.update(game)
-        game.player.draw(game)
+        game.player.update()
+        game.player.draw()
       }
     })()
   }
