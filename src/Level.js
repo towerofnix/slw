@@ -13,6 +13,7 @@ export default class Level {
 
   meta: Object // see levels.toml
   tileset: Image
+  entityImages: Object <Image>
   tilemap: Array <Array <Tile>>
 
   w: number // width
@@ -22,10 +23,12 @@ export default class Level {
     game: SLW,
     levelid: string,
     tileset: Image,
+    entityImages: Object <Image>,
   ) {
     this.game = game
 
     this.tileset = tileset
+    this.entityImages = entityImages
     this.meta = levels[levelid]
 
     const leveldata = this.meta.tilemap

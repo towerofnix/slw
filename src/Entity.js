@@ -23,11 +23,7 @@ export class Entity {
   w: number // width
   h: number // height
 
-  color: string // "rgba(r, g, b, a)"
-  sprite: {
-    sheet: Image,
-    position: Position,
-  }
+  sprite: Image
 
   get top(): number {
     return Math.floor(this.y)
@@ -47,6 +43,7 @@ export class Entity {
 
   constructor(game: SLW) {
     this.game = game
+    this.sprite = game.level.entityImages[this.constructor.name]
 
     this.x = 0
     this.y = 0
@@ -59,7 +56,7 @@ export class Entity {
 
     // pleasing color for debugging reasons :P
     const c = require('pleasejs').make_color({ format: 'rgb' })[0]
-    this.color = `rgba(${c.r}, ${c.g}, ${c.b}, 0.75)`
+    // this.color = `rgba(${c.r}, ${c.g}, ${c.b}, 0.75)`
   }
 
   update() {
@@ -102,15 +99,19 @@ export class Entity {
     const ctx = this.game.canvas.getContext('2d')
     if (!(ctx instanceof CanvasRenderingContext2D)) return
 
-    if (DEBUG) {
+    /*if (DEBUG) {
       // Draw the bounding box (if in DEBUG mode).
       ctx.fillStyle = this.color
       ctx.fillRect(this.left, this.top, this.w + 1, this.h + 1)
-    }
+    }*/
 
     if (this.sprite) {
       // Draw the sprite image (if there is one).
-      let pos = this.sprite.position || [0, 0]
+      let pos = [0, 0] // Animate for later
+      ctx,drawImage(this.sprite,
+        pos[0], pos[1], w, h,
+        this.x, this.y, w, h
+      );
     }
   }
 
