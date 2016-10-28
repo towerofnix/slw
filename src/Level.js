@@ -3,6 +3,22 @@
 const toml = require('toml')
 const levels = toml.parse(require('./levels.toml'))
 
+const MUSIC_VOLUMES = {
+  airship: 0.25,
+  athletic: 0.25,
+  beach: 0.25,
+  castle: 0.25,
+  cave: 0.25,
+  'file-select': 0.5,
+  'flower-gardens': 1,
+  'grassland': 0.15,
+  'jungle': 0.25,
+  'kapper-desert': 0.25,
+  'star-world': 0.25,
+  'underwater-underworld': 1,
+  'water': 0.25,
+}
+
 import SLW from './SLW'
 import Tile from './Tile'
 
@@ -17,6 +33,8 @@ export default class Level {
 
   w: number // width
   h: number // height
+
+  music: window.Audio
 
   constructor(
     game: SLW,
@@ -50,6 +68,10 @@ export default class Level {
 
     this.w = rows.length
     this.h = rows[1].length
+
+    this.music = new window.Audio('sound/music/' + this.meta.music + '.mp3')
+    this.music.volume = MUSIC_VOLUMES[this.meta.music] || 0.5 // to normalize
+    this.music.play() // load automatically
   }
 
   update() {

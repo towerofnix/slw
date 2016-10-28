@@ -33,5 +33,23 @@ Also please run `flow` decently frequently because it might help you with issues
 * Tilesets:
   - [theundead101](http://www.mfgg.net/index.php?act=user&param=09&uid=13240)
   - Super Mario World (+ edits)
-  - [ArnuroMinigon](http://www.mfgg.net/index.php?act=resdb&param=02&c=1&id=33168) (currently unused)
-* Sprites: [UltLuigi](http://www.mfgg.net/index.php?act=user&param=01&uid=11191) (+ edits)
+  - [ArnuroMinigon](http://www.mfgg.net/index.php?act=resdb&param=02&c=1&id=33168)
+* Sprites: Super Mario World (+ edits)
+* Music:
+  - **File Select**: [Training Course - SMW2](http://youtu.be/99jtEbwxI9Y)
+  - **Grassland**: [Bob-omb Battlefield - SM64 [Remix]](http://youtu.be/QCLMWyG_4Ao
+  - **Athletic**: [Double Cherry Pass - SM3DW [Remix]](http://youtu.be/vsi35tBqdAE)
+  - **Cave**: [Underground - SMW2](http://youtu.be/8RtLhXibDfA)
+  - **Beach**: [Delfino Plaza - SMS](http://youtu.be/A6KvY5QuP-k)
+  - **Water**: [Dire, Dire Docks - SM64 [Remix]](http://youtu.be/HvpsMOHqPFI)
+  - **Airship**: [Mario 1 Airship - SMM [Remix]](http://youtu.be/-qvBbXY8Z-4)
+  - **Jungle**: [Castle/Fortress - SMW2](http://youtu.be/SAlAGoWCJ4g)
+  - **Castle**: [Castle - NSMB [Remix]](http://youtu.be/XksIX7fZYuM)
+  - **Ghost House**: [Mario 3 Ghost House - SMM [Remix]](http://youtu.be/YJTEGiWn3XU)
+  - **Map - Flower Gardens**: [Onett - Earthbound](http://youtu.be/3jtnGr1Y9ws)
+  - **Map - Underwater Underworld**: [Threed, Free at Last - Earthbound](http://youtu.be/n6NtKgmektI)
+  - **Map - Chilly Tropics**: _todo_
+  - **Map - Kapper Desert**: [Sammer Kingdom - SPM [Remix]](http://youtu.be/26czdXE0AAM)
+  - **Map - Poison Pond**: _todo_
+  - **Map - Lava Lair**: _todo_
+  - **Map - Star World**: [World Bowser - SM3DW [Remix]](http://youtu.be/soHWZeVTx_A)
