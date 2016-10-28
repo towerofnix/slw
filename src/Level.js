@@ -75,7 +75,7 @@ export default class Level {
       for (let x = viewStartX; x < viewEndX; x++) {
         const tile = this.tileAt([x, y])
         const [rendX, rendY] = this.getAbsolutePosition([x, y])
-        const [tileX, tileY] = tile.position
+        const [tileX, tileY] = tile.texPosition
 
         ctx.drawImage(
           this.tileset,

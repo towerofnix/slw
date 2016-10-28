@@ -12,7 +12,7 @@ export default class Tile {
   name: string
 
   // Absolute [x, y] position in tileset.png
-  position: Position
+  texPosition: Position
 
   // true if objects should collide with this tile
   solid: boolean
@@ -26,7 +26,7 @@ export default class Tile {
     this.game = game
 
     this.name = props.name || 'Unknown'
-    this.position = props.position
+    this.texPosition = props.texPosition
     this.solid = props.solid || false
     this.exists = false
   }
@@ -63,7 +63,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     constructor(game) {
       super(game, {
         name: 'Ground',
-        position: [4, 5],
+        texPosition: [4, 5],
         solid: true
       })
     }
@@ -92,44 +92,44 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       let bottomLeft = bottomLeftTile.name === this.name
       let bottomRight = bottomRightTile.name === this.name
 
-      if(top && left && right && bottom) this.position = [1, 6]
-      if(!top && left && right && bottom) this.position = [1, 5]
-      if(!top && !left && right && bottom) this.position = [0, 5]
-      if(!top && left && !right && bottom) this.position = [2, 5]
-      if(top && !left && right && bottom) this.position = [0, 6]
-      if(top && !left && right && !bottom) this.position = [0, 7]
-      if(top && left && right && !bottom) this.position = [1, 7]
-      if(top && left && !right && !bottom) this.position = [2, 7]
-      if(top && left && !right && bottom) this.position = [2, 6]
+      if(top && left && right && bottom) this.texPosition = [1, 6]
+      if(!top && left && right && bottom) this.texPosition = [1, 5]
+      if(!top && !left && right && bottom) this.texPosition = [0, 5]
+      if(!top && left && !right && bottom) this.texPosition = [2, 5]
+      if(top && !left && right && bottom) this.texPosition = [0, 6]
+      if(top && !left && right && !bottom) this.texPosition = [0, 7]
+      if(top && left && right && !bottom) this.texPosition = [1, 7]
+      if(top && left && !right && !bottom) this.texPosition = [2, 7]
+      if(top && left && !right && bottom) this.texPosition = [2, 6]
 
       if(top && left && right && bottom && !topLeft && !topRight)
-        this.position = [5, 5]
+        this.texPosition = [5, 5]
 
       if(top && left && right && bottom && !topLeft && topRight)
-        this.position = [3, 6]
+        this.texPosition = [3, 6]
 
       if(top && left && right && bottom && topLeft && !topRight)
-        this.position = [4, 6]
+        this.texPosition = [4, 6]
 
       if(top && left && right && bottom && !bottomLeft)
-        this.position = [6, 6]
+        this.texPosition = [6, 6]
 
       if(top && left && right && bottom && !bottomRight)
-        this.position = [5, 6]
+        this.texPosition = [5, 6]
 
       if(!top && left && right && bottom && !bottomRight)
-        this.position = [8, 5]
+        this.texPosition = [8, 5]
 
       if(!top && left && right && bottom && !bottomLeft)
-        this.position = [7, 5]
+        this.texPosition = [7, 5]
 
       if(top && left && right && !bottom && !topLeft && !topRight)
-        this.position = [6, 7]
+        this.texPosition = [6, 7]
 
-      if(!top && !left && right && !bottom) this.position = [3, 7]
-      if(left && right && !bottom && !top) this.position = [4, 7]
-      if(left && !right && !bottom && !top) this.position = [5, 7]
-      if(!top && !left && !right && bottom) this.position = [3, 5]
+      if(!top && !left && right && !bottom) this.texPosition = [3, 7]
+      if(left && right && !bottom && !top) this.texPosition = [4, 7]
+      if(left && !right && !bottom && !top) this.texPosition = [5, 7]
+      if(!top && !left && !right && bottom) this.texPosition = [3, 5]
 
       // TODO
     }
@@ -141,7 +141,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     constructor(game) {
       super(game, {
         name: '? Block',
-        position: [0, 4],
+        texPosition: [0, 4],
         solid: true
       })
     }
@@ -153,7 +153,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     onUpdate() {
       this.i += 0.1
       if(this.i >= 4) this.i = 0
-      this.position[0] = Math.max(Math.floor(this.i), 0)
+      this.texPosition[0] = Math.max(Math.floor(this.i), 0)
     }
 
     onAirPunch() {
@@ -176,7 +176,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     constructor(game) {
       super(game, {
         name: '? Block (Used)',
-        position: [4, 4],
+        texPosition: [4, 4],
         solid: true,
       })
     }
@@ -186,7 +186,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     constructor(game) {
       super(game, {
         name: 'Air',
-        position: [0, 1],
+        texPosition: [0, 1],
       })
     }
   }],
@@ -199,7 +199,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     constructor(game) {
       super(game, {
         name: 'Coin',
-        position: [0, 3],
+        texPosition: [0, 3],
       })
 
       this.coinSound = new window.Audio('sound/smw_coin.wav')
@@ -213,7 +213,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       this.i += 0.1
       if (this.i >= 4) this.i = 0
 
-      this.position[0] = Math.max(Math.floor(this.i), 0)
+      this.texPosition[0] = Math.max(Math.floor(this.i), 0)
     }
 
     onTouch() {
@@ -230,7 +230,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     constructor(game) {
       super(game, {
         name: 'Player',
-        position: [0, 0],
+        texPosition: [0, 0],
       })
     }
 
@@ -251,7 +251,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     constructor(game) {
       super(game, {
         name: 'Goomba',
-        position: [0, 0],
+        texPosition: [0, 0],
       })
     }
 
@@ -274,7 +274,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     constructor(game) {
       super(game, {
         name: 'Camera Boundary (Left)',
-        position: [0, 0],
+        texPosition: [0, 0],
         solid: true,
       })
     }
@@ -291,7 +291,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     constructor(game) {
       super(game, {
         name: 'Camera Boundary (Right)',
-        position: [0, 0],
+        texPosition: [0, 0],
         solid: true,
       })
     }
@@ -308,7 +308,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     constructor(game) {
       super(game, {
         name: 'Camera Boundary (Bottom)',
-        position: [0, 0],
+        texPosition: [0, 0],
         solid: true,
       })
     }
@@ -325,7 +325,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     constructor(game) {
       super(game, {
         name: 'Camera Boundary (Top)',
-        position: [0, 0],
+        texPosition: [0, 0],
         solid: true,
       })
     }
@@ -342,7 +342,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     constructor(game) {
       super(game, {
         name: 'Death Zone',
-        position: [0, 0],
+        texPosition: [0, 0],
       })
     }
 
