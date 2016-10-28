@@ -22,6 +22,9 @@ export class Entity {
   x: number
   y: number
 
+  // order in which entity is rendered
+  z: number
+
   // Velocity
   xv: number
   yv: number
@@ -68,6 +71,7 @@ export class Entity {
 
     this.x = 0
     this.y = 0
+    this.z = 0
 
     this.xv = 0
     this.yv = 0
@@ -234,14 +238,14 @@ export class Player extends Entity {
     this.sprite.position = [233, -3]
     this.sprite.positionType = 'absolute'
     this.sprite.width = 18
-    this.sprite.height = 33
+    this.sprite.height = 34
     this.spriteAnimation = {time: 0, anim: '', oldAnim: '', nextFrame: 0}
 
     this.x = x
     this.y = y
 
-    this.w = 16
-    this.h = 32
+    this.w = 15
+    this.h = 31
 
     this.jumpSound = new window.Audio('sound/smw_jump.wav')
   }
@@ -349,6 +353,7 @@ export class Goomba extends Entity {
 
     this.x = x
     this.y = y
+    this.z = 1
 
     this.w = 16
     this.h = 16
@@ -372,11 +377,13 @@ export class Powerup extends Entity {
 
     this.x = x
     this.y = y
+    this.z = 2
 
     this.w = 16
     this.h = 16
 
     this.xv = xv
+    this.sprite.position = [0, 0]
   }
 
   update() {
@@ -406,11 +413,15 @@ export class Sign extends Entity {
     this.x = x
     this.y = y
 
-    this.w = 32
-    this.h = 32
+    this.w = 44
+    this.h = 45
 
-    // TODO fix this
+    this.game.entities.push(this)
+
     this.sprite.sheet.src = 'tileset.png'
-    this.sprite.position = [5, 2]
+    this.sprite.positionType = 'absolute'
+    this.sprite.position = [80, 32]
+    this.sprite.width = 44
+    this.sprite.height = 47
   }
 }

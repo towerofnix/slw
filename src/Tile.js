@@ -204,6 +204,16 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
   }],
 
+  ['~', class extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Donut Block',
+        texPosition: [4, 3],
+        solidTop: true
+      })
+    }
+  }],
+
   ['-', class extends Tile {
     constructor(game) {
       super(game, {

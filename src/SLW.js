@@ -11,6 +11,16 @@ import Tile from './Tile'
 import Level from './Level'
 import { Entity, Player } from './Entity'
 
+const BG_COLORS = {
+  clouds: '#A0D0F8',
+  hills: '#F8E0B0',
+}
+
+const BG_REPEATS = {
+  clouds: 'repeat-x',
+  hills: 'repeat-y',
+}
+
 export default class SLW {
   // Map to store key-pressed data in.
   keys: Object
@@ -69,7 +79,7 @@ export default class SLW {
     const ctx = this.canvas.getContext('2d')
 
     if (ctx instanceof CanvasRenderingContext2D) {
-      ctx.fillStyle = '#A0D0F8'
+      ctx.fillStyle = BG_COLORS[this.level.meta.background] || 'black'
       ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
     }
   }
@@ -85,10 +95,16 @@ export default class SLW {
     let minX = Tile.size + this.canvas.width / 2
     let maxX = (this.level.w - 1) * Tile.size - this.canvas.width / 2
 
-    if(y < minY) y = minY
-    if(y > maxY) y = maxY
-    if(x < minX) x = minX
-    if(x > maxX) x = maxX
+    //if(y < minY) y = minY
+    if (y > maxY) y = maxY
+    if (x < minX) x = minX
+    if (x > maxX) x = maxX
+
+    if (this.level.meta.special.includes('floating')) {
+      // airship-like level, wave the camera y
+      let wave = Math.sin(this.tick / 40) * Tile.size / 2
+      y += wave
+    }
 
     this.camera[0] += x - this.canvas.width / 2 - this.camera[0]
     this.camera[1] += y - this.canvas.height / 2 - this.camera[1]
@@ -104,12 +120,34 @@ export default class SLW {
     const ctx = this.canvas.getContext('2d')
     if (!(ctx instanceof CanvasRenderingContext2D)) return
 
+    // background
+    let bg = new Image
+    bg.src = `background/${this.level.meta.background}.png`
+    let ptrn = ctx.createPattern(bg, BG_REPEATS[this.level.meta.background] || 'repeat')
+
+    let tx = -0.25 * this.camera[0]
+    let ty = -0.25 * this.camera[1]
+    if (this.level.meta.special.includes('floating')) tx += -0.25 * this.tick
+
+    ctx.save()
+    ctx.translate(tx, ty)
+
+    ctx.fillStyle = ptrn
+    ctx.fillRect(-tx, -ty, this.canvas.width, this.canvas.height)
+
+    ctx.restore()
+
     // scroll
+    ctx.save()
     ctx.translate(Math.floor(-this.camera[0]), Math.floor(-this.camera[1]))
 
     this.level.draw()
+    this.entities.sort((a, b) => {
+      if(a.z > b.z) return 1
+      if(a.z < b.z) return -1
+      return 0
+    }).forEach(e => e.draw())
     this.player.draw()
-    this.entities.forEach(e => e.draw())
 
     /*
     ctx.fillStyle = 'red'
@@ -119,7 +157,7 @@ export default class SLW {
     */
 
     // unscroll
-    ctx.translate(Math.floor(this.camera[0]), Math.floor(this.camera[1]))
+    ctx.restore()
 
     // TODO GUI
 
