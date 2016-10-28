@@ -116,11 +116,9 @@ export class Entity {
 
         // Air punch should only happen when the entity jumps.
         if (v === -1) {
-          const tileAboveX = Math.round(this.left / Tile.size)
-          const tileAboveY = this.top / Tile.size - 1
-          const tileAbove = this.game.level.tileAt([tileAboveX, tileAboveY])
-
-          tileAbove.onAirPunch()
+          for (let tile of this.tilesAbove) {
+            tile.onAirPunch(this)
+          }
         }
       }
     }
@@ -129,7 +127,7 @@ export class Entity {
       tile.onTouch(this)
     }
 
-    for (let tile of this.pickTiles(0, 0, 1, 1)) {
+    for (let tile of this.tilesBelow) {
       tile.onStand(this)
     }
 
@@ -244,17 +242,32 @@ export class Entity {
     return entities
   }
 
+  // Get the two (potentially same) tiles ABOVE the entity.
+  get tilesAbove(): [Tile, Tile] {
+    let l = this.game.level.tileAt([Math.floor(this.x / 16), this.top / 16 - 0.1])
+    let r = this.game.level.tileAt([Math.ceil(this.x / 16), this.top / 16 - 0.1])
+
+    return [l, r]
+  }
+
+  // Get the two (potentially same) tiles BELOW the entity.
+  get tilesBelow(): [Tile, Tile] {
+    let l = this.game.level.tileAt([Math.floor(this.x / 16), this.bottom / 16 + 0.1])
+    let r = this.game.level.tileAt([Math.ceil(this.x / 16), this.bottom / 16 + 0.1])
+
+    return [l, r]
+  }
+
   // Whether or not the entity is on the ground or not.
-  // TODO use pickTiles() once it is fixed
   get grounded(): boolean {
     /*
     return this.pickTiles(0, 0, 1, 1).some(x => x.solid || x.solidTop)
     */
 
-    return (
-      this.game.level.tileAt([Math.floor(this.x / 16), this.bottom / 16 + 0.1]).solid ||
-      this.game.level.tileAt([Math.ceil(this.x / 16), this.bottom / 16 + 0.1]).solid
-    )
+    let l = this.game.level.tileAt([Math.floor(this.x / 16), this.bottom / 16 + 0.1]).solid
+    let r = this.game.level.tileAt([Math.ceil(this.x / 16), this.bottom / 16 + 0.1]).solid
+
+    return this.tilesBelow.some(tile => tile.solid || tile.solidTop)
   }
 
   // Called when another entity touches this entity.
@@ -434,6 +447,8 @@ export class Powerup extends Entity {
 
   update() {
     this.yv += GRAVITY * 0.7
+    this.xv = 2
+
     super.update()
   }
 
