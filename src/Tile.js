@@ -324,6 +324,38 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
         texPosition: [0, 0],
       })
     }
+
+    onCreate() {
+      let topTile    = this.game.level.tileAt([this.x, this.y - 1])
+      let bottomTile = this.game.level.tileAt([this.x, this.y + 1])
+      let leftTile   = this.game.level.tileAt([this.x - 1, this.y])
+      let rightTile  = this.game.level.tileAt([this.x + 1, this.y])
+
+      let topLeftTile = this.game.level.tileAt([this.x - 1, this.y - 1])
+      let topRightTile = this.game.level.tileAt([this.x + 1, this.y - 1])
+      let bottomLeftTile = this.game.level.tileAt([this.x - 1, this.y + 1])
+      let bottomRightTile = this.game.level.tileAt([this.x + 1, this.y + 1])
+
+      // if below us is the [centre, top] of ground, randomly place foliage
+      if(bottomTile.name === 'Ground' && bottomLeftTile.name === 'Ground' && bottomRightTile.name === 'Ground') {
+        let foliage = rnd(0, 4) // 1 in 5 chance of any at all
+
+        if(foliage === 0) {
+          let what = rnd(0, 4) // random piece
+
+          if(what === 0) {
+            if(topTile.name !== this.name) return
+
+            // tree!
+            this.texPosition = [0, 1]
+            topTile.texPosition = [1, 0]
+
+          } else {
+            this.texPosition = [what, 1]
+          }
+        }
+      }
+    }
   }],
 
   ['C', class CloudTile extends Tile {

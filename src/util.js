@@ -11,5 +11,5 @@ export function sign(n: number): number {
 
 // Returns andom integer from `min` through `max`.
 export function rnd(min: number, max: number): number {
-  return Math.floor(Math.random() * min) + max
+  return Math.floor(Math.random() * max) + min
 }
