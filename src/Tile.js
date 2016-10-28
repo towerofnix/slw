@@ -123,7 +123,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
         this.texPosition = [5, 6]
 
       if(!top && left && right && bottom && !bottomRight)
-        this.texPosition = [8, 5]
+        this.texPosition = [6, 5]
 
       if(!top && left && right && bottom && !bottomLeft)
         this.texPosition = [7, 5]
