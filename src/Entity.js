@@ -249,7 +249,10 @@ export class Entity {
   }
 
   // Called when another entity touches this entity.
-  onTouch() {}
+  onTouch(by: Entity) {}
+
+  // Called when another entity stands on this entity.
+  onStand(by: Entity) {}
 }
 
 export class Player extends Entity {
@@ -500,8 +503,10 @@ export class Coin extends Entity {
     anim.time++
   }
 
-  onTouch() {
-    this.coinSound.play()
-    this.destroy()
+  onTouch(by: Entity) {
+    if(by instanceof Player) {
+      this.coinSound.play()
+      this.destroy()
+    }
   }
 }
