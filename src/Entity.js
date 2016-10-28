@@ -218,6 +218,7 @@ export class Entity {
 export class Player extends Entity {
   jumpSound: window.Audio
   lastJump: number
+  mayJump: boolean
 
   spriteAnimation: {
     time: number,
@@ -259,34 +260,37 @@ export class Player extends Entity {
     if (this.game.keys[39]) {
       this.xv += 0.1
       this.spriteAnimation.anim = 'walk-right'
+    } else if(this.xv > 0) {
+      this.xv = Math.max(0, this.xv - 0.2)
     }
 
     if (this.game.keys[37]) {
       // xv
       this.xv -= 0.1
       this.spriteAnimation.anim = 'walk-left'
+    } else if(this.xv < 0) {
+      this.xv = Math.min(0, this.xv + 0.2)
     }
 
-    if (!this.game.keys[39] && !this.game.keys[37]) {
-      // slow down TODO if on ice, make this value smaller
-      this.xv *= 0.8
-      if (Math.abs(this.xv) < 0.1) {
-        this.xv = 0
-      }
+    if (Math.abs(this.xv) < 0.1) {
+      this.xv = 0
     }
 
     this.xv = Math.min(this.xv,  4)
     this.xv = Math.max(this.xv, -4)
 
-    if (this.grounded && isJump(this.game.keys)) {
+    if (this.grounded && isJump(this.game.keys) && this.mayJump) {
       // jump height is based on a) how long you hold the key and b) your xv
       this.yv = -3 + Math.abs(this.xv) * -0.5
       this.lastJump = Date.now()
 
       this.jumpSound.play()
+      this.mayJump = false
     } else if(isJump(this.game.keys) && Date.now() - this.lastJump < 100) {
       this.yv = -3 + Math.abs(this.xv) * -0.5
-      console.log(Date.now() - this.lastJump)
+    } else if(!isJump(this.game.keys)) {
+      // we may jump next frame
+      this.mayJump = true
     }
 
     this.yv = Math.min(this.yv,  4)

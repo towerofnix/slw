@@ -82,7 +82,7 @@ export default class Level {
           tileX * Tile.size, tileY * Tile.size,
           Tile.size, Tile.size,
 
-          rendX, rendY, Tile.size, Tile.size)
+          rendX + tile.dx, rendY + tile.dy, Tile.size, Tile.size)
       }
     }
   }

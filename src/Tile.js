@@ -17,8 +17,10 @@ export default class Tile {
   // true if objects should collide with this tile
   solid: boolean
 
-  x: number
-  y: number
+  x: number // static
+  y: number // static
+  dx: number
+  dy: number
 
   exists: boolean
 
@@ -29,6 +31,9 @@ export default class Tile {
     this.texPosition = props.texPosition
     this.solid = props.solid || false
     this.exists = false
+
+    this.dx = 0
+    this.dy = 0
   }
 
   static size: number
@@ -161,7 +166,8 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
 
       if (this.game && this.x && this.y) {
         const tile = new (Tile.get('x'))(this.game)
-        this.game.level.replaceTile([this.x, this.y], tile)
+        const usedBlock = this.game.level.replaceTile([this.x, this.y], tile)
+        usedBlock.dy = -0.5 * Tile.size
 
         const [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
         let shroom = new Mushroom(this.game, x, 0)
@@ -175,10 +181,15 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
   ['x', class extends Tile {
     constructor(game) {
       super(game, {
-        name: '? Block (Used)',
+        name: 'Used Block',
         texPosition: [4, 4],
         solid: true,
       })
+    }
+
+    onUpdate() {
+      if(this.dy < 0) this.dy = Math.ceil(this.dy * 0.9)
+      else this.dy = 0
     }
   }],
 
