@@ -198,6 +198,7 @@ export class Entity {
   }
 
   // Handy function to pick tiles around the entity.
+  // TODO is this broken? Do tests!
   pickTiles(
     tileLeft: number, tileRight: number, tileTop: number, tileBottom: number
   ): Array <Tile> {
@@ -244,8 +245,16 @@ export class Entity {
   }
 
   // Whether or not the entity is on the ground or not.
+  // TODO use pickTiles() once it is fixed
   get grounded(): boolean {
+    /*
     return this.pickTiles(0, 0, 1, 1).some(x => x.solid || x.solidTop)
+    */
+
+    return (
+      this.game.level.tileAt([Math.floor(this.x / 16), this.bottom / 16 + 0.1]).solid ||
+      this.game.level.tileAt([Math.ceil(this.x / 16), this.bottom / 16 + 0.1]).solid
+    )
   }
 
   // Called when another entity touches this entity.
