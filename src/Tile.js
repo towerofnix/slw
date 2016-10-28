@@ -153,6 +153,47 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
   }],
 
+  ['P', class PipeTile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Pipe',
+        texPosition: [8, 4],
+        solid: true
+      })
+    }
+
+    onCreate() {
+      // we need to look at our adjacient tiles to figure out
+      // how we should be displayed:
+
+      let topTile    = this.game.level.tileAt([this.x, this.y - 1])
+      let bottomTile = this.game.level.tileAt([this.x, this.y + 1])
+      let leftTile   = this.game.level.tileAt([this.x - 1, this.y])
+      let rightTile  = this.game.level.tileAt([this.x + 1, this.y])
+
+      let top    = topTile.name    === this.name
+      let bottom = bottomTile.name === this.name
+                || bottomTile.name === 'Ground'
+      let left   = leftTile.name   === this.name
+      let right  = rightTile.name  === this.name
+
+      let topLeftTile = this.game.level.tileAt([this.x - 1, this.y - 1])
+      let topRightTile = this.game.level.tileAt([this.x + 1, this.y - 1])
+      let bottomLeftTile = this.game.level.tileAt([this.x - 1, this.y + 1])
+      let bottomRightTile = this.game.level.tileAt([this.x + 1, this.y + 1])
+
+      let topLeft = topLeftTile.name === this.name
+      let topRight = topRightTile.name === this.name
+      let bottomLeft = bottomLeftTile.name === this.name
+      let bottomRight = bottomRightTile.name === this.name
+
+      if (!right) this.texPosition[0] = 9
+      if (!bottom) this.texPosition[1] = 4
+      if (!top)    this.texPosition[1] = 2
+      if (top && bottom) this.texPosition[1] = 3
+    }
+  }],
+
   ['?', class QBlockTile extends Tile {
     i: number
 
