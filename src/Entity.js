@@ -250,9 +250,6 @@ export class Entity {
 
   // Called when another entity touches this entity.
   onTouch(by: Entity) {}
-
-  // Called when another entity stands on this entity.
-  onStand(by: Entity) {}
 }
 
 export class Player extends Entity {
