@@ -106,8 +106,11 @@ export default class SLW {
       y += wave
     }
 
-    this.camera[0] += x - this.canvas.width / 2 - this.camera[0]
-    this.camera[1] += y - this.canvas.height / 2 - this.camera[1]
+    x -= this.canvas.width / 2
+    y -= this.canvas.height / 2
+
+    this.camera[0] = x
+    this.camera[1] = y
   }
 
   // Update all the entities.
