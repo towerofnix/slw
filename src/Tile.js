@@ -280,7 +280,17 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     constructor(game) {
       super(game, {
         name: 'Air',
-        texPosition: [0, 1],
+        texPosition: [0, 0],
+      })
+    }
+  }],
+
+  ['C', class CloudTile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Cloud',
+        texPosition: [4, 1],
+        solidTop: true,
       })
     }
   }],
