@@ -142,12 +142,14 @@ export default class SLW {
     ctx.save()
     ctx.translate(Math.floor(-this.camera[0]), Math.floor(-this.camera[1]))
 
-    this.level.draw()
-    this.entities.sort((a, b) => {
+    const entities = this.entities.sort((a, b) => {
       if(a.z > b.z) return 1
       if(a.z < b.z) return -1
       return 0
-    }).forEach(e => e.draw())
+    })
+    entities.filter(e => e.z < 0).forEach(e => e.draw())
+    this.level.draw()
+    entities.filter(e => e.z >= 0).forEach(e => e.draw())
     this.player.draw()
 
     /*

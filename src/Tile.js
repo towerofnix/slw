@@ -1,6 +1,7 @@
 // @flow
 
 import SLW from './SLW'
+import { rnd } from './util'
 import { Entity, Player, Goomba, Mushroom, Sign, Coin } from './Entity'
 
 type Position = [number, number]
@@ -215,6 +216,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     fallVelocity: number
     fallCountdown: number
     falling: boolean
+    lastStoodOn: number
 
     constructor(game) {
       super(game, {
@@ -225,17 +227,37 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       })
 
       this.fallVelocity = 0
-      this.fallCountdown = 30
+      this.fallCountdown = 40
       this.falling = false
+      this.lastStoodOn = Date.now()
     }
 
     onUpdate() {
       if (this.falling) {
         this.dy += this.fallVelocity
+        this.dx = 0
 
         if (this.fallVelocity < 6) {
           this.fallVelocity += 0.3
         }
+      }
+
+      if (this.lastStoodOn - Date.now() < -5 && !this.falling) {
+        // no longer
+        this.texPosition = [4, 3]
+        this.fallCountdown = 40
+        this.dx = 0
+        this.dy = 0
+      }
+
+      if (this.lastStoodOn - Date.now() < -2500 && this.falling) {
+        this.solidTop = true
+        this.dx = 0
+        this.dy = 0
+        this.fallCountdown = 40
+        this.texPosition = [4, 3]
+        this.fallVelocity = 0
+        this.falling = false
       }
     }
 
@@ -244,8 +266,13 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       if (this.fallCountdown <= 0) {
         this.falling = true
         this.solidTop = false
+      } else {
+        this.dx = rnd(-2, 2)
+        this.dy = rnd(-2, 2)
       }
-      console.log('Hi')
+
+      this.lastStoodOn = Date.now()
+      this.texPosition = [4, 2]
     }
   }],
 
