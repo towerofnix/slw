@@ -77,8 +77,21 @@ export default class SLW {
   // Modify the camera position to reflect where the player is.
   // Essentially, this is just scrolling.
   cameraUpdate() {
-    this.camera[0] += this.player.x - this.canvas.width / 2 - this.camera[0]
-    this.camera[1] += this.player.y - this.canvas.height / 2 - this.camera[1]
+    let x = this.player.x
+    let y = this.player.y
+
+    let minY = Tile.size + this.canvas.height / 2
+    let maxY = (this.level.h - 1) * Tile.size - this.canvas.height / 2
+    let minX = Tile.size + this.canvas.width / 2
+    let maxX = (this.level.w - 1) * Tile.size - this.canvas.width / 2
+
+    if(y < minY) y = minY
+    if(y > maxY) y = maxY
+    if(x < minX) x = minX
+    if(x > maxX) x = maxX
+
+    this.camera[0] += x - this.canvas.width / 2 - this.camera[0]
+    this.camera[1] += y - this.canvas.height / 2 - this.camera[1]
   }
 
   // Update all the entities.
@@ -97,6 +110,13 @@ export default class SLW {
     this.level.draw()
     this.player.draw()
     this.entities.forEach(e => e.draw())
+
+    /*
+    ctx.fillStyle = 'red'
+    ctx.fillRect(Tile.size, (this.level.h - 1) * Tile.size, (this.level.w - 2) * Tile.size, 1)
+    ctx.fillRect(Tile.size, Tile.size, 1, (this.level.h - 2) * Tile.size)
+    ctx.fillRect((this.level.w - 1) * Tile.size, Tile.size, 1, (this.level.h - 2) * Tile.size)
+    */
 
     // unscroll
     ctx.translate(Math.floor(this.camera[0]), Math.floor(this.camera[1]))

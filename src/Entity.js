@@ -398,3 +398,19 @@ export class Mushroom extends Powerup {
     this.sprite.position = [0, 2]
   }
 }
+
+export class Sign extends Entity {
+  constructor(game: SLW, x: number = 0, y: number = 0) {
+    super(game)
+
+    this.x = x
+    this.y = y
+
+    this.w = 32
+    this.h = 32
+
+    // TODO fix this
+    this.sprite.sheet.src = 'tileset.png'
+    this.sprite.position = [5, 2]
+  }
+}

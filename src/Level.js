@@ -66,8 +66,8 @@ export default class Level {
       }
     }
 
-    this.w = rows.length
-    this.h = rows[1].length
+    this.h = this.tilemap.length
+    this.w = this.tilemap[0].length
 
     this.music = new window.Audio('sound/music/' + this.meta.music + '.mp3')
     this.music.volume = MUSIC_VOLUMES[this.meta.music] || 0.5 // to normalize

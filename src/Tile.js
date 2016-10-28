@@ -1,7 +1,7 @@
 // @flow
 
 import SLW from './SLW'
-import { Entity, Player, Goomba, Mushroom } from './Entity'
+import { Entity, Player, Goomba, Mushroom, Sign } from './Entity'
 
 type Position = [number, number]
 
@@ -136,6 +136,11 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       if(left && !right && !bottom && !top) this.texPosition = [5, 7]
       if(!top && !left && !right && bottom) this.texPosition = [3, 5]
 
+      if(top && !left && !right && bottom) this.texPosition = [7, 6]
+      if(top && !left && !right && !bottom) this.texPosition = [7, 7]
+
+      if(top && left && !right && bottom && !topLeft) this.texPosition = [8, 5]
+
       // TODO
     }
   }],
@@ -187,6 +192,12 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       })
     }
 
+    onAirPunch() {
+      let snd = new window.Audio('sound/smw_shell_ricochet.wav')
+      snd.volume = 0.5
+      snd.play()
+    }
+
     onUpdate() {
       if(this.dy < 0) this.dy = Math.ceil(this.dy * 0.9)
       else this.dy = 0
@@ -227,13 +238,15 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       this.texPosition[0] = Math.max(Math.floor(this.i), 0)
     }
 
-    onTouch() {
-      // TODO add 1 to coins
+    onTouch(by: Entity) {
+      if(by instanceof Player) {
+        // TODO add 1 to coins
 
-      // replace this tile with Air
-      const tile = new (Tile.get('-'))(this.game)
-      this.game.level.replaceTile([this.x, this.y], tile)
-      this.coinSound.play()
+        // replace this tile with Air
+        const tile = new (Tile.get('-'))(this.game)
+        this.game.level.replaceTile([this.x, this.y], tile)
+        this.coinSound.play()
+      }
     }
   }],
 
@@ -251,6 +264,27 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       this.game.player.x = x
       this.game.player.y = y - this.game.player.h + Tile.size - 1 // directly
                                                                   // on top
+
+      // replace this tile with Air
+      const tile = new (Tile.get('-'))(this.game)
+      this.game.level.replaceTile([this.x, this.y], tile)
+    }
+  }],
+
+  ['>', class extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Sign',
+        texPosition: [0, 0],
+      })
+    }
+
+    onCreate() {
+      // place a sign here
+      let sign = new Sign(this.game)
+      const [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
+      sign.x = x
+      sign.y = y - sign.h + Tile.size - 2 // 1 block above top
 
       // replace this tile with Air
       const tile = new (Tile.get('-'))(this.game)
@@ -278,74 +312,6 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       // replace this tile with Air
       const tile = new (Tile.get('-'))(this.game)
       this.game.level.replaceTile([this.x, this.y], tile)
-    }
-  }],
-
-  ['>', class extends Tile {
-    constructor(game) {
-      super(game, {
-        name: 'Camera Boundary (Left)',
-        texPosition: [0, 0],
-        solid: true,
-      })
-    }
-
-    onUpdate() {
-      let dist = (this.x + 1) * Tile.size
-
-      if (this.game.camera[0] < dist)
-        this.game.camera[0] = dist
-    }
-  }],
-
-  ['<', class extends Tile {
-    constructor(game) {
-      super(game, {
-        name: 'Camera Boundary (Right)',
-        texPosition: [0, 0],
-        solid: true,
-      })
-    }
-
-    onUpdate() {
-      let dist = (this.x + 1) * Tile.size
-
-      if (this.game.camera[0] > dist)
-        this.game.camera[0] = dist
-    }
-  }],
-
-  ['^', class extends Tile {
-    constructor(game) {
-      super(game, {
-        name: 'Camera Boundary (Bottom)',
-        texPosition: [0, 0],
-        solid: true,
-      })
-    }
-
-    onUpdate() {
-      // WHY DOESN'T THIS WORK
-      let dist = (this.y + 1) * Tile.size
-
-      this.game.camera[1] = Math.min(this.game.camera[1], dist)
-    }
-  }],
-
-  ['v', class extends Tile {
-    constructor(game) {
-      super(game, {
-        name: 'Camera Boundary (Top)',
-        texPosition: [0, 0],
-        solid: true,
-      })
-    }
-
-    onUpdate() {
-      let dist = (this.y) * Tile.size
-
-      if (this.game.camera[1] < dist)
-        this.game.camera[1] = dist
     }
   }],
 
