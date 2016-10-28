@@ -40,7 +40,8 @@ Also please run `flow` decently frequently because it might help you with issues
   - **File Select**: [Training Course - SMW2](http://youtu.be/99jtEbwxI9Y)
   - **Grassland**: [Bob-omb Battlefield - SM64 [Remix]](http://youtu.be/QCLMWyG_4Ao
   - **Athletic**: [Double Cherry Pass - SM3DW [Remix]](http://youtu.be/vsi35tBqdAE)
-  - **Cave**: [Underground - SMW2](http://youtu.be/8RtLhXibDfA)
+  - **Underground**: [Mario 1 Underground - SMAS [Remix]](http://youtu.be/ntVfeFSKwPA)
+  - **Ice Cave**: [Underground - SMW2](http://youtu.be/8RtLhXibDfA)
   - **Beach**: [Delfino Plaza - SMS](http://youtu.be/A6KvY5QuP-k)
   - **Water**: [Dire, Dire Docks - SM64 [Remix]](http://youtu.be/HvpsMOHqPFI)
   - **Airship**: [Mario 1 Airship - SMM [Remix]](http://youtu.be/-qvBbXY8Z-4)
