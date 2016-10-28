@@ -8,6 +8,8 @@ import Tile from './Tile'
 
 import { sign } from './util'
 
+type Position = [number, number]
+
 export class Entity {
   game: SLW
 
@@ -27,6 +29,9 @@ export class Entity {
   sprite: {
     sheet: Image,
     position: Position,
+    positionType: ?string,
+    width: number,
+    height: number
   }
 
   get top(): number {
@@ -48,6 +53,14 @@ export class Entity {
   constructor(game: SLW) {
     this.game = game
 
+    this.sprite = {
+      sheet: new Image(),
+      position: [0, 0],
+      positionType: '',
+      width: 0,
+      height: 0
+    }
+
     this.x = 0
     this.y = 0
 
@@ -66,7 +79,7 @@ export class Entity {
     let v: number = 0
 
     // x:
-    const xv = Math.floor(this.xv)
+    const xv = Math.round(this.xv)
     v = sign(xv)
 
     for (let i = 0; i < Math.abs(xv); i++) {
@@ -87,11 +100,14 @@ export class Entity {
         this.y -= v
         this.yv = 0
 
-        const tileAboveX = Math.round(this.left / Tile.size)
-        const tileAboveY = this.top / Tile.size - 1
-        const tileAbove = this.game.level.tileAt([tileAboveX, tileAboveY])
+        // Air punch should only happen when the entity jumps.
+        if (v === -1) {
+          const tileAboveX = Math.round(this.left / Tile.size)
+          const tileAboveY = this.top / Tile.size - 1
+          const tileAbove = this.game.level.tileAt([tileAboveX, tileAboveY])
 
-        tileAbove.onAirPunch()
+          tileAbove.onAirPunch()
+        }
       }
     }
 
@@ -114,9 +130,28 @@ export class Entity {
       ctx.fillRect(this.left, this.top, this.w + 1, this.h + 1)
     }
 
-    if (this.sprite) {
-      // Draw the sprite image (if there is one).
-      let pos = this.sprite.position || [0, 0]
+    // Draw the sprite image (if there is one).
+    const sprite = this.sprite
+
+    if (sprite) {
+      let [x, y] = sprite.position || [0, 0]
+      let w = sprite.width || this.w
+      let h = sprite.height || this.h
+
+      if (sprite.positionType !== 'absolute') {
+        x *= w
+        y *= h
+      }
+
+      ctx.drawImage(
+        this.sprite.sheet,
+
+        // Area on sheet to grab
+        x, y, w, h,
+
+        // Area on screen to draw
+        this.left, this.top, w, h
+      )
     }
   }
 
@@ -178,32 +213,60 @@ export class Entity {
 export class Player extends Entity {
   jumpSound: window.Audio
 
+  spriteAnimation: {
+    time: number,
+    anim: string,
+    oldAnim: string,
+    nextFrame: number
+  }
+
   constructor(game: SLW, x: number = 0, y:number = 0) {
     super(game)
+
+    this.sprite.sheet.src = 'liam.png'
+    this.sprite.position = [233, -3]
+    this.sprite.positionType = 'absolute'
+    this.sprite.width = 18
+    this.sprite.height = 33
+    this.spriteAnimation = {time: 0, anim: '', oldAnim: '', nextFrame: 0}
 
     this.x = x
     this.y = y
 
     this.w = 16
-    this.h = 24
+    this.h = 32
 
     this.jumpSound = new window.Audio('sound/smw_jump.wav')
   }
 
   update() {
     // input:
+
+    if (Math.abs(this.xv) < 0.4) {
+      if (this.spriteAnimation.anim === 'walk-right') {
+        this.spriteAnimation.anim = 'idle-right'
+      } else if (this.spriteAnimation.anim === 'walk-left') {
+        this.spriteAnimation.anim = 'idle-left'
+      }
+    }
+
     if (this.game.keys[39]) {
-      this.xv += 1
+      this.xv += 0.3
+      this.spriteAnimation.anim = 'walk-right'
     }
 
     if (this.game.keys[37]) {
       // xv
-      this.xv -= 1
+      this.xv -= 0.3
+      this.spriteAnimation.anim = 'walk-left'
     }
 
     if (!this.game.keys[39] && !this.game.keys[37]) {
       // slow down
-      this.xv += sign(this.xv) * -0.5
+      this.xv *= 0.8
+      if (Math.abs(this.xv) < 0.1) {
+        this.xv = 0
+      }
     }
 
     if (this.grounded && this.game.keys[32]) {
@@ -220,6 +283,48 @@ export class Player extends Entity {
 
     // actually move:
     super.update()
+  }
+
+  draw() {
+    // Animation..
+    const anim = this.spriteAnimation
+    if (anim.anim !== anim.oldAnim) {
+      anim.oldAnim = anim.anim
+      anim.time = 0
+      anim.nextFrame = 0
+    }
+
+    if (anim.anim === 'walk-right' || anim.anim === 'walk-left') {
+      if (anim.time >= anim.nextFrame) {
+        anim.nextFrame = (
+          Math.ceil(anim.time + Math.min(40 - Math.abs(this.xv * 3), 10))
+        )
+
+        if (anim.anim === 'walk-right') {
+          if (this.sprite.position[0] === 292) {
+            this.sprite.position = [264, -3]
+          } else {
+            this.sprite.position = [292, -3]
+          }
+        } else if (anim.anim === 'walk-left') {
+          if (this.sprite.position[0] === 166) {
+            this.sprite.position = [137, -3]
+          } else {
+            this.sprite.position = [166, -3]
+          }
+        }
+      }
+    }
+
+    if (anim.anim === 'idle-left') {
+      this.sprite.position = [197, -3]
+    } else if (anim.anim === 'idle-right') {
+      this.sprite.position = [233, -3]
+    }
+
+    this.spriteAnimation.time++
+
+    super.draw()
   }
 }
 
@@ -248,6 +353,8 @@ export class Powerup extends Entity {
   constructor(game: SLW, x: number = 0, y: number = 0, xv: number = 1) {
     super(game)
 
+    this.sprite.sheet.src = 'tileset.png'
+
     this.x = x
     this.y = y
 
@@ -269,4 +376,10 @@ export class Powerup extends Entity {
   }
 }
 
-export class Mushroom extends Powerup {}
+export class Mushroom extends Powerup {
+  constructor(...args: any) {
+    super(...args)
+
+    this.sprite.position = [0, 2]
+  }
+}
