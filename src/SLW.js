@@ -95,7 +95,7 @@ export default class SLW {
     let minX = Tile.size + this.canvas.width / 2
     let maxX = (this.level.w - 1) * Tile.size - this.canvas.width / 2
 
-    //if(y < minY) y = minY
+    if(y < minY) y = minY
     if (y > maxY) y = maxY
     if (x < minX) x = minX
     if (x > maxX) x = maxX
@@ -106,8 +106,9 @@ export default class SLW {
       y += wave
     }
 
-    this.camera[0] += x - this.canvas.width / 2 - this.camera[0]
-    this.camera[1] += y - this.canvas.height / 2 - this.camera[1]
+    let lag = this.tick > 0 ? 8 : 1
+    this.camera[0] += (x - this.canvas.width / 2 - this.camera[0]) / lag
+    this.camera[1] += (y - this.canvas.height / 2 - this.camera[1]) / lag
   }
 
   // Update all the entities.
