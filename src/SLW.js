@@ -38,8 +38,8 @@ export default class SLW {
     this.entities = []
 
     this.canvas = document.createElement('canvas')
-    this.canvas.width = 256
-    this.canvas.height = 256
+    this.canvas.width = 20 * 20
+    this.canvas.height = 20 * 20
 
     this.canvas.addEventListener('keydown', (evt: KeyboardEvent) => {
       this.keys[evt.keyCode] = true

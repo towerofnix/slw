@@ -68,8 +68,8 @@ export default class Level {
 
     const viewStartX = Math.floor(this.game.camera[0] / Tile.size)
     const viewStartY = Math.floor(this.game.camera[1] / Tile.size)
-    const viewEndX = Math.ceil(this.game.camera[0] / Tile.size) + 16
-    const viewEndY = Math.ceil(this.game.camera[1] / Tile.size) + 16
+    const viewEndX = Math.ceil(this.game.camera[0] / Tile.size) + 25
+    const viewEndY = Math.ceil(this.game.camera[1] / Tile.size) + 25
 
     for (let y = viewStartY; y < viewEndY; y++) {
       for (let x = viewStartX; x < viewEndX; x++) {

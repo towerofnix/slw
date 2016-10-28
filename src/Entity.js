@@ -10,6 +10,11 @@ import { sign } from './util'
 
 type Position = [number, number]
 
+// is [z], [space], or [up arrow] down?
+function isJump(keys): boolean {
+  return keys[32] || keys[38] || keys[90]
+}
+
 export class Entity {
   game: SLW
 
@@ -212,6 +217,7 @@ export class Entity {
 
 export class Player extends Entity {
   jumpSound: window.Audio
+  lastJump: number
 
   spriteAnimation: {
     time: number,
@@ -251,34 +257,39 @@ export class Player extends Entity {
     }
 
     if (this.game.keys[39]) {
-      this.xv += 0.3
+      this.xv += 0.1
       this.spriteAnimation.anim = 'walk-right'
     }
 
     if (this.game.keys[37]) {
       // xv
-      this.xv -= 0.3
+      this.xv -= 0.1
       this.spriteAnimation.anim = 'walk-left'
     }
 
     if (!this.game.keys[39] && !this.game.keys[37]) {
-      // slow down
+      // slow down TODO if on ice, make this value smaller
       this.xv *= 0.8
       if (Math.abs(this.xv) < 0.1) {
         this.xv = 0
       }
     }
 
-    if (this.grounded && this.game.keys[32]) {
-      // jump
-      this.yv = -4.5
+    this.xv = Math.min(this.xv,  4)
+    this.xv = Math.max(this.xv, -4)
+
+    if (this.grounded && isJump(this.game.keys)) {
+      // jump height is based on a) how long you hold the key and b) your xv
+      this.yv = -3 + Math.abs(this.xv) * -0.5
+      this.lastJump = Date.now()
+
       this.jumpSound.play()
+    } else if(isJump(this.game.keys) && Date.now() - this.lastJump < 100) {
+      this.yv = -3 + Math.abs(this.xv) * -0.5
+      console.log(Date.now() - this.lastJump)
     }
 
-    this.xv = Math.min(this.xv,  3)
-    this.xv = Math.max(this.xv, -3)
     this.yv = Math.min(this.yv,  4)
-
     this.yv += GRAVITY
 
     // actually move:
