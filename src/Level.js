@@ -71,6 +71,7 @@ export default class Level {
 
     this.music = new window.Audio('sound/music/' + this.meta.music + '.mp3')
     this.music.volume = MUSIC_VOLUMES[this.meta.music] || 0.5 // to normalize
+    this.music.loop = true
     this.music.play() // load automatically
   }
 
