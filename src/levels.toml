@@ -1,6 +1,6 @@
 [F-1]
 music="grassland"
-special=[] # ["floating"]
+special=["floating"]
 background="clouds"
 tilemap = """
 =----------------------------------------------------------------------------------=
