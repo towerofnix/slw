@@ -105,9 +105,12 @@ export class Entity {
 
     for (let i = 0; i < Math.abs(yv); i++) {
       this.y += v
-      if (this.collides()) {
+
+      if (this.grounded || this.collides()) {
         this.y -= v
         this.yv = 0
+
+        this.y = Math.ceil(this.y / Tile.size) * Tile.size
 
         // Air punch should only happen when the entity jumps.
         if (v === -1) {
@@ -120,8 +123,12 @@ export class Entity {
       }
     }
 
-    for (let tile of this.collides(true)) {
+    for (let tile of this.pickTiles(0, 0, 0, 1)) {
       tile.onTouch(this)
+    }
+
+    for (let tile of this.pickTiles(0, 0, 1, 1)) {
+      tile.onStand(this)
     }
 
     for (let entity of this.entityCollides()) {
@@ -188,6 +195,28 @@ export class Entity {
     return shouldReturnTiles ? tiles : collision
   }
 
+  // Handy function to pick tiles around the entity.
+  pickTiles(
+    tileLeft: number, tileRight: number, tileTop: number, tileBottom: number
+  ): Array <Tile> {
+    const tiles = []
+
+    for (let px = Math.floor(tileLeft); px <= Math.ceil(tileRight); px++) {
+      for (let py = Math.floor(tileTop); py <= Math.ceil(tileBottom); py++) {
+        tiles.push(this.game.level.tileAt([
+          tileLeft + px + this.x / Tile.size, tileTop + py + this.y / Tile.size
+        ]))
+      }
+    }
+
+    return tiles
+  }
+
+  // Handy function to destroy the entity.
+  destroy() {
+    this.game.entities.splice(this.game.entities.indexOf(this), 1)
+  }
+
   // What entities are we touching?
   entityCollides(): Array <Entity> {
     const entities = []
@@ -196,8 +225,15 @@ export class Entity {
       // Don't detect itself!
       if (entity === this) continue
 
-      if (this.left <= entity.left && entity.left <= this.right &&
-          this.top <= entity.top && entity.top <= this.bottom) {
+      if (
+        (
+          this.left <= entity.left && entity.left <= this.right ||
+          this.left <= entity.right && entity.right <= this.right
+        ) && (
+          this.top <= entity.top && entity.top <= this.bottom ||
+          this.top <= entity.bottom && entity.bottom <= this.bottom
+        )
+      ) {
         entities.push(entity)
       }
     }
@@ -207,12 +243,7 @@ export class Entity {
 
   // Whether or not the entity is on the ground or not.
   get grounded(): boolean {
-    // Check if either the tile below the player to the LEFT or the tile below
-    // the player to the RIGHT is solid.
-    return (
-      this.game.level.tileAt([Math.floor(this.x / 16), this.bottom / 16 + 0.1]).solid ||
-      this.game.level.tileAt([Math.ceil(this.x / 16), this.bottom / 16 + 0.1]).solid
-    )
+    return this.pickTiles(0, 0, 1, 1).some(x => x.solid || x.solidTop)
   }
 
   // Called when another entity touches this entity.
@@ -234,7 +265,7 @@ export class Player extends Entity {
   constructor(game: SLW, x: number = 0, y:number = 0) {
     super(game)
 
-    this.sprite.sheet.src = 'liam.png'
+    this.sprite.sheet.src = 'sprites/liam.png'
     this.sprite.position = [233, -3]
     this.sprite.positionType = 'absolute'
     this.sprite.width = 18
@@ -423,5 +454,48 @@ export class Sign extends Entity {
     this.sprite.position = [80, 32]
     this.sprite.width = 44
     this.sprite.height = 47
+  }
+}
+
+export class Coin extends Entity {
+  coinSound: window.Audio
+
+  spriteAnimation: {
+    time: number,
+    nextFrame: number
+  }
+
+  constructor(game: SLW, x: number = 0, y: number = 0) {
+    super(game)
+
+    this.x = x
+    this.y = y
+
+    this.w = 16
+    this.h = 16
+
+    this.sprite.sheet.src = 'sprites/coin.png'
+    this.sprite.width = 16
+    this.sprite.height = 16
+
+    this.spriteAnimation = {time: 0, nextFrame: 0}
+
+    this.coinSound = new window.Audio('sound/smw_coin.wav')
+  }
+
+  update() {
+    const anim = this.spriteAnimation
+
+    if (anim.time >= anim.nextFrame) {
+      anim.nextFrame = anim.time + 10
+      this.sprite.position[0] = (this.sprite.position[0] + 1) % 4
+    }
+
+    anim.time++
+  }
+
+  onTouch() {
+    this.coinSound.play()
+    this.destroy()
   }
 }

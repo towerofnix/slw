@@ -1,7 +1,7 @@
 // @flow
 
 import SLW from './SLW'
-import { Entity, Player, Goomba, Mushroom, Sign } from './Entity'
+import { Entity, Player, Goomba, Mushroom, Sign, Coin } from './Entity'
 
 type Position = [number, number]
 
@@ -17,6 +17,9 @@ export default class Tile {
   // true if objects should collide with this tile
   solid: boolean
 
+  // If solid is false, should the top be solid anyways?
+  solidTop: boolean
+
   x: number // static
   y: number // static
   dx: number
@@ -30,6 +33,7 @@ export default class Tile {
     this.name = props.name || 'Unknown'
     this.texPosition = props.texPosition
     this.solid = props.solid || false
+    this.solidTop = props.solidTop || false
     this.exists = false
 
     this.dx = 0
@@ -59,12 +63,15 @@ export default class Tile {
   // (Won't work if { solid: true }!)
   onTouch(by: Entity) {}
 
+  // Same deal, but for when it's being standed on.
+  onStand(by: Entity) {}
+
   // Air punched, e.g. hitting a question mark block.
   onAirPunch() {}
 }
 
 export const tilemap: Map <string, Class<Tile>> = new Map([
-  ['=', class extends Tile {
+  ['=', class GroundTile extends Tile {
     constructor(game) {
       super(game, {
         name: 'Ground',
@@ -145,7 +152,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
   }],
 
-  ['?', class extends Tile {
+  ['?', class QBlockTile extends Tile {
     i: number
 
     constructor(game) {
@@ -183,7 +190,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
   }],
 
-  ['x', class extends Tile {
+  ['x', class UsedBlockTile extends Tile {
     constructor(game) {
       super(game, {
         name: 'Used Block',
@@ -204,17 +211,45 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
   }],
 
-  ['~', class extends Tile {
+  ['~', class DonutTile extends Tile {
+    fallVelocity: number
+    fallCountdown: number
+    falling: boolean
+
     constructor(game) {
       super(game, {
         name: 'Donut Block',
         texPosition: [4, 3],
+        solid: false,
         solidTop: true
       })
+
+      this.fallVelocity = 0
+      this.fallCountdown = 30
+      this.falling = false
+    }
+
+    onUpdate() {
+      if (this.falling) {
+        this.dy += this.fallVelocity
+
+        if (this.fallVelocity < 6) {
+          this.fallVelocity += 0.3
+        }
+      }
+    }
+
+    onStand() {
+      this.fallCountdown--
+      if (this.fallCountdown <= 0) {
+        this.falling = true
+        this.solidTop = false
+      }
+      console.log('Hi')
     }
   }],
 
-  ['-', class extends Tile {
+  ['-', class AirTile extends Tile {
     constructor(game) {
       super(game, {
         name: 'Air',
@@ -223,7 +258,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
   }],
 
-  ['0', class extends Tile {
+  ['0', class CoinTile extends Tile {
     i: number
 
     coinSound: window.Audio
@@ -239,6 +274,15 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
 
     onCreate() {
       this.i = 0
+
+      const tile = new (Tile.get('-'))(this.game)
+      const coin = new Coin(this.game)
+      const [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
+      coin.x = x
+      coin.y = y - coin.h + Tile.size - 1 // directly on top
+
+      this.game.level.replaceTile([this.x, this.y], tile)
+      this.game.entities.push(coin)
     }
 
     onUpdate() {
@@ -260,7 +304,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
   }],
 
-  ['@', class extends Tile {
+  ['@', class PlayerTile extends Tile {
     constructor(game) {
       super(game, {
         name: 'Player',
@@ -281,7 +325,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
   }],
 
-  ['>', class extends Tile {
+  ['>', class SignTile extends Tile {
     constructor(game) {
       super(game, {
         name: 'Sign',
@@ -302,7 +346,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
   }],
 
-  ['G', class extends Tile {
+  ['G', class GoombaTile extends Tile {
     constructor(game) {
       super(game, {
         name: 'Goomba',
@@ -325,7 +369,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
   }],
 
-  ['#', class extends Tile {
+  ['#', class DeathZoneTile extends Tile {
     constructor(game) {
       super(game, {
         name: 'Death Zone',
