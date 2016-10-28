@@ -8,7 +8,7 @@ const MUSIC_VOLUMES = {
   athletic: 0.25,
   beach: 1,
   castle: 0.25,
-  cave: 0.25,
+  'ice-cave': 0.25,
   'file-select': 0.5,
   'flower-gardens': 1,
   'grassland': 0.15,
@@ -17,6 +17,7 @@ const MUSIC_VOLUMES = {
   'star-world': 0.25,
   'underwater-underworld': 1,
   'water': 0.25,
+  'underground': 0.5,
 }
 
 import SLW from './SLW'

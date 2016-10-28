@@ -1,6 +1,6 @@
 // @flow
 
-const DEBUG = true // show bounding boxes
+const DEBUG = false // show bounding boxes
 const GRAVITY = 0.25
 
 import SLW from './SLW'
@@ -106,7 +106,9 @@ export class Entity {
     for (let i = 0; i < Math.abs(yv); i++) {
       this.y += v
 
-      if (this.grounded || this.collides()) {
+      // Checking if grounded should only happen if the entity is going down
+      // (that way it can jump through solidTop blocks)
+      if ((v === 1 && this.grounded) || this.collides()) {
         this.y -= v
         this.yv = 0
 
@@ -258,19 +260,20 @@ export class Player extends Entity {
   spriteAnimation: {
     time: number,
     anim: string,
+    dir: string,
     oldAnim: string,
-    nextFrame: number
+    nextFrame: number,
   }
 
   constructor(game: SLW, x: number = 0, y:number = 0) {
     super(game)
 
     this.sprite.sheet.src = 'sprites/liam.png'
-    this.sprite.position = [233, -3]
+    this.sprite.position = [-100, -100]
     this.sprite.positionType = 'absolute'
-    this.sprite.width = 18
-    this.sprite.height = 34
-    this.spriteAnimation = {time: 0, anim: '', oldAnim: '', nextFrame: 0}
+    this.sprite.width = 19
+    this.sprite.height = 32
+    this.spriteAnimation = { time: 0, dir: 'right', anim: 'idle', oldAnim: '', nextFrame: 0 }
 
     this.x = x
     this.y = y
@@ -284,17 +287,13 @@ export class Player extends Entity {
   update() {
     // input:
 
-    if (Math.abs(this.xv) < 0.4) {
-      if (this.spriteAnimation.anim === 'walk-right') {
-        this.spriteAnimation.anim = 'idle-right'
-      } else if (this.spriteAnimation.anim === 'walk-left') {
-        this.spriteAnimation.anim = 'idle-left'
-      }
+    if (Math.abs(this.xv) < 0.2 && this.grounded) {
+      this.spriteAnimation.anim = 'idle'
     }
 
     if (this.game.keys[39]) {
       this.xv += 0.1
-      this.spriteAnimation.anim = 'walk-right'
+      if (this.grounded) this.spriteAnimation.anim = 'walk'
     } else if(this.xv > 0) {
       this.xv = Math.max(0, this.xv - 0.2)
     }
@@ -302,7 +301,7 @@ export class Player extends Entity {
     if (this.game.keys[37]) {
       // xv
       this.xv -= 0.1
-      this.spriteAnimation.anim = 'walk-left'
+      if (this.grounded) this.spriteAnimation.anim = 'walk'
     } else if(this.xv < 0) {
       this.xv = Math.min(0, this.xv + 0.2)
     }
@@ -315,18 +314,28 @@ export class Player extends Entity {
     this.xv = Math.max(this.xv, -4)
 
     if (this.grounded && isJump(this.game.keys) && this.mayJump) {
-      // jump height is based on a) how long you hold the key and b) your xv
-      this.yv = -3 + Math.abs(this.xv) * -0.5
+      // jump height is based on how long you hold the key[s]
+      // you can hold it for longer if your xv is higher
+
+      this.yv = -3.5
       this.lastJump = Date.now()
 
       this.jumpSound.play()
+      this.spriteAnimation.anim = 'jump'
       this.mayJump = false
-    } else if(isJump(this.game.keys) && Date.now() - this.lastJump < 100) {
-      this.yv = -3 + Math.abs(this.xv) * -0.5
+    } else if(isJump(this.game.keys) && Date.now() - this.lastJump < 50 + Math.abs(this.xv) * 50) {
+      this.yv = -3.5
     } else if(!isJump(this.game.keys)) {
       // we may jump next frame
       this.mayJump = true
     }
+
+    if(this.yv > 0 && this.spriteAnimation.anim !== 'jump' && !this.grounded) {
+      this.spriteAnimation.anim = 'fall'
+    }
+
+    if(this.xv > 0) this.spriteAnimation.dir = 'right'
+    if(this.xv < 0) this.spriteAnimation.dir = 'left'
 
     this.yv = Math.min(this.yv,  4)
     this.yv += GRAVITY
@@ -344,35 +353,32 @@ export class Player extends Entity {
       anim.nextFrame = 0
     }
 
-    if (anim.anim === 'walk-right' || anim.anim === 'walk-left') {
+    if (anim.anim === 'walk' || (anim.anim === 'idle' && anim.oldAnim === 'walk')) {
       if (anim.time >= anim.nextFrame) {
         anim.nextFrame = (
           Math.ceil(anim.time + Math.min(40 - Math.abs(this.xv * 3), 10))
         )
 
-        if (anim.anim === 'walk-right') {
-          if (this.sprite.position[0] === 292) {
-            this.sprite.position = [264, -3]
-          } else {
-            this.sprite.position = [292, -3]
-          }
-        } else if (anim.anim === 'walk-left') {
-          if (this.sprite.position[0] === 166) {
-            this.sprite.position = [137, -3]
-          } else {
-            this.sprite.position = [166, -3]
-          }
+        if (this.sprite.position[0] === 57) {
+          this.sprite.position[0] = 0
+        } else if (this.sprite.position[0] === 38) {
+          this.sprite.position[0] = 57
+        } else if (this.sprite.position[0] === 19) {
+          if(anim.anim === 'walk') this.sprite.position[0] = 38
+        } else {
+          this.sprite.position[0] = 19
         }
       }
+    } else if (anim.anim === 'idle') {
+      this.sprite.position[0] = 19
+    } else if (anim.anim === 'jump') {
+      this.sprite.position[0] = 76
+    } else if (anim.anim === 'fall') {
+      this.sprite.position[0] = 97
     }
 
-    if (anim.anim === 'idle-left') {
-      this.sprite.position = [197, -3]
-    } else if (anim.anim === 'idle-right') {
-      this.sprite.position = [233, -3]
-    }
-
-    this.spriteAnimation.time++
+    this.sprite.position[1] = anim.dir === 'left' ? 32 : 0
+    this.spriteAnimation.time++ // could use this.game.tick
 
     super.draw()
   }
