@@ -281,15 +281,17 @@ export class Player extends Entity {
     this.xv = Math.max(this.xv, -4)
 
     if (this.grounded && isJump(this.game.keys) && this.mayJump) {
-      // jump height is based on a) how long you hold the key and b) your xv
-      this.yv = -3 + Math.abs(this.xv) * -0.5
+      // jump height is based on how long you hold the key[s]
+      // you can hold it for longer if your xv is higher
+
+      this.yv = -3.5
       this.lastJump = Date.now()
 
       this.jumpSound.play()
       this.spriteAnimation.anim = 'jump'
       this.mayJump = false
-    } else if(isJump(this.game.keys) && Date.now() - this.lastJump < 100) {
-      this.yv = -3 + Math.abs(this.xv) * -0.5
+    } else if(isJump(this.game.keys) && Date.now() - this.lastJump < 50 + Math.abs(this.xv) * 50) {
+      this.yv = -3.5
     } else if(!isJump(this.game.keys)) {
       // we may jump next frame
       this.mayJump = true
