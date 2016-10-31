@@ -86,7 +86,11 @@ export default class Level {
   }
 
   draw() {
-    // Draw the tilemap
+    // Draw the tilemap. Skip if the tileset sheet isn't loaded yet.
+    if (!this.tileset.complete) {
+      return
+    }
+
     const ctx = this.game.canvas.getContext('2d')
     if (!(ctx instanceof CanvasRenderingContext2D)) return
 
