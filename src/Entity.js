@@ -146,10 +146,10 @@ export class Entity {
       ctx.fillRect(this.left, this.top, this.w + 1, this.h + 1)
     }
 
-    // Draw the sprite image (if there is one).
+    // Draw the sprite image (if there is one, and the sprite is loaded).
     const sprite = this.sprite
 
-    if (sprite) {
+    if (sprite && sprite.sheet.complete) {
       let [x, y] = sprite.position || [0, 0]
       let w = sprite.width || this.w
       let h = sprite.height || this.h
