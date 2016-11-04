@@ -42,7 +42,7 @@ Also please run `flow` decently frequently because it might help you with issues
   - **Athletic**: [Double Cherry Pass - SM3DW [Remix]](http://youtu.be/vsi35tBqdAE)
   - **Underground**: [Mario 1 Underground - SMAS [Remix]](http://youtu.be/ntVfeFSKwPA)
   - **Ice Cave**: [Underground - SMW2](http://youtu.be/8RtLhXibDfA)
-  - **Beach**: [Delfino Plaza - SMS](http://youtu.be/A6KvY5QuP-k)
+  - **Beach**: [Mario 3 Athletic - SMAS](http://youtu.be/DQ0HyPVYgwg)
   - **Water**: [Dire, Dire Docks - SM64 [Remix]](http://youtu.be/HvpsMOHqPFI)
   - **Airship**: [Mario 1 Airship - SMM [Remix]](http://youtu.be/-qvBbXY8Z-4)
   - **Jungle**: [Castle/Fortress - SMW2](http://youtu.be/SAlAGoWCJ4g)
@@ -53,7 +53,7 @@ Also please run `flow` decently frequently because it might help you with issues
   - **Ghost House (2)**: [Mario 3 Ghost House - SMM [Remix]](http://youtu.be/TFDF0hz1yek)
   - **Map - Flower Gardens**: [Onett - Earthbound](http://youtu.be/3jtnGr1Y9ws)
   - **Map - Underwater Underworld**: [Threed, Free at Last - Earthbound](http://youtu.be/n6NtKgmektI)
-  - **Map - Chilly Tropics**: _todo_
+  - **Map - Chilly Tropics**: [Delfino Plaza - SMS](http://youtu.be/A6KvY5QuP-k)
   - **Map - Kapper Canyon**: [Sammer Kingdom - SPM [Remix]](http://youtu.be/26czdXE0AAM)
   - **Map - Poison Pond**: [Mario 3 Pipe Land - SMAS](http://youtu.be/G4rrefSgjO0)
   - **Map - Lava Lair**: [X-Naut Fortress - PM: TTYD [Remix]](http://youtu.be/-49neEQRUzc)
