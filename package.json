@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "pleasejs": "^0.4.2",
+    "stylus": "^0.54.5",
     "toml": "^2.3.0"
   }
 }
