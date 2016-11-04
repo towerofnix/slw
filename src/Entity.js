@@ -307,60 +307,105 @@ export class Player extends Entity {
   }
 
   update() {
-    // input:
+    if (this.game.level.meta.special.includes('world')) {
+      // overworld/map movement is different.
+      
+      if (Math.abs(this.xv) < 0.2 && Math.abs(this.yv) < 0.2) {
+        this.spriteAnimation.anim = 'idle'
+      }
+      
+      if (this.game.keys[39]) {
+        this.xv += 0.2
+        this.spriteAnimation.anim = 'walk'
+      } else if(this.xv > 0) {
+        this.xv = Math.max(0, this.xv - 0.4)
+      }
+      
+      if (this.game.keys[37]) {
+        this.xv -= 0.2
+        this.spriteAnimation.anim = 'walk'
+      } else if(this.xv < 0) {
+        this.xv = Math.min(0, this.xv + 0.4)
+      }
+      
+      this.xv = Math.min(this.xv,  2)
+      this.xv = Math.max(this.xv, -2)
+      
+      if(this.xv > 0) this.spriteAnimation.dir = 'right'
+      if(this.xv < 0) this.spriteAnimation.dir = 'left'
+      
+      if (this.game.keys[40]) {
+        this.yv += 0.2
+        this.spriteAnimation.anim = 'walk'
+      } else if(this.yv > 0) {
+        this.yv = Math.max(0, this.yv - 0.4)
+      }
+      
+      if (this.game.keys[38]) {
+        this.yv -= 0.2
+        this.spriteAnimation.anim = 'walk'
+      } else if(this.yv < 0) {
+        this.yv = Math.min(0, this.yv + 0.4)
+      }
+            
+      this.yv = Math.min(this.yv,  2)
+      this.yv = Math.max(this.yv, -2)
+    } else {
+      // input:
 
-    if (Math.abs(this.xv) < 0.2 && this.grounded) {
-      this.spriteAnimation.anim = 'idle'
+      if (Math.abs(this.xv) < 0.2 && this.grounded) {
+        this.spriteAnimation.anim = 'idle'
+      }
+
+      if (this.game.keys[39]) {
+        this.xv += 0.1
+        if (this.grounded) this.spriteAnimation.anim = 'walk'
+      } else if(this.xv > 0) {
+        this.xv = Math.max(0, this.xv - 0.2)
+      }
+
+      if (this.game.keys[37]) {
+        // xv
+        this.xv -= 0.1
+        if (this.grounded) this.spriteAnimation.anim = 'walk'
+      } else if(this.xv < 0) {
+        this.xv = Math.min(0, this.xv + 0.2)
+      }
+
+      if (Math.abs(this.xv) < 0.1) {
+        this.xv = 0
+      }
+
+      this.xv = Math.min(this.xv,  4)
+      this.xv = Math.max(this.xv, -4)
+
+      if (this.grounded && isJump(this.game.keys) && this.mayJump) {
+        // jump height is based on how long you hold the key[s]
+        // you can hold it for longer if your xv is higher
+
+        this.yv = -3.5
+        this.lastJump = Date.now()
+
+        this.jumpSound.play()
+        this.spriteAnimation.anim = 'jump'
+        this.mayJump = false
+      } else if(isJump(this.game.keys) && Date.now() - this.lastJump < 50 + Math.abs(this.xv) * 50) {
+        this.yv = -3.5
+      } else if(!isJump(this.game.keys)) {
+        // we may jump next frame
+        this.mayJump = true
+      }
+
+      if(this.yv > 0 && this.spriteAnimation.anim !== 'jump' && !this.grounded) {
+        this.spriteAnimation.anim = 'fall'
+      }
+
+      if(this.xv > 0) this.spriteAnimation.dir = 'right'
+      if(this.xv < 0) this.spriteAnimation.dir = 'left'
+
+      this.yv = Math.min(this.yv,  4)
+      this.yv += GRAVITY
     }
-
-    if (this.game.keys[39]) {
-      this.xv += 0.1
-      if (this.grounded) this.spriteAnimation.anim = 'walk'
-    } else if(this.xv > 0) {
-      this.xv = Math.max(0, this.xv - 0.2)
-    }
-
-    if (this.game.keys[37]) {
-      // xv
-      this.xv -= 0.1
-      if (this.grounded) this.spriteAnimation.anim = 'walk'
-    } else if(this.xv < 0) {
-      this.xv = Math.min(0, this.xv + 0.2)
-    }
-
-    if (Math.abs(this.xv) < 0.1) {
-      this.xv = 0
-    }
-
-    this.xv = Math.min(this.xv,  4)
-    this.xv = Math.max(this.xv, -4)
-
-    if (this.grounded && isJump(this.game.keys) && this.mayJump) {
-      // jump height is based on how long you hold the key[s]
-      // you can hold it for longer if your xv is higher
-
-      this.yv = -3.5
-      this.lastJump = Date.now()
-
-      this.jumpSound.play()
-      this.spriteAnimation.anim = 'jump'
-      this.mayJump = false
-    } else if(isJump(this.game.keys) && Date.now() - this.lastJump < 50 + Math.abs(this.xv) * 50) {
-      this.yv = -3.5
-    } else if(!isJump(this.game.keys)) {
-      // we may jump next frame
-      this.mayJump = true
-    }
-
-    if(this.yv > 0 && this.spriteAnimation.anim !== 'jump' && !this.grounded) {
-      this.spriteAnimation.anim = 'fall'
-    }
-
-    if(this.xv > 0) this.spriteAnimation.dir = 'right'
-    if(this.xv < 0) this.spriteAnimation.dir = 'left'
-
-    this.yv = Math.min(this.yv,  4)
-    this.yv += GRAVITY
 
     // actually move:
     super.update()

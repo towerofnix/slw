@@ -56,7 +56,10 @@ export default class Level {
       this.tilemap[y] = []
       let row = rows[y]
       for (let x = 0; x < row.length; x++) {
-        let tile = new (Tile.get(row[x]))(this.game)
+        let tileid = row[x]
+        if(this.meta.special.includes('world')) tileid = 'W ' + tileid
+        
+        let tile = new (Tile.get(tileid))(this.game)
 
         tile.x = x
         tile.y = y

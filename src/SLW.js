@@ -121,17 +121,20 @@ export default class SLW {
     const ctx = this.canvas.getContext('2d')
     if (!(ctx instanceof CanvasRenderingContext2D)) return
 
-    // background
-    let bg = new Image
-    bg.src = `background/${this.level.meta.background}.png`
-    let ptrn = ctx.createPattern(bg, BG_REPEATS[this.level.meta.background] || 'repeat')
-
     let tx = -0.25 * this.camera[0]
     let ty = -0.25 * this.camera[1]
     if (this.level.meta.special.includes('floating')) tx += -0.25 * this.tick
 
     ctx.save()
     ctx.translate(tx, ty)
+
+    if(this.level.meta.background === 'none') {
+      var ptrn = 'black'
+    } else {
+      let bg = new Image
+      bg.src = `background/${this.level.meta.background}.png`
+      var ptrn = ctx.createPattern(bg, BG_REPEATS[this.level.meta.background] || 'repeat')
+    }
 
     ctx.fillStyle = ptrn
     ctx.fillRect(-tx, -ty, this.canvas.width, this.canvas.height)

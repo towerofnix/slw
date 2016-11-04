@@ -4,7 +4,7 @@ window.addEventListener('load', e => {
   let tileset = new Image
 
   tileset.onload = () => {
-    const game = new SLW('F-1', tileset)
+    const game = new SLW('F', tileset)
 
     window.game = game // debug only pls
     document.body.appendChild(game.canvas)

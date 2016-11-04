@@ -492,6 +492,117 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       if(by instanceof Player) console.warn('you are ded')
     }
   }],
+  
+  // World tiles ///////////////////////////////////////////////////////////////
+  
+  ['W ~', class WorldWaterTile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Water',
+        texPosition: [0, 15],
+      })
+      
+      this.solid = true
+    }
+  }],
+  
+  ['W  ', class WorldGroundTile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Ground',
+        texPosition: [1, 13],
+      })
+    }
+    
+    onUpdate() {
+      let topTile    = this.game.level.tileAt([this.x, this.y - 1])
+      let bottomTile = this.game.level.tileAt([this.x, this.y + 1])
+      let leftTile   = this.game.level.tileAt([this.x - 1, this.y])
+      let rightTile  = this.game.level.tileAt([this.x + 1, this.y])
+
+      let top    = topTile.name    !== 'Water'
+      let bottom = bottomTile.name !== 'Water'
+      let left   = leftTile.name   !== 'Water'
+      let right  = rightTile.name  !== 'Water'
+
+      let topLeftTile = this.game.level.tileAt([this.x - 1, this.y - 1])
+      let topRightTile = this.game.level.tileAt([this.x + 1, this.y - 1])
+      let bottomLeftTile = this.game.level.tileAt([this.x - 1, this.y + 1])
+      let bottomRightTile = this.game.level.tileAt([this.x + 1, this.y + 1])
+
+      let topLeft = topLeftTile.name !== 'Water'
+      let topRight = topRightTile.name !== 'Water'
+      let bottomLeft = bottomLeftTile.name !== 'Water'
+      let bottomRight = bottomRightTile.name !== 'Water'
+      
+      if(!left && top && right && bottom) this.texPosition = [0, 13]
+      if(left && top && !right && bottom) this.texPosition = [2, 13]
+      if(left && !top && right && bottom) this.texPosition = [1, 12]
+      if(left && top && right && !bottom) this.texPosition = [1, 14]
+      
+      if(left && !top && !right && bottom) this.texPosition = [2, 12]
+      if(!left && !top && right && bottom) this.texPosition = [0, 12]
+      if(left && top && !right && !bottom) this.texPosition = [2, 14]
+      if(!left && top && right && !bottom) this.texPosition = [0, 14]
+      
+      if(left && top && right && bottom && !topRight) {
+        this.texPosition = [3, 13]
+      }
+      
+      if(left && top && right && bottom && !topLeft) {
+        this.texPosition = [4, 13]
+      }
+      
+      if(left && top && right && bottom && !bottomRight) {
+        this.texPosition = [3, 12]
+      }
+      
+      if(left && top && right && bottom && !bottomLeft) {
+        this.texPosition = [4, 12]
+      }
+    }
+  }],
+  
+  ['W @', class WorldPlayerTile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Player',
+        texPosition: [0, 0],
+      })
+    }
+
+    onCreate() {
+      // place the player here
+      const [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
+      this.game.player.x = x
+      this.game.player.y = y - this.game.player.h + Tile.size - 1 // directly
+                                                                  // on top
+
+      // replace this tile with Ground
+      const tile = new (Tile.get('W  '))(this.game)
+      this.game.level.replaceTile([this.x, this.y], tile)
+    }
+  }],
+  
+  ['W :', class WorldFenceTile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Fence',
+        texPosition: [4, 14],
+      })
+      
+      this.solid = true
+    }
+  }],
+  
+  ['W .', class WorldFlowerTile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Flower',
+        texPosition: [3, 14],
+      })
+    }
+  }],
 ])
 
 Tile.size = 16
