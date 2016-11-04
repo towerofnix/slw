@@ -47,12 +47,14 @@ Also please run `flow` decently frequently because it might help you with issues
   - **Airship**: [Mario 1 Airship - SMM [Remix]](http://youtu.be/-qvBbXY8Z-4)
   - **Jungle**: [Castle/Fortress - SMW2](http://youtu.be/SAlAGoWCJ4g)
   - **Castle**: [Castle - NSMB [Remix]](http://youtu.be/XksIX7fZYuM)
+  - **Fortress**: [Castle - NSMB Wii [Remix]](http://youtu.be/S6A6R-p_XsQ)
+  - **Desert**: [Stonecarving City - WL: SI [Remix]](http://youtu.be/H7Bs3ezKs-c)
   - **Ghost House (1)**: [Mario 1 Ghost House - SMM [Remix]](http://youtu.be/YJTEGiWn3XU)
   - **Ghost House (2)**: [Mario 3 Ghost House - SMM [Remix]](http://youtu.be/TFDF0hz1yek)
   - **Map - Flower Gardens**: [Onett - Earthbound](http://youtu.be/3jtnGr1Y9ws)
   - **Map - Underwater Underworld**: [Threed, Free at Last - Earthbound](http://youtu.be/n6NtKgmektI)
   - **Map - Chilly Tropics**: _todo_
   - **Map - Kapper Canyon**: [Sammer Kingdom - SPM [Remix]](http://youtu.be/26czdXE0AAM)
-  - **Map - Poison Pond**: _todo_
-  - **Map - Lava Lair**: _todo_
+  - **Map - Poison Pond**: [Mario 3 Pipe Land - SMAS](http://youtu.be/G4rrefSgjO0)
+  - **Map - Lava Lair**: [X-Naut Fortress - PM: TTYD [Remix]](http://youtu.be/-49neEQRUzc)
   - **Map - Star World**: [World Bowser - SM3DW [Remix]](http://youtu.be/soHWZeVTx_A)
