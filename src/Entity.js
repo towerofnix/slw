@@ -1,6 +1,6 @@
 // @flow
 
-const DEBUG = false // show bounding boxes
+const DEBUG = true // show bounding boxes
 const GRAVITY = 0.25
 
 import SLW from './SLW'
@@ -310,6 +310,11 @@ export class Player extends Entity {
     if (this.game.level.meta.special.includes('world')) {
       // overworld/map movement is different.
       
+      // small hitbox allows for greater movement
+      this.w = 15
+      this.h = 15
+      this.sprite.height = 19 // TODO
+      
       if (Math.abs(this.xv) < 0.2 && Math.abs(this.yv) < 0.2) {
         this.spriteAnimation.anim = 'idle'
       }
@@ -351,6 +356,9 @@ export class Player extends Entity {
       this.yv = Math.min(this.yv,  2)
       this.yv = Math.max(this.yv, -2)
     } else {
+      this.w = 15
+      this.h = 31 // TODO small player
+      
       // input:
 
       if (Math.abs(this.xv) < 0.2 && this.grounded) {

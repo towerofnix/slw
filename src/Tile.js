@@ -27,6 +27,8 @@ export default class Tile {
   dy: number
 
   exists: boolean
+  
+  levelid: ?number // WorldLevelTile only
 
   constructor(game: SLW, props: Object = {}) {
     this.game = game
@@ -512,6 +514,8 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
         name: 'Ground',
         texPosition: [1, 13],
       })
+      
+      this.solid = true
     }
     
     onUpdate() {
@@ -575,11 +579,10 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       // place the player here
       const [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
       this.game.player.x = x
-      this.game.player.y = y - this.game.player.h + Tile.size - 1 // directly
-                                                                  // on top
-
-      // replace this tile with Ground
-      const tile = new (Tile.get('W  '))(this.game)
+      this.game.player.y = y - this.game.player.h + Tile.size
+      
+      // replace this tile with a pipe
+      const tile = new (Tile.get('W P'))(this.game)
       this.game.level.replaceTile([this.x, this.y], tile)
     }
   }],
@@ -601,6 +604,179 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
         name: 'Flower',
         texPosition: [3, 14],
       })
+    }
+  }],
+  
+  ['W P', class WorldPipeTile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Pipe',
+        texPosition: [0, 11],
+      })
+    }
+  }],
+  
+  ['W -', class WorldPathTile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Path',
+        texPosition: [1, 9],
+      })
+    }
+    
+    onUpdate() {
+      let topTile    = this.game.level.tileAt([this.x, this.y - 1])
+      let bottomTile = this.game.level.tileAt([this.x, this.y + 1])
+      let leftTile   = this.game.level.tileAt([this.x - 1, this.y])
+      let rightTile  = this.game.level.tileAt([this.x + 1, this.y])
+
+      const k = [this.name, 'Level', 'Pipe']
+
+      let top    = k.includes(topTile.name)
+      let bottom = k.includes(bottomTile.name)
+      let left   = k.includes(leftTile.name)
+      let right  = k.includes(rightTile.name)
+      
+      if(top && !left && !right && bottom) this.texPosition = [2, 8]
+      if(top && left && !right && !bottom) this.texPosition = [3, 9]
+      if(top && !left && right && bottom) this.texPosition = [2, 10]
+    }
+  }],
+  
+  ['W lv', class WorldLevelTile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Level',
+        texPosition: [2, 9],
+      })
+    }
+  }],
+  
+  ['W 1', class WorldLevel1Tile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Level 1',
+        texPosition: [0, 0],
+      })
+    }
+
+    onCreate() {
+      // replace this tile with a level tile
+      const tile = new (Tile.get('W lv'))(this.game)
+      tile.levelid = 2
+      this.game.level.replaceTile([this.x, this.y], tile)
+    }
+  }],
+  
+  ['W 2', class WorldLevel2Tile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Level 2',
+        texPosition: [0, 0],
+      })
+    }
+
+    onCreate() {
+      // replace this tile with a level tile
+      const tile = new (Tile.get('W lv'))(this.game)
+      tile.levelid = 2
+      this.game.level.replaceTile([this.x, this.y], tile)
+    }
+  }],
+  
+  ['W 3', class WorldLevel3Tile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Level 3',
+        texPosition: [0, 0],
+      })
+    }
+
+    onCreate() {
+      // replace this tile with a level tile
+      const tile = new (Tile.get('W lv'))(this.game)
+      tile.levelid = 3
+      this.game.level.replaceTile([this.x, this.y], tile)
+    }
+  }],
+  
+  ['W 4', class WorldLevel4Tile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Level 4',
+        texPosition: [0, 0],
+      })
+    }
+
+    onCreate() {
+      // replace this tile with a level tile
+      const tile = new (Tile.get('W lv'))(this.game)
+      tile.levelid = 4
+      this.game.level.replaceTile([this.x, this.y], tile)
+    }
+  }],
+  
+  ['W 5', class WorldLevel5Tile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Level 5',
+        texPosition: [0, 0],
+      })
+    }
+
+    onCreate() {
+      // replace this tile with a level tile
+      const tile = new (Tile.get('W lv'))(this.game)
+      tile.levelid = 5
+      this.game.level.replaceTile([this.x, this.y], tile)
+    }
+  }],
+  
+  ['W 6', class WorldLevel6Tile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Level 6',
+        texPosition: [0, 0],
+      })
+    }
+
+    onCreate() {
+      // replace this tile with a level tile
+      const tile = new (Tile.get('W lv'))(this.game)
+      tile.levelid = 6
+      this.game.level.replaceTile([this.x, this.y], tile)
+    }
+  }],
+  
+  ['W 7', class WorldLevel7Tile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Level 7',
+        texPosition: [0, 0],
+      })
+    }
+
+    onCreate() {
+      // replace this tile with a level tile
+      const tile = new (Tile.get('W lv'))(this.game)
+      tile.levelid = 7
+      this.game.level.replaceTile([this.x, this.y], tile)
+    }
+  }],
+  
+  ['W 8', class WorldLevel8Tile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Level 8',
+        texPosition: [0, 0],
+      })
+    }
+
+    onCreate() {
+      // replace this tile with a level tile
+      const tile = new (Tile.get('W lv'))(this.game)
+      tile.levelid = 8
+      this.game.level.replaceTile([this.x, this.y], tile)
     }
   }],
 ])
