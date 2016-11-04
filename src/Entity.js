@@ -1,6 +1,6 @@
 // @flow
 
-const DEBUG = true // show bounding boxes
+const DEBUG = false // show bounding boxes
 const GRAVITY = 0.25
 
 import SLW from './SLW'
@@ -84,7 +84,7 @@ export class Entity {
     this.color = `rgba(${c.r}, ${c.g}, ${c.b}, 0.75)`
   }
 
-  update() {
+  update(stop: boolean = true) {
     let v: number = 0
 
     // x:
@@ -95,7 +95,7 @@ export class Entity {
       this.x += v
       if (this.collides()) {
         this.x -= v
-        this.xv = 0
+        if (stop) this.xv = 0
       }
     }
 
@@ -110,7 +110,7 @@ export class Entity {
       // (that way it can jump through solidTop blocks)
       if ((v === 1 && this.grounded) || this.collides()) {
         this.y -= v
-        this.yv = 0
+        if (stop) this.yv = 0
 
         this.y = Math.ceil(this.y / Tile.size) * Tile.size
 
@@ -241,6 +241,16 @@ export class Entity {
 
     return entities
   }
+  
+  // Get the single tile at the centre of the entity.
+  get tileOn(): Tile {
+    let t = this.game.level.tileAt([
+      Math.floor((this.x + this.w / 2) / 16),
+      Math.floor((this.y + this.h / 2) / 16)
+    ])
+
+    return t
+  }
 
   // Get the two (potentially same) tiles ABOVE the entity.
   get tilesAbove(): [Tile, Tile] {
@@ -286,6 +296,9 @@ export class Player extends Entity {
     oldAnim: string,
     nextFrame: number,
   }
+  
+  lastOn: ?Tile // world map only.
+  wantsInput: ?boolean // world map only.
 
   constructor(game: SLW, x: number = 0, y:number = 0) {
     super(game)
@@ -308,53 +321,149 @@ export class Player extends Entity {
 
   update() {
     if (this.game.level.meta.special.includes('world')) {
-      // overworld/map movement is different.
+      // overworld/map..
       
       // small hitbox allows for greater movement
       this.w = 15
       this.h = 15
       this.sprite.height = 19 // TODO
       
-      if (Math.abs(this.xv) < 0.2 && Math.abs(this.yv) < 0.2) {
-        this.spriteAnimation.anim = 'idle'
+      const on = this.tileOn
+      if (!this.lastOn) {
+        this.y += this.h
+        this.wantsInput = true
       }
       
-      if (this.game.keys[39]) {
-        this.xv += 0.2
-        this.spriteAnimation.anim = 'walk'
-      } else if(this.xv > 0) {
-        this.xv = Math.max(0, this.xv - 0.4)
-      }
-      
-      if (this.game.keys[37]) {
-        this.xv -= 0.2
-        this.spriteAnimation.anim = 'walk'
-      } else if(this.xv < 0) {
-        this.xv = Math.min(0, this.xv + 0.4)
-      }
-      
-      this.xv = Math.min(this.xv,  2)
-      this.xv = Math.max(this.xv, -2)
-      
-      if(this.xv > 0) this.spriteAnimation.dir = 'right'
-      if(this.xv < 0) this.spriteAnimation.dir = 'left'
-      
-      if (this.game.keys[40]) {
-        this.yv += 0.2
-        this.spriteAnimation.anim = 'walk'
-      } else if(this.yv > 0) {
-        this.yv = Math.max(0, this.yv - 0.4)
-      }
-      
-      if (this.game.keys[38]) {
-        this.yv -= 0.2
-        this.spriteAnimation.anim = 'walk'
-      } else if(this.yv < 0) {
-        this.yv = Math.min(0, this.yv + 0.4)
-      }
+      if (on.name === 'Path' && !this.wantsInput) {
+        // we're already moving!
+        
+        // we need to be on a NEW tile to do anything:
+        if (!this.lastOn || on.texPosition !== this.lastOn.texPosition) {
+          const [h, v] = on.texPosition
+          //console.log([h, v])
+          
+          if (h == 2 && v == 8) {
+            // vertical straight
+            console.log('|')
+          }
+          
+          if (h == 1 && v == 9) {
+            // horizontal straight
+            console.log('-')
+          }
+          
+          if (h == 3 && v == 9) {
+            // up/left turn
+            console.log('/')
             
-      this.yv = Math.min(this.yv,  2)
-      this.yv = Math.max(this.yv, -2)
+            if(this.yv === 0) {
+              // from left
+              this.xv = 0
+              this.yv = -16
+            } else {
+              // from up
+              this.xv = -16
+              this.yv = 0
+            }
+          }
+          
+          if (h == 3 && v == 8) {
+            // down/right turn
+            console.log('/')
+            
+            if(this.yv === 0) {
+              // from right
+              this.xv = 0
+              this.yv = 16
+            } else {
+              // from down
+              this.xv = 16
+              this.yv = 0
+            }
+          }
+          
+          if (h == 1 && v == 8) {
+            // up/right turn
+            console.log('\\')
+            
+            if(this.yv === 0) {
+              // from right
+              this.xv = 0
+              this.yv = -16
+            } else {
+              // from up
+              this.xv = 16
+              this.yv = 0
+            }
+          }
+          
+          if (h == 1 && v == 10) {
+            // down/left turn
+            console.log('\\')
+            
+            if(this.yv === 0) {
+              // from left
+              this.xv = 0
+              this.yv = 16
+            } else {
+              // from down
+              this.xv = -16
+              this.yv = 0
+            }
+          }
+          
+          if (h == 2 && v == 10) {
+            // up/down T-junction
+            this.xv = 0
+            this.yv = 0
+            this.wantsInput = true
+          }
+        }
+      } else {
+        this.xv = 0
+        this.yv = 0
+        
+        // take input..
+        // TODO don't allow passing by [3, 10] tiles (uncompleted levels)
+        console.log('?')
+        
+        if (Math.abs(this.xv) < 0.2 && Math.abs(this.yv) < 0.2) {
+          this.spriteAnimation.anim = 'idle'
+        }
+        
+        if (this.game.keys[39]) {
+          this.xv = 16
+          this.spriteAnimation.anim = 'walk'
+        } else if (this.xv > 0) {
+          this.xv = 0
+        }
+        
+        if (this.game.keys[37]) {
+          this.xv = -16
+          this.spriteAnimation.anim = 'walk'
+        } else if (this.xv < 0) {
+          this.xv = 0
+        }
+        
+        if (this.xv > 0) this.spriteAnimation.dir = 'right'
+        if (this.xv < 0) this.spriteAnimation.dir = 'left'
+        
+        if (this.game.keys[40]) {
+          this.yv = 16
+          this.spriteAnimation.anim = 'walk'
+        } else if (this.yv > 0) {
+          this.yv = 0
+        }
+        
+        if (this.game.keys[38]) {
+          this.yv = -16
+          this.spriteAnimation.anim = 'walk'
+        } else if (this.yv < 0) {
+          this.yv = 0
+        }
+      }
+      
+      this.lastOn = on
     } else {
       this.w = 15
       this.h = 31 // TODO small player
@@ -416,7 +525,9 @@ export class Player extends Entity {
     }
 
     // actually move:
-    super.update()
+    super.update(!this.game.level.meta.special.includes('world'))
+    
+    if (this.xv !== 0 || this.yv !== 0) this.wantsInput = false
   }
 
   draw() {

@@ -640,15 +640,26 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       if(top && !left && !right && bottom) this.texPosition = [2, 8]
       if(top && left && !right && !bottom) this.texPosition = [3, 9]
       if(top && !left && right && bottom) this.texPosition = [2, 10]
+      if(!top && !left && right && bottom) this.texPosition = [3, 8]
+      if(top && !left && right && !bottom) this.texPosition = [1, 8]
+      if(!top && left && !right && bottom) this.texPosition = [1, 10]
     }
   }],
   
   ['W lv', class WorldLevelTile extends Tile {
+    complete: boolean
+    
     constructor(game) {
       super(game, {
         name: 'Level',
         texPosition: [2, 9],
       })
+      
+      this.complete = false
+    }
+    
+    onUpdate() {
+      this.texPosition = this.complete ?  [2, 9] : [3, 10]
     }
   }],
   
