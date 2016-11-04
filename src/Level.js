@@ -78,6 +78,19 @@ export default class Level {
     this.music.loop = true
     this.music.play() // load automatically
   }
+  
+  create() {
+    // Call create() on the Level Tiles
+    for (let row of this.tilemap) {
+      for (let tile of row) {
+        tile.onCreate()
+      }
+    }
+  }
+  
+  destroy() {
+    this.music.pause()
+  }
 
   update() {
     // Call update() on the tilemap's Tiles

@@ -66,12 +66,7 @@ export default class SLW {
     this.level = new Level(this, levelid, tileset)
     this.tick = 0
 
-    // Call create() on the Level Tiles
-    for (let row of this.level.tilemap) {
-      for (let tile of row) {
-        tile.onCreate()
-      }
-    }
+    this.level.create()
   }
 
   // Clears the game canvas.

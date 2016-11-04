@@ -5,6 +5,7 @@ const GRAVITY = 0.25
 
 import SLW from './SLW'
 import Tile from './Tile'
+import Level from './Level'
 
 import { sign } from './util'
 
@@ -13,6 +14,11 @@ type Position = [number, number]
 // is [z], [space], or [up arrow] down?
 function isJump(keys): boolean {
   return keys[32] || keys[38] || keys[90]
+}
+
+// is [z], [space], or [enter] down?
+function isYes(keys): boolean {
+  return keys[32] || keys[13] || keys[90]
 }
 
 export class Entity {
@@ -324,9 +330,9 @@ export class Player extends Entity {
       // overworld/map..
       
       // small hitbox allows for greater movement
+      // TODO
       this.w = 15
       this.h = 15
-      this.sprite.height = 19 // TODO
       
       const on = this.tileOn
       if (!this.lastOn) {
@@ -461,13 +467,25 @@ export class Player extends Entity {
         } else if (this.yv < 0) {
           this.yv = 0
         }
+        
+        if (on.name === 'Level' && isYes(this.game.keys)) {
+          // open level!
+          // TODO some animation?
+          
+          const lv = this.game.level.meta.id + '-' + on.levelid
+          console.log('start', lv)
+          
+          this.w = 15
+          this.h = 31
+          
+          this.game.level.destroy() // bye bye world map
+          this.game.level = new Level(this.game, lv, this.game.level.tileset)
+          this.game.level.create()  // hello level
+        }
       }
       
       this.lastOn = on
     } else {
-      this.w = 15
-      this.h = 31 // TODO small player
-      
       // input:
 
       if (Math.abs(this.xv) < 0.2 && this.grounded) {

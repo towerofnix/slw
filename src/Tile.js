@@ -674,7 +674,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     onCreate() {
       // replace this tile with a level tile
       const tile = new (Tile.get('W lv'))(this.game)
-      tile.levelid = 2
+      tile.levelid = 1
       this.game.level.replaceTile([this.x, this.y], tile)
     }
   }],
