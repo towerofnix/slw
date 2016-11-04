@@ -124,7 +124,12 @@ export default class SLW {
     // background
     let bg = new Image
     bg.src = `background/${this.level.meta.background}.png`
-    let ptrn = ctx.createPattern(bg, BG_REPEATS[this.level.meta.background] || 'repeat')
+    
+    let ptrn = bg.complete
+    ? ctx.createPattern(bg, BG_REPEATS[this.level.meta.background] || 'repeat')
+    : BG_COLORS[this.level.meta.background] || 'black'
+    
+    console.log(bg.complete)
 
     let tx = -0.25 * this.camera[0]
     let ty = -0.25 * this.camera[1]
