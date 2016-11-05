@@ -35,6 +35,9 @@ export default class SLW {
 
   // Camera position. Used for scrolling.
   camera: Position
+  
+  // Cursor (mouse) position, relative to the canvas.
+  cursor: Position
 
   // Level, to contain information about the currently active level.
   level: Level
@@ -46,6 +49,7 @@ export default class SLW {
 
   constructor(levelid: string, tileset: Image) {
     this.keys = {}
+    this.cursor = [0, 0]
     this.entities = []
 
     this.canvas = document.createElement('canvas')
@@ -58,6 +62,11 @@ export default class SLW {
 
     this.canvas.addEventListener('keyup', (evt: KeyboardEvent) => {
       this.keys[evt.keyCode] = false
+    })
+    
+    this.canvas.addEventListener('mousemove', (evt: MouseEvent) => {
+      let rect = this.canvas.getBoundingClientRect()
+      this.cursor = [evt.clientX - rect.left, evt.clientY - rect.top]
     })
 
     this.canvas.setAttribute('tabindex', '1')
@@ -162,6 +171,7 @@ export default class SLW {
     ctx.restore()
 
     // GUI:
+    
     if (this.level.meta.special.includes('world')) {
       let on = this.player.tileOn
       let str = this.level.meta.name
@@ -173,7 +183,11 @@ export default class SLW {
       
       ctx.drawImage(Text.write(str), 4, 4)
     }
-
+    
+    let cursor = new Image
+    cursor.src = 'sprites/cursor.png'
+    ctx.drawImage(cursor, Math.floor(this.cursor[0] / 16) * 16 - 4, Math.floor(this.cursor[1] / 16) * 16 - 4)
+    
     this.tick++
   }
 }
