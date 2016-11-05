@@ -161,8 +161,18 @@ export default class SLW {
     // unscroll
     ctx.restore()
 
-    // GUI..
-    ctx.drawImage(Text.write('The quick brown fox\njumped over\nthe lazy dog.'), 0, 0)
+    // GUI:
+    if (this.level.meta.special.includes('world')) {
+      let on = this.player.tileOn
+      let str = this.level.meta.name
+      
+      if (on.name === 'Level') {
+        let level = Level.metaOf(this.level.meta.id + '-' + on.levelid)
+        str += ' . ' + level.name
+      }
+      
+      ctx.drawImage(Text.write(str), 4, 4)
+    }
 
     this.tick++
   }

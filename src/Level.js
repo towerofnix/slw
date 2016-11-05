@@ -36,6 +36,10 @@ export default class Level {
   h: number // height
 
   music: window.Audio
+  
+  static metaOf(levelid) {
+    return levels[levelid]
+  }
 
   constructor(
     game: SLW,

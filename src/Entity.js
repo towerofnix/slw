@@ -680,6 +680,7 @@ export class Player extends Entity {
     this.game.level.create()  // hello world map
     
     this.game.tick = 0
+    this.state = 0
     
     // find the last level in the map
     for (let row of this.game.level.tilemap) {
