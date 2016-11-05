@@ -350,13 +350,15 @@ export class Player extends Entity {
     nextFrame: number,
   }
   
+  state: number // powerup state
+  
   lastOn: ?Tile // world map only.
   wantsInput: ?boolean // world map only.
 
   constructor(game: SLW, x: number = 0, y:number = 0) {
     super(game)
 
-    this.sprite.sheet.src = 'sprites/liam.png'
+    this.sprite.sheet.src = 'sprites/liam-0.png'
     this.sprite.position = [-100, -100]
     this.sprite.positionType = 'absolute'
     this.sprite.width = 19
@@ -367,12 +369,29 @@ export class Player extends Entity {
     this.y = y
 
     this.w = 15
-    this.h = 31
-
+    this.h = 15
+    this.state = 0
+    
     this.jumpSound = new window.Audio('sound/smw_jump.wav')
   }
 
   update() {
+    this.sprite.sheet.src = `sprites/liam-${this.state}.png`
+    if (this.state > 0) {
+      // big/powerupped
+      this.w = 15
+      this.h = 31
+      this.sprite.width = 19
+      this.sprite.height = 32
+      this.sprite.positionType = 'absolute'
+    } else {
+      // small
+      this.w = 15
+      this.h = 15
+      this.sprite.width = 16
+      this.sprite.height = 16
+    }
+    
     if (this.game.level.meta.special.includes('world')) {
       // overworld/map..
       
@@ -611,27 +630,40 @@ export class Player extends Entity {
         anim.nextFrame = (
           Math.ceil(anim.time + Math.max(12 - Math.abs(this.xv * 3), 8))
         )
-        console.log(Math.abs(this.xv * 3))
 
-        if (this.sprite.position[0] === 57) {
-          this.sprite.position[0] = 0
-        } else if (this.sprite.position[0] === 38) {
-          this.sprite.position[0] = 57
-        } else if (this.sprite.position[0] === 19) {
-          if(anim.anim === 'walk') this.sprite.position[0] = 38
+        if (this.state === 0) {
+          if (this.sprite.position[0] === 32) {
+            this.sprite.position[0] = 0
+          } else if (this.sprite.position[0] === 16) {
+            this.sprite.position[0] = 32
+          } else if (this.sprite.position[0] === 0) {
+            if(anim.anim === 'walk') this.sprite.position[0] = 16
+          } else {
+            this.sprite.position[0] = 0
+          }
         } else {
-          this.sprite.position[0] = 19
+          if (this.sprite.position[0] === 57) {
+            this.sprite.position[0] = 0
+          } else if (this.sprite.position[0] === 38) {
+            this.sprite.position[0] = 57
+          } else if (this.sprite.position[0] === 19) {
+            if(anim.anim === 'walk') this.sprite.position[0] = 38
+          } else {
+            this.sprite.position[0] = 19
+          }
         }
       }
     } else if (anim.anim === 'idle') {
-      this.sprite.position[0] = 19
+      this.sprite.position[0] = this.state === 0 ? 0 : 19
     } else if (anim.anim === 'jump') {
-      this.sprite.position[0] = 76
+      this.sprite.position[0] = this.state === 0 ? 48 : 76
     } else if (anim.anim === 'fall') {
-      this.sprite.position[0] = 97
+      this.sprite.position[0] = this.state === 0 ? 32 : 97
     }
 
-    this.sprite.position[1] = anim.dir === 'left' ? 32 : 0
+    this.sprite.position[1] = this.state === 0 ?
+      (anim.dir === 'left' ? 16 : 0) :
+      (anim.dir === 'left' ? 32 : 0)
     this.spriteAnimation.time++ // could use this.game.tick
 
     super.draw()
@@ -694,8 +726,6 @@ export class Powerup extends Entity {
   onTouch(by: Entity) {
     if (by instanceof Player) {
       this.game.entities.splice(this.game.entities.indexOf(this), 1)
-
-      // TODO Powerups
     }
   }
 }
@@ -705,6 +735,15 @@ export class Mushroom extends Powerup {
     super(...args)
 
     this.sprite.position = [0, 2]
+  }
+  
+  onTouch(by: Entity) {
+    if (by instanceof Player && by.state === 0) {
+      by.state = 1 // small to big
+      by.y -= Tile.size
+    }
+    
+    super.onTouch(by)
   }
 }
 
