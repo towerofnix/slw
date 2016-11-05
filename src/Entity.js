@@ -99,7 +99,7 @@ export class Entity {
 
     for (let i = 0; i < Math.abs(xv); i++) {
       this.x += v
-      if (this.collides()) {
+      if (this.touchingWallRight || this.touchingWallLeft) {
         this.x -= v
         if (stop) this.xv = 0
       }
@@ -199,6 +199,56 @@ export class Entity {
     }
 
     return shouldReturnTiles ? tiles : collision
+  }
+
+  get touchingWallRight(): boolean {
+    let tileLeft   = Math.floor(this.right  / Tile.size)
+    let tileRight  = tileLeft
+    let tileTop    = Math.floor(this.top    / Tile.size)
+    let tileBottom = Math.floor(this.bottom / Tile.size)
+
+    // Weird bug.. dunno why this (helps) fix #19 though. I can't imagine
+    // tileBottom is broken! (Right?)
+    // TODO Figure this out. Right now it's a plain fix for height=16
+    if (this.h === 16) {
+      tileBottom--
+    }
+
+    for (let x = tileLeft; x <= tileRight; x++) {
+      for (let y = tileTop; y <= tileBottom; y++) {
+        const tile = this.game.level.tileAt([x, y])
+
+        if (tile.solid) {
+          return true
+        }
+      }
+    }
+
+    return false
+  }
+
+  get touchingWallLeft(): boolean {
+    let tileLeft   = Math.floor(this.left   / Tile.size)
+    let tileRight  = tileLeft
+    let tileTop    = Math.floor(this.top    / Tile.size)
+    let tileBottom = Math.floor(this.bottom / Tile.size)
+
+    // Same deal as touchingWallRight
+    if (this.h === 16) {
+      tileBottom--
+    }
+
+    for (let x = tileLeft; x <= tileRight; x++) {
+      for (let y = tileTop; y <= tileBottom; y++) {
+        const tile = this.game.level.tileAt([x, y])
+
+        if (tile.solid) {
+          return true
+        }
+      }
+    }
+
+    return false
   }
 
   // Handy function to pick tiles around the entity.

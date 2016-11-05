@@ -225,7 +225,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
         const usedBlock = this.game.level.replaceTile([this.x, this.y], tile)
         usedBlock.dy = -0.5 * Tile.size
 
-        const [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
+        let [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
         let shroom = new Mushroom(this.game, x, 0)
         shroom.y = y - shroom.h - 1
         shroom.yv = -1.5
