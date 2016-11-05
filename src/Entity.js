@@ -563,7 +563,6 @@ export class Player extends Entity {
       this.xv = Math.min(this.xv,  4)
       this.xv = Math.max(this.xv, -4)
 
-      console.log(this.yv)
       if (this.grounded && isJump(this.game.keys) && this.mayJump) {
         // jump height is based on how long you hold the key[s]
         // you can hold it for longer if your xv is higher
