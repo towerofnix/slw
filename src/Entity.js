@@ -537,7 +537,6 @@ export class Player extends Entity {
           // TODO some animation?
           
           const lv = this.game.level.meta.id + '-' + on.levelid
-          console.log('start', lv)
           
           this.w = 15
           this.h = 31
@@ -609,7 +608,7 @@ export class Player extends Entity {
     }
 
     // actually move:
-    super.update(!this.game.level.meta.special.includes('world'))
+    super.update(this.wantsInput)
     
     if (this.xv !== 0 || this.yv !== 0) this.wantsInput = false
   }
@@ -669,6 +668,30 @@ export class Player extends Entity {
 
     super.draw()
   }
+
+  destroy() {
+    // go back to world map:
+    
+    const lv = this.game.level.meta.world
+    const id = this.game.level.meta.id
+    
+    this.game.level.destroy() // bye bye current level
+    this.game.level = new Level(this.game, lv, this.game.level.tileset)
+    this.game.level.create()  // hello world map
+    
+    this.game.tick = 0
+    
+    // find the last level in the map
+    for (let row of this.game.level.tilemap) {
+      for (let tile of row) {
+        if (tile.name === 'Level' && tile.levelid == id) {
+          // go there!
+          this.x = tile.x * Tile.size
+          this.y = tile.y * Tile.size
+        }
+      }
+    }
+  }
 }
 
 export class Goomba extends Entity {
@@ -725,9 +748,7 @@ export class Powerup extends Entity {
   }
 
   onTouch(by: Entity) {
-    if (by instanceof Player) {
-      this.game.entities.splice(this.game.entities.indexOf(this), 1)
-    }
+    if (by instanceof Player) this.destroy()
   }
 }
 

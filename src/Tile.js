@@ -490,8 +490,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
 
     onTouch(by: Entity) {
-      // TODO destroy it
-      if(by instanceof Player) console.warn('you are ded')
+      by.destroy()
     }
   }],
   
@@ -612,6 +611,15 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       super(game, {
         name: 'Pipe',
         texPosition: [0, 11],
+      })
+    }
+  }],
+  
+  ['W H', class WorldHouseTile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'House',
+        texPosition: [1, 11],
       })
     }
   }],
