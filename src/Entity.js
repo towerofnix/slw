@@ -330,9 +330,6 @@ export class Entity {
     return this.pickTiles(0, 0, 1, 1).some(x => x.solid || x.solidTop)
     */
 
-    let l = this.game.level.tileAt([Math.floor(this.x / 16), this.bottom / 16 + 0.1]).solid
-    let r = this.game.level.tileAt([Math.ceil(this.x / 16), this.bottom / 16 + 0.1]).solid
-
     return this.tilesBelow.some(tile => tile.solid || tile.solidTop)
   }
 
@@ -545,18 +542,18 @@ export class Player extends Entity {
       }
 
       if (this.game.keys[39]) {
-        this.xv += 0.1
+        this.xv += 0.2
         if (this.grounded) this.spriteAnimation.anim = 'walk'
       } else if(this.xv > 0) {
-        this.xv = Math.max(0, this.xv - 0.2)
+        this.xv = Math.max(0, this.xv - 0.4)
       }
 
       if (this.game.keys[37]) {
         // xv
-        this.xv -= 0.1
+        this.xv -= 0.2
         if (this.grounded) this.spriteAnimation.anim = 'walk'
       } else if(this.xv < 0) {
-        this.xv = Math.min(0, this.xv + 0.2)
+        this.xv = Math.min(0, this.xv + 0.4)
       }
 
       if (Math.abs(this.xv) < 0.1) {
@@ -576,7 +573,7 @@ export class Player extends Entity {
         this.jumpSound.play()
         this.spriteAnimation.anim = 'jump'
         this.mayJump = false
-      } else if(isJump(this.game.keys) && Date.now() - this.lastJump < 50 + Math.abs(this.xv) * 50) {
+      } else if(isJump(this.game.keys) && Date.now() - this.lastJump < 100 + Math.abs(this.xv) * 50) {
         this.yv = -3.5
       } else if(!isJump(this.game.keys)) {
         // we may jump next frame
@@ -612,8 +609,9 @@ export class Player extends Entity {
     if (anim.anim === 'walk' || (anim.anim === 'idle' && anim.oldAnim === 'walk')) {
       if (anim.time >= anim.nextFrame) {
         anim.nextFrame = (
-          Math.ceil(anim.time + Math.min(40 - Math.abs(this.xv * 3), 10))
+          Math.ceil(anim.time + Math.max(12 - Math.abs(this.xv * 3), 8))
         )
+        console.log(Math.abs(this.xv * 3))
 
         if (this.sprite.position[0] === 57) {
           this.sprite.position[0] = 0
@@ -651,7 +649,7 @@ export class Goomba extends Entity {
     this.w = 16
     this.h = 16
 
-    this.xv = 1
+    this.xv = 2
   }
 
   update() {
@@ -681,15 +679,24 @@ export class Powerup extends Entity {
 
   update() {
     this.yv += GRAVITY * 0.7
-    this.xv = 2
+    
+    let o = this.xv
+    
+    this.x += this.xv
+    if (this.touchingWallRight || this.touchingWallLeft) o = this.xv * -1
+    this.x -= this.xv
+    
+    this.xv = o
 
     super.update()
   }
 
-  onTouch() {
-    this.game.entities.splice(this.game.entities.indexOf(this), 1)
+  onTouch(by: Entity) {
+    if (by instanceof Player) {
+      this.game.entities.splice(this.game.entities.indexOf(this), 1)
 
-    // TODO Powerups
+      // TODO Powerups
+    }
   }
 }
 
