@@ -255,6 +255,16 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
   }],
 
+  ['*', class InvisibleBlockTile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Invisible Block',
+        texPosition: [0, 0],
+        solid: true
+      })
+    }
+  }],
+
   ['~', class DonutTile extends Tile {
     fallVelocity: number
     fallCountdown: number
