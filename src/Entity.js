@@ -481,6 +481,8 @@ export class Player extends Entity {
           this.game.level.destroy() // bye bye world map
           this.game.level = new Level(this.game, lv, this.game.level.tileset)
           this.game.level.create()  // hello level
+          
+          this.game.tick = 0
         }
       }
       
