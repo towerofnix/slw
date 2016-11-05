@@ -8,6 +8,7 @@
 type Position = [number, number]
 
 import Tile from './Tile'
+import Text from './Text'
 import Level from './Level'
 import { Entity, Player } from './Entity'
 
@@ -160,7 +161,8 @@ export default class SLW {
     // unscroll
     ctx.restore()
 
-    // TODO GUI
+    // GUI..
+    ctx.drawImage(Text.write('The quick brown fox\njumped over\nthe lazy dog.'), 0, 0)
 
     this.tick++
   }
