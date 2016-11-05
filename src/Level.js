@@ -31,7 +31,7 @@ export default class Level {
   meta: Object // see levels.toml
   tileset: Image
   tilemap: Array <Array <Tile>>
-  debug: Boolean
+  debug: boolean
 
   w: number // width
   h: number // height

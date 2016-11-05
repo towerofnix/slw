@@ -190,8 +190,8 @@ export default class SLW {
     }
 
     if (this.level.debug) {
-      ctx.drawImage(Text.write('x: '+this.player.x), 2, 2)
-      ctx.drawImage(Text.write('y: '+this.player.y), 2, 4)
+      ctx.drawImage(Text.write('x: '+this.player.x), 2, 6)
+      ctx.drawImage(Text.write('y: '+this.player.y), 2, 8)
     }
     
     let cursor = new Image
