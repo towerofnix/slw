@@ -94,6 +94,10 @@ export default class Level {
   
   destroy() {
     this.music.pause()
+
+    // TODO Entity destroying? Might not be a bad idea, e.g. if entities have
+    // set event listeners that reference themselves... they wouldn't be GC'd.
+    this.game.entities.splice(0, this.game.entities.length)
   }
 
   update() {
