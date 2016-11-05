@@ -608,7 +608,7 @@ export class Player extends Entity {
     }
 
     // actually move:
-    super.update(this.wantsInput)
+    super.update(this.wantsInput == true || !this.game.level.meta.special.includes('world'))
     
     if (this.xv !== 0 || this.yv !== 0) this.wantsInput = false
   }
