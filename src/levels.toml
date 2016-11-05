@@ -46,7 +46,7 @@ tilemap = """
 
 [F-1]
 name="Typical Beginnings"
-music="athletic"
+music="grassland"
 special=[]
 background="hills"
 tilemap = """
