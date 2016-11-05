@@ -31,6 +31,7 @@ export default class Level {
   meta: Object // see levels.toml
   tileset: Image
   tilemap: Array <Array <Tile>>
+  debug: Boolean
 
   w: number // width
   h: number // height
@@ -50,6 +51,7 @@ export default class Level {
 
     this.tileset = tileset
     this.meta = levels[levelid]
+    this.debug = this.meta.debug ? true : false
 
     const leveldata = this.meta.tilemap
 

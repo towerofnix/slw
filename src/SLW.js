@@ -188,6 +188,11 @@ export default class SLW {
       
       ctx.drawImage(Text.write(str), 4, 4)
     }
+
+    if (this.level.debug) {
+      ctx.drawImage(Text.write('x: '+this.player.x), 2, 2)
+      ctx.drawImage(Text.write('y: '+this.player.y), 2, 4)
+    }
     
     let cursor = new Image
     cursor.src = 'sprites/cursor.png'

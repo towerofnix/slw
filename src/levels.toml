@@ -89,6 +89,7 @@ name="Debug Land"
 
 music="athletic"
 special=["floating"]
+debug=true
 background="clouds"
 tilemap = """
 =-------------------------------------------=
