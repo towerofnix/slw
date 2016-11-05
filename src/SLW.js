@@ -175,10 +175,15 @@ export default class SLW {
     if (this.level.meta.special.includes('world')) {
       let on = this.player.tileOn
       let str = this.level.meta.name
-      
+
       if (on.name === 'Level') {
         let level = Level.metaOf(this.level.meta.id + '-' + on.levelid)
-        str += ' . ' + (on.levelid || 0)  + ' ' + level.name
+
+        if (level) {
+          str += ' . ' + (on.levelid || 0)  + ' ' + level.name
+        } else {
+          str += ' . Level doesn\'t exist rip'
+        }
       }
       
       ctx.drawImage(Text.write(str), 4, 4)

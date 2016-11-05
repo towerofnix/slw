@@ -7,7 +7,7 @@ import SLW from './SLW'
 import Tile from './Tile'
 import Level from './Level'
 
-import { sign } from './util'
+import { sign, levels } from './util'
 
 type Position = [number, number]
 
@@ -339,6 +339,7 @@ export class Entity {
 
 export class Player extends Entity {
   jumpSound: window.Audio
+  errorSound: window.Audio
   lastJump: number
   mayJump: boolean
 
@@ -373,6 +374,7 @@ export class Player extends Entity {
     this.state = 0
     
     this.jumpSound = new window.Audio('sound/smw_jump.wav')
+    this.errorSound = new window.Audio('sound/smw_stomp_koopa_kid.wav')
   }
 
   update() {
@@ -531,24 +533,28 @@ export class Player extends Entity {
         } else if (this.yv < 0) {
           this.yv = 0
         }
-        
+
         if (on.name === 'Level' && isYes(this.game.keys)) {
           // open level!
           // TODO some animation?
-          
+
           const lv = this.game.level.meta.id + '-' + on.levelid
-          
-          this.w = 15
-          this.h = 31
-          
-          this.game.level.destroy() // bye bye world map
-          this.game.level = new Level(this.game, lv, this.game.level.tileset)
-          this.game.level.create()  // hello level
-          
-          this.game.tick = 0
+
+          if (lv in levels) {
+            this.w = 15
+            this.h = 31
+
+            this.game.level.destroy() // bye bye world map
+            this.game.level = new Level(this.game, lv, this.game.level.tileset)
+            this.game.level.create()  // hello level
+
+            this.game.tick = 0
+          } else {
+            this.errorSound.play()
+          }
         }
       }
-      
+
       this.lastOn = on
     } else {
       // input:

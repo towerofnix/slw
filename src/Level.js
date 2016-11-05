@@ -1,7 +1,6 @@
 // @flow
 
 const toml = require('toml')
-const levels = toml.parse(require('./levels.toml'))
 
 const MUSIC_VOLUMES = {
   airship: 0.25,
@@ -22,6 +21,7 @@ const MUSIC_VOLUMES = {
 
 import SLW from './SLW'
 import Tile from './Tile'
+import { levels } from './util'
 
 type Position = [number, number]
 

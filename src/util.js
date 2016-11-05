@@ -37,3 +37,6 @@ export function tint(img: Image, colour: string, operation: string = 'source-in'
   res.src = canvas.toDataURL()
   return res
 }
+
+const toml = require('toml')
+export const levels = toml.parse(require('./levels.toml'))
