@@ -603,6 +603,8 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
         name: 'Flower',
         texPosition: [3, 14],
       })
+      
+      this.solid = true
     }
   }],
   
