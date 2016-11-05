@@ -402,12 +402,17 @@ export class Player extends Entity {
       
       const on = this.tileOn
       if (!this.lastOn) {
-        this.y += this.h
         this.wantsInput = true
       }
       
       if (on.name === 'Path' && !this.wantsInput) {
         // we're already moving!
+        
+        this.spriteAnimation.anim = 'walk'
+        if (this.xv > 0) this.spriteAnimation.dir = 'right'
+        if (this.xv < 0) this.spriteAnimation.dir = 'left'
+        if (this.yv > 0) this.spriteAnimation.dir = 'down'
+        if (this.yv < 0) this.spriteAnimation.dir = 'up'
         
         // we need to be on a NEW tile to do anything:
         if (!this.lastOn || on.texPosition !== this.lastOn.texPosition) {
@@ -497,39 +502,32 @@ export class Player extends Entity {
         
         // take input..
         // TODO don't allow passing by [3, 10] tiles (uncompleted levels)
-        console.log('?')
-        
-        if (Math.abs(this.xv) < 0.2 && Math.abs(this.yv) < 0.2) {
-          this.spriteAnimation.anim = 'idle'
-        }
+        this.spriteAnimation.anim = 'idle'
         
         if (this.game.keys[39]) {
           this.xv = 16
-          this.spriteAnimation.anim = 'walk'
+          this.spriteAnimation.dir = 'right'
         } else if (this.xv > 0) {
           this.xv = 0
         }
         
         if (this.game.keys[37]) {
           this.xv = -16
-          this.spriteAnimation.anim = 'walk'
+          this.spriteAnimation.dir = 'left'
         } else if (this.xv < 0) {
           this.xv = 0
         }
         
-        if (this.xv > 0) this.spriteAnimation.dir = 'right'
-        if (this.xv < 0) this.spriteAnimation.dir = 'left'
-        
         if (this.game.keys[40]) {
           this.yv = 16
-          this.spriteAnimation.anim = 'walk'
+          this.spriteAnimation.dir = 'down'
         } else if (this.yv > 0) {
           this.yv = 0
         }
         
         if (this.game.keys[38]) {
           this.yv = -16
-          this.spriteAnimation.anim = 'walk'
+          this.spriteAnimation.dir = 'up'
         } else if (this.yv < 0) {
           this.yv = 0
         }
@@ -661,9 +659,12 @@ export class Player extends Entity {
       this.sprite.position[0] = this.state === 0 ? 32 : 97
     }
 
-    this.sprite.position[1] = this.state === 0 ?
-      (anim.dir === 'left' ? 16 : 0) :
-      (anim.dir === 'left' ? 32 : 0)
+    this.sprite.position[1] = this.state === 0 ? ({
+      left: 16,
+      right: 0,
+      up: 48,
+      down: 32,
+    })[anim.dir] : (anim.dir === 'left' ? 32 : 0)
     this.spriteAnimation.time++ // could use this.game.tick
 
     super.draw()

@@ -579,7 +579,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       // place the player here
       const [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
       this.game.player.x = x
-      this.game.player.y = y - this.game.player.h + Tile.size
+      this.game.player.y = y// - this.game.player.h + Tile.size
       
       // replace this tile with a pipe
       const tile = new (Tile.get('W P'))(this.game)
