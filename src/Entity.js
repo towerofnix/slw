@@ -395,228 +395,259 @@ export class Player extends Entity {
     }
     
     if (this.game.level.meta.special.includes('world')) {
-      // overworld/map..
-      
-      // small hitbox allows for greater movement
-      // TODO
-      this.w = 15
-      this.h = 15
-      
-      const on = this.tileOn
-      if (!this.lastOn) {
-        this.wantsInput = true
-      }
-      
-      if (on.name === 'Path' && !this.wantsInput) {
-        // we're already moving!
-        
-        this.spriteAnimation.anim = 'walk'
-        if (this.xv > 0) this.spriteAnimation.dir = 'right'
-        if (this.xv < 0) this.spriteAnimation.dir = 'left'
-        if (this.yv > 0) this.spriteAnimation.dir = 'down'
-        if (this.yv < 0) this.spriteAnimation.dir = 'up'
-        
-        // we need to be on a NEW tile to do anything:
-        if (!this.lastOn || on.texPosition !== this.lastOn.texPosition) {
-          const [h, v] = on.texPosition
-          //console.log([h, v])
-          
-          if (h == 2 && v == 8) {
-            // vertical straight
-            console.log('|')
-          }
-          
-          if (h == 1 && v == 9) {
-            // horizontal straight
-            console.log('-')
-          }
-          
-          if (h == 3 && v == 9) {
-            // up/left turn
-            console.log('/')
-            
-            if(this.yv === 0) {
-              // from left
-              this.xv = 0
-              this.yv = -16
-            } else {
-              // from up
-              this.xv = -16
-              this.yv = 0
-            }
-          }
-          
-          if (h == 3 && v == 8) {
-            // down/right turn
-            console.log('/')
-            
-            if(this.yv === 0) {
-              // from right
-              this.xv = 0
-              this.yv = 16
-            } else {
-              // from down
-              this.xv = 16
-              this.yv = 0
-            }
-          }
-          
-          if (h == 1 && v == 8) {
-            // up/right turn
-            console.log('\\')
-            
-            if(this.yv === 0) {
-              // from right
-              this.xv = 0
-              this.yv = -16
-            } else {
-              // from up
-              this.xv = 16
-              this.yv = 0
-            }
-          }
-          
-          if (h == 1 && v == 10) {
-            // down/left turn
-            console.log('\\')
-            
-            if(this.yv === 0) {
-              // from left
-              this.xv = 0
-              this.yv = 16
-            } else {
-              // from down
-              this.xv = -16
-              this.yv = 0
-            }
-          }
-          
-          if (h == 2 && v == 10) {
-            // up/down T-junction
-            this.xv = 0
-            this.yv = 0
-            this.wantsInput = true
-          }
-        }
-      } else {
-        this.xv = 0
-        this.yv = 0
-        
-        // take input..
-        // TODO don't allow passing by [3, 10] tiles (uncompleted levels)
-        this.spriteAnimation.anim = 'idle'
-        
-        if (this.game.keys[39]) {
-          this.xv = 16
-          this.spriteAnimation.dir = 'right'
-        } else if (this.xv > 0) {
-          this.xv = 0
-        }
-        
-        if (this.game.keys[37]) {
-          this.xv = -16
-          this.spriteAnimation.dir = 'left'
-        } else if (this.xv < 0) {
-          this.xv = 0
-        }
-        
-        if (this.game.keys[40]) {
-          this.yv = 16
-          this.spriteAnimation.dir = 'down'
-        } else if (this.yv > 0) {
-          this.yv = 0
-        }
-        
-        if (this.game.keys[38]) {
-          this.yv = -16
-          this.spriteAnimation.dir = 'up'
-        } else if (this.yv < 0) {
-          this.yv = 0
-        }
-
-        if (on.name === 'Level' && isYes(this.game.keys)) {
-          // open level!
-          // TODO some animation?
-
-          const lv = this.game.level.meta.id + '-' + on.levelid
-
-          if (lv in levels) {
-            this.w = 15
-            this.h = 31
-
-            this.game.level.destroy() // bye bye world map
-            this.game.level = new Level(this.game, lv, this.game.level.tileset)
-            this.game.level.create()  // hello level
-
-            this.game.tick = 0
-          } else {
-            this.errorSound.play()
-          }
-        }
-      }
-
-      this.lastOn = on
+      this.mapMotion()
     } else {
-      // input:
-
-      if (Math.abs(this.xv) < 0.2 && this.grounded) {
-        this.spriteAnimation.anim = 'idle'
-      }
-
-      if (this.game.keys[39]) {
-        this.xv += 0.2
-        if (this.grounded) this.spriteAnimation.anim = 'walk'
-      } else if(this.xv > 0) {
-        this.xv = Math.max(0, this.xv - 0.4)
-      }
-
-      if (this.game.keys[37]) {
-        // xv
-        this.xv -= 0.2
-        if (this.grounded) this.spriteAnimation.anim = 'walk'
-      } else if(this.xv < 0) {
-        this.xv = Math.min(0, this.xv + 0.4)
-      }
-
-      if (Math.abs(this.xv) < 0.1) {
-        this.xv = 0
-      }
-
-      this.xv = Math.min(this.xv,  4)
-      this.xv = Math.max(this.xv, -4)
-
-      if (this.grounded && isJump(this.game.keys) && this.mayJump) {
-        // jump height is based on how long you hold the key[s]
-        // you can hold it for longer if your xv is higher
-
-        this.yv = -3.5
-        this.lastJump = Date.now()
-
-        this.jumpSound.play()
-        this.spriteAnimation.anim = 'jump'
-        this.mayJump = false
-      } else if(isJump(this.game.keys) && this.yv < -3 && Date.now() - this.lastJump < 100 + Math.abs(this.xv) * 50) {
-        this.yv = -3.5
-      } else if(!isJump(this.game.keys)) {
-        // we may jump next frame
-        this.mayJump = true
-      }
-
-      if(this.yv > 0 && this.spriteAnimation.anim !== 'jump' && !this.grounded) {
-        this.spriteAnimation.anim = 'fall'
-      }
-
-      if(this.xv > 0) this.spriteAnimation.dir = 'right'
-      if(this.xv < 0) this.spriteAnimation.dir = 'left'
-
-      this.yv = Math.min(this.yv,  4)
-      this.yv += GRAVITY
+      this.levelMotion()
     }
 
     // actually move:
     super.update(this.wantsInput == true || !this.game.level.meta.special.includes('world'))
     
     if (this.xv !== 0 || this.yv !== 0) this.wantsInput = false
+  }
+
+  mapMotion() {
+    // overworld/map..
+    const walkSpeed = 4
+
+    // small hitbox allows for greater movement
+    // TODO
+    this.w = 15
+    this.h = 15
+
+    // A different version of tileOn. This one only counts a new tile if you're
+    // actually 100% on it - that is, if tileX and tileY are integers.
+    let on: ?Tile
+    const tileX = this.left / Tile.size
+    const tileY = this.top / Tile.size
+    if (Number.isInteger(tileX) && Number.isInteger(tileY)) {
+      on = this.game.level.tileAt([tileX, tileY])
+    } else {
+      on = this.lastOn
+    }
+
+    // Initial
+    if (!this.lastOn) {
+      this.wantsInput = true
+    }
+
+    // Levels, houses and pipes should let the user take input. If it's the
+    // same tile as the player was just on a tick ago, there's no need to give
+    // more input - if it does, the actual user needs to hold down whatever
+    // direcitonal button they're moving in until the player gets off that
+    // tile!
+    if (on &&
+      ['Level', 'House', 'Pipe'].includes(on.name) && on !== this.lastOn
+    ) {
+      this.wantsInput = true
+    }
+
+    if (on && on.name === 'Path' && !this.wantsInput) {
+      // we're already moving!
+      
+      this.spriteAnimation.anim = 'walk'
+      if (this.xv > 0) this.spriteAnimation.dir = 'right'
+      if (this.xv < 0) this.spriteAnimation.dir = 'left'
+      if (this.yv > 0) this.spriteAnimation.dir = 'down'
+      if (this.yv < 0) this.spriteAnimation.dir = 'up'
+      
+      // we need to be on a NEW tile to do anything:
+      if (!this.lastOn || on.texPosition !== this.lastOn.texPosition) {
+        const [h, v] = on.texPosition
+        //console.log([h, v])
+        
+        if (h == 2 && v == 8) {
+          // vertical straight
+          console.log('|')
+        }
+        
+        if (h == 1 && v == 9) {
+          // horizontal straight
+          console.log('-')
+        }
+        
+        if (h == 3 && v == 9) {
+          // up/left turn
+          console.log('/')
+          
+          if (this.yv === 0) {
+            // from left
+            this.xv = 0
+            this.yv = -walkSpeed
+          } else {
+            // from up
+            this.xv = -walkSpeed
+            this.yv = 0
+          }
+        }
+        
+        if (h == 3 && v == 8) {
+          // down/right turn
+          console.log('/')
+          
+          if (this.yv === 0) {
+            // from right
+            this.xv = 0
+            this.yv = walkSpeed
+          } else {
+            // from down
+            this.xv = walkSpeed
+            this.yv = 0
+          }
+        }
+        
+        if (h == 1 && v == 8) {
+          // up/right turn
+          console.log('\\')
+          
+          if (this.yv === 0) {
+            // from right
+            this.xv = 0
+            this.yv = -walkSpeed
+          } else {
+            // from up
+            this.xv = walkSpeed
+            this.yv = 0
+          }
+        }
+        
+        if (h == 1 && v == 10) {
+          // down/left turn
+          console.log('\\')
+          
+          if (this.yv === 0) {
+            // from left
+            this.xv = 0
+            this.yv = walkSpeed
+          } else {
+            // from down
+            this.xv = -walkSpeed
+            this.yv = 0
+          }
+        }
+        
+        if (h == 2 && v == 10) {
+          // up/down T-junction
+          this.xv = 0
+          this.yv = 0
+          this.wantsInput = true
+        }
+      }
+    } else if (this.wantsInput) {
+      this.xv = 0
+      this.yv = 0
+
+      // take input..
+      // TODO don't allow passing by [3, 10] tiles (uncompleted levels)
+      this.spriteAnimation.anim = 'idle'
+      
+      if (this.game.keys[39]) {
+        this.xv = walkSpeed
+        this.spriteAnimation.dir = 'right'
+      } else if (this.xv > 0) {
+        this.xv = 0
+      }
+      
+      if (this.game.keys[37]) {
+        this.xv = -walkSpeed
+        this.spriteAnimation.dir = 'left'
+      } else if (this.xv < 0) {
+        this.xv = 0
+      }
+      
+      if (this.game.keys[40]) {
+        this.yv = walkSpeed
+        this.spriteAnimation.dir = 'down'
+      } else if (this.yv > 0) {
+        this.yv = 0
+      }
+      
+      if (this.game.keys[38]) {
+        this.yv = -walkSpeed
+        this.spriteAnimation.dir = 'up'
+      } else if (this.yv < 0) {
+        this.yv = 0
+      }
+
+      if (on && on.name === 'Level' && isYes(this.game.keys)) {
+        // open level!
+        // TODO some animation?
+
+        const lv = this.game.level.meta.id + '-' + on.levelid
+
+        if (lv in levels) {
+          this.w = 15
+          this.h = 31
+
+          this.game.level.destroy() // bye bye world map
+          this.game.level = new Level(this.game, lv, this.game.level.tileset)
+          this.game.level.create()  // hello level
+
+          this.game.tick = 0
+        } else {
+          this.errorSound.play()
+        }
+      }
+    }
+
+    this.lastOn = on
+  }
+
+  levelMotion() {
+    // input:
+
+    if (Math.abs(this.xv) < 0.2 && this.grounded) {
+      this.spriteAnimation.anim = 'idle'
+    }
+
+    if (this.game.keys[39]) {
+      this.xv += 0.2
+      if (this.grounded) this.spriteAnimation.anim = 'walk'
+    } else if(this.xv > 0) {
+      this.xv = Math.max(0, this.xv - 0.4)
+    }
+
+    if (this.game.keys[37]) {
+      // xv
+      this.xv -= 0.2
+      if (this.grounded) this.spriteAnimation.anim = 'walk'
+    } else if(this.xv < 0) {
+      this.xv = Math.min(0, this.xv + 0.4)
+    }
+
+    if (Math.abs(this.xv) < 0.1) {
+      this.xv = 0
+    }
+
+    this.xv = Math.min(this.xv,  4)
+    this.xv = Math.max(this.xv, -4)
+
+    if (this.grounded && isJump(this.game.keys) && this.mayJump) {
+      // jump height is based on how long you hold the key[s]
+      // you can hold it for longer if your xv is higher
+
+      this.yv = -3.5
+      this.lastJump = Date.now()
+
+      this.jumpSound.play()
+      this.spriteAnimation.anim = 'jump'
+      this.mayJump = false
+    } else if(isJump(this.game.keys) && this.yv < -3 && Date.now() - this.lastJump < 100 + Math.abs(this.xv) * 50) {
+      this.yv = -3.5
+    } else if(!isJump(this.game.keys)) {
+      // we may jump next frame
+      this.mayJump = true
+    }
+
+    if(this.yv > 0 && this.spriteAnimation.anim !== 'jump' && !this.grounded) {
+      this.spriteAnimation.anim = 'fall'
+    }
+
+    if(this.xv > 0) this.spriteAnimation.dir = 'right'
+    if(this.xv < 0) this.spriteAnimation.dir = 'left'
+
+    this.yv = Math.min(this.yv,  4)
+    this.yv += GRAVITY
   }
 
   draw() {
