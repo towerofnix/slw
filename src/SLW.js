@@ -168,7 +168,7 @@ export default class SLW {
       
       if (on.name === 'Level') {
         let level = Level.metaOf(this.level.meta.id + '-' + on.levelid)
-        str += ' . ' + level.name
+        str += ' . ' + (on.levelid || 0)  + ' ' + level.name
       }
       
       ctx.drawImage(Text.write(str), 4, 4)
