@@ -38,7 +38,7 @@ Also please run `flow` decently frequently because it might help you with issues
 * Sprites: Super Mario World (+ edits)
 * Music:
   - **File Select**: [Training Course - SMW2](http://youtu.be/99jtEbwxI9Y)
-  - **Grassland**: [Bob-omb Battlefield - SM64 [Remix]](http://youtu.be/QCLMWyG_4Ao
+  - **Grassland**: [Bob-omb Battlefield - SM64 [Remix]](http://youtu.be/QCLMWyG_4Ao)
   - **Athletic**: [Double Cherry Pass - SM3DW [Remix]](http://youtu.be/vsi35tBqdAE)
   - **Underground**: [Mario 1 Underground - SMAS [Remix]](http://youtu.be/ntVfeFSKwPA)
   - **Ice Cave**: [Underground - SMW2](http://youtu.be/8RtLhXibDfA)
