@@ -9,7 +9,9 @@ window.addEventListener('load', e => {
   const game = new SLW('F-1', tileset)
 
   window.game = game // debug only pls
-  main.appendChild(game.canvas)
+
+  // Prepend the game canvas, so that it's below the controller
+  main.insertBefore(game.canvas, main.firstChild)
 
   game.tileset = tileset
   game.canvas.focus()
@@ -38,5 +40,9 @@ window.addEventListener('load', e => {
     buildTarget: document.getElementById('controller'),
     eventTarget: game.canvas,
     disableZoom: true
+  })
+
+  main.addEventListener('touchmove', evt => {
+    evt.preventDefault()
   })
 })
