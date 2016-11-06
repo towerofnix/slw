@@ -130,6 +130,9 @@ export class Entity {
       }
     }
 
+    if ((this.y >= this.game.level.h * Tile.size) && !this.game.level.meta.special.includes('world'))
+      return this.destroy()
+
     for (let tile of this.pickTiles(0, 0, 0, 1)) {
       tile.onTouch(this)
     }
