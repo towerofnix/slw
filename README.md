@@ -24,7 +24,13 @@ $ gulp build    # once
 $ gulp watch    # for changes
 ```
 
-And then you can open up index.html in your browser. (With `watch`, Whenever you make changes to the `src` folder, everything will be rebuilt.
+(With `watch`, Whenever you make changes to the `src` folder, everything will be rebuilt.
+
+You also need to run a webserver because of browser security rules:
+
+```bash
+$ python -m SimpleHTTPServer
+```
 
 Also please run `flow` decently frequently because it might help you with issues and stuff. (Also it would be nice if no errors came from `flow`!) (Also you should really just get a flow linter or whatever for your favorite text editor. It hopefully exists.)
 
