@@ -130,6 +130,8 @@ export class Entity {
       }
     }
 
+    if (this.y >= 400) this.destroy()
+
     for (let tile of this.pickTiles(0, 0, 0, 1)) {
       tile.onTouch(this)
     }
