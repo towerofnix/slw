@@ -1,7 +1,7 @@
 // @flow
 
 const DEBUG = false // lags lots but is helpful
-const GRAVITY = 0.25
+const GRAVITY = 0.2625
 
 import SLW from './SLW'
 import Tile from './Tile'
