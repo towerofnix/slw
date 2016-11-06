@@ -15,7 +15,7 @@ window.addEventListener('load', e => {
     let didTick = false
 
     !(function render() {
-      requestAnimationFrame(render)
+      game.gamepadInput()
 
       if(document.hasFocus()) { // don't update if we're in devtools
         // Very deliberate order:
@@ -27,6 +27,8 @@ window.addEventListener('load', e => {
         game.canvasClear()
         game.draw()
       }
+
+      requestAnimationFrame(render)
     })()
   }
 

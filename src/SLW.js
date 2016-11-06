@@ -45,6 +45,9 @@ export default class SLW {
   // Amount of draw()s called since we started.
   tick: number
 
+  gamepadSupport: boolean
+  gamepadEnabled: boolean
+
   entities: Array <Entity>
 
   constructor(levelid: string, tileset: Image) {
@@ -77,6 +80,21 @@ export default class SLW {
     this.tick = 0
 
     this.level.create()
+
+    this.gamepadSupport = 'GamepadEvent' in window || 'getGamepads' in navigator
+    this.gamepadEnabled = localStorage['gamepadEnabled'] == 'true'
+
+    if (this.gamepadSupport) {
+      let el = document.getElementById('gamepadEnabled')
+      // @flow ignore
+      el.disabled = false
+      el.innerText = this.gamepadEnabled ? 'Gamepad is ON' : 'Gamepad is OFF'
+      el.addEventListener('click', (evt: Event) => {
+        this.gamepadEnabled = !this.gamepadEnabled
+        localStorage['gamepadEnabled'] = this.gamepadEnabled.toString()
+        el.innerText = this.gamepadEnabled ? 'Gamepad is ON' : 'Gamepad is OFF'
+      })
+    }
   }
 
   // Clears the game canvas.
@@ -86,6 +104,41 @@ export default class SLW {
     if (ctx instanceof CanvasRenderingContext2D) {
       ctx.fillStyle = BG_COLORS[this.level.meta.background] || 'black'
       ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+    }
+  }
+
+  // Do gamepad things.
+  gamepadInput() {
+    try {
+      if (this.gamepadSupport && this.gamepadEnabled) {
+        const gamepads = window.navigator.getGamepads()
+
+        if (gamepads.length > 0) {
+          let newest = gamepads[0]
+          for (let i = 0; i < gamepads.length; i++) {
+            const gamepad = gamepads[i]
+
+            if (gamepad.connected) {
+              // we want the latest timestamped gamepad
+              if (newest.timestamp < gamepad.timestamp) newest = gamepad
+            }
+          }
+
+          // set the keys
+          const pad = newest
+
+          this.keys[90] = pad.buttons[1].pressed // z
+          this.keys[80] = pad.buttons[2].pressed // x
+          this.keys[37] = pad.axes[0] < -0.5     // <
+          this.keys[39] = pad.axes[0] >  0.5     // >
+          this.keys[38] = pad.axes[1] < -0.5     // ^
+          this.keys[40] = pad.axes[1] >  0.5     // v
+        }
+      }
+    } catch(e) {
+      // There's probably gonna be errors thrown around in lots of browsers.
+      // Don't them crash the game.
+      console.warn(e)
     }
   }
 
