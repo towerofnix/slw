@@ -261,7 +261,7 @@ Camera XY   ${this.camera.map(p => Math.floor(p)).join(' ')}
 
     let cursor = new Image
     cursor.src = 'sprites/cursor.png'
-    ctx.drawImage(cursor, Math.floor(this.cursor[0] / 16) * 16 - 4, Math.floor(this.cursor[1] / 16) * 16 - 4)
+    //ctx.drawImage(cursor, Math.floor(this.cursor[0] / 16) * 16 - 4, Math.floor(this.cursor[1] / 16) * 16 - 4)
 
     this.tick++
   }

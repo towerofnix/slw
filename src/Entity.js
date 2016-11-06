@@ -599,27 +599,53 @@ export class Player extends Entity {
   levelMotion() {
     // input:
 
+    let crouch = (this.spriteAnimation.anim === 'crouch' && !this.grounded)
+      || (this.game.keys[40] && this.grounded)
+
+    if (this.game.keys[40] && !this.grounded && !crouch) {
+      // ground pound!
+      this.spriteAnimation.anim = 'groundpound'
+      if (this.yv < 0) this.yv = 0
+      this.xv *= 0.1
+    } else if (this.grounded && this.spriteAnimation.anim === 'groundpound') {
+      // we're on the ground now, so crouch instead
+      crouch = true
+      this.spriteAnimation.anim = 'crouch'
+    }
+
+    const groundpound = this.spriteAnimation.anim === 'groundpound'
+    let friction = (this.grounded && crouch) ? 0.2 : 0.4
+    if (groundpound) friction = 2
+
     if (Math.abs(this.xv) < 0.2 && this.grounded) {
       this.spriteAnimation.anim = 'idle'
     }
 
-    if (this.game.keys[39]) {
+    if (this.game.keys[39] && !crouch) {
       this.xv += 0.2
       if (this.grounded) this.spriteAnimation.anim = 'walk'
     } else if(this.xv > 0) {
-      this.xv = Math.max(0, this.xv - 0.4)
+      this.xv = Math.max(0, this.xv - friction)
     }
 
-    if (this.game.keys[37]) {
+    if (this.game.keys[37] && !crouch && !groundpound) {
       // xv
       this.xv -= 0.2
       if (this.grounded) this.spriteAnimation.anim = 'walk'
     } else if(this.xv < 0) {
-      this.xv = Math.min(0, this.xv + 0.4)
+      this.xv = Math.min(0, this.xv + friction)
     }
 
     if (Math.abs(this.xv) < 0.1) {
       this.xv = 0
+    }
+
+    if (this.collides) {
+      if (this.touchingWallLeft || this.touchingWallRight) {
+        // go backwards through the wall
+        this.x += this.spriteAnimation.dir === 'right' ? -1 : 1
+        this.xv = 0
+      }
     }
 
     this.xv = Math.min(this.xv,  4)
@@ -635,22 +661,30 @@ export class Player extends Entity {
       this.jumpSound.play()
       this.spriteAnimation.anim = 'jump'
       this.mayJump = false
-    } else if(isJump(this.game.keys) && this.yv < -3 && Date.now() - this.lastJump < 100 + Math.abs(this.xv) * 50) {
+    } else if (!groundpound && isJump(this.game.keys) && this.yv < -3 && Date.now() - this.lastJump < 100 + Math.abs(this.xv) * 50) {
       this.yv = -3.5
-    } else if(!isJump(this.game.keys)) {
+    } else if (!isJump(this.game.keys)) {
       // we may jump next frame
       this.mayJump = true
     }
 
-    if(this.yv > 0 && this.spriteAnimation.anim !== 'jump' && !this.grounded) {
+    if (this.yv > 0 && this.spriteAnimation.anim !== 'jump' && !this.grounded && !crouch) {
       this.spriteAnimation.anim = 'fall'
     }
 
-    if(this.xv > 0) this.spriteAnimation.dir = 'right'
-    if(this.xv < 0) this.spriteAnimation.dir = 'left'
+    if (crouch) this.spriteAnimation.anim = 'crouch'
+    if (groundpound) this.spriteAnimation.anim = 'groundpound'
+    if (this.xv > 0) this.spriteAnimation.dir = 'right'
+    if (this.xv < 0) this.spriteAnimation.dir = 'left'
+
+    if (crouch || groundpound) {
+      this.h = 15
+    } else {
+      this.h = this.state === 0 ? 15 : 31
+    }
 
     this.yv = Math.min(this.yv,  4)
-    this.yv += GRAVITY
+    this.yv += groundpound ? 1 : GRAVITY
   }
 
   draw() {
@@ -696,6 +730,12 @@ export class Player extends Entity {
       this.sprite.position[0] = this.state === 0 ? 48 : 76
     } else if (anim.anim === 'fall') {
       this.sprite.position[0] = this.state === 0 ? 32 : 97
+    } else if (anim.anim === 'crouch') {
+      console.log('crouch!')
+      this.sprite.position[0] = this.state === 0 ? 64 : 235
+    } else if (anim.anim === 'groundpound') {
+      console.log('ground pound!')
+      this.sprite.position[0] = this.state === 0 ? 64 : 138 // TODO state 0 (small)
     }
 
     this.sprite.position[1] = this.state === 0 ? ({
