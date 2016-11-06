@@ -38,6 +38,7 @@ export default class SLW {
 
   // Cursor (mouse) position, relative to the canvas.
   cursor: Position
+  cursorDown: boolean
 
   // Level, to contain information about the currently active level.
   level: Level
@@ -52,6 +53,7 @@ export default class SLW {
 
   constructor(levelid: string, tileset: Image) {
     this.keys = {}
+    this.cursorDown = false
     this.cursor = [0, 0]
     this.entities = []
 
@@ -70,6 +72,14 @@ export default class SLW {
     this.canvas.addEventListener('mousemove', (evt: MouseEvent) => {
       let rect = this.canvas.getBoundingClientRect()
       this.cursor = [evt.clientX - rect.left, evt.clientY - rect.top]
+    })
+
+    this.canvas.addEventListener('mouseup', (evt: MouseEvent) => {
+      this.cursorDown = false
+    })
+
+    this.canvas.addEventListener('mousedown', (evt: MouseEvent) => {
+      this.cursorDown = true
     })
 
     this.canvas.setAttribute('tabindex', '1')
@@ -238,6 +248,14 @@ export default class SLW {
           str += ' . Level doesn\'t exist rip'
         }
       }
+
+      str += `
+
+Cursor XY   ${this.cursor.map(p => Math.floor(p)).join(' ')}
+Cursor Down ${this.cursorDown.toString()}
+Player XY   ${this.player.x + ' ' + this.player.y}
+Camera XY   ${this.camera.map(p => Math.floor(p)).join(' ')}
+      `
 
       ctx.drawImage(Text.write(str), 4, 4)
     }
