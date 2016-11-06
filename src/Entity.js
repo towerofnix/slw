@@ -343,6 +343,9 @@ export class Entity {
 export class Player extends Entity {
   jumpSound: window.Audio
   errorSound: window.Audio
+  startLevelSound: window.Audio
+  moveLevelSound: window.Audio
+
   lastJump: number
   mayJump: boolean
 
@@ -378,6 +381,8 @@ export class Player extends Entity {
 
     this.jumpSound = new window.Audio('sound/smw_jump.wav')
     this.errorSound = new window.Audio('sound/smw_stomp_koopa_kid.wav')
+    this.startLevelSound = new window.Audio('sound/begin_level.wav')
+    this.moveLevelSound = new window.Audio('sound/move_level.wav')
   }
 
   update() {
@@ -587,9 +592,15 @@ export class Player extends Entity {
           this.game.level.create()  // hello level
 
           this.game.tick = 0
+          this.startLevelSound.play()
         } else {
           this.errorSound.play()
         }
+      }
+
+      if (this.xv !== 0 || this.yv !== 0) {
+        // we moved :O
+        this.moveLevelSound.play()
       }
     }
 
@@ -758,6 +769,9 @@ export class Goomba extends Entity {
 }
 
 export class Powerup extends Entity {
+  getSound: window.Audio
+  initSound: window.Audio
+
   constructor(game: SLW, x: number = 0, y: number = 0, xv: number = 1) {
     super(game)
 
@@ -772,6 +786,11 @@ export class Powerup extends Entity {
 
     this.xv = xv
     this.sprite.position = [0, 0]
+
+    this.getSound = new window.Audio('sound/powerup_get.wav')
+    this.initSound = new window.Audio('sound/powerup_init.wav')
+
+    this.initSound.play()
   }
 
   update() {
@@ -789,7 +808,10 @@ export class Powerup extends Entity {
   }
 
   onTouch(by: Entity) {
-    if (by instanceof Player) this.destroy()
+    if (by instanceof Player) {
+      this.destroy()
+      this.getSound.play()
+    }
   }
 }
 
