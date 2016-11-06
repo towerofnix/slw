@@ -151,6 +151,7 @@ function buildJs(resolve, watch=false) {
           drop_debugger: false
         }
       }))
+      .pipe(require('gulp-convert-newline')()) // \r\n -> \n
       .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(out_dir))
   }

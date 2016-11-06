@@ -1224,6 +1224,12 @@ constants-browserify@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/constants-browserify/-/constants-browserify-1.0.0.tgz#c20b96d8c617748aaf1c16021760cd27fcb8cb75"
 
+convert-newline@^0.0.x:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/convert-newline/-/convert-newline-0.0.5.tgz#9bef8fb07f832124852888a30d6231ed7b3e121c"
+  dependencies:
+    iconv-lite "^0.4.8"
+
 convert-source-map@^1.1.0, convert-source-map@^1.1.1, convert-source-map@1.X:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-1.3.0.tgz#e9f3e9c6e2728efc2676696a70eb382f73106a67"
@@ -1979,6 +1985,15 @@ gulp-cli@^1.0.0:
     wreck "^6.3.0"
     yargs "^3.28.0"
 
+gulp-convert-newline:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/gulp-convert-newline/-/gulp-convert-newline-0.0.3.tgz#90080481aef38d993b0f3f96072a6b2ea3f5971c"
+  dependencies:
+    convert-newline "^0.0.x"
+    gulp-util "^3.0.4"
+    iconv-lite "^0.4.8"
+    through2 "^0.6.5"
+
 gulp-sourcemaps@^1.6.0:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/gulp-sourcemaps/-/gulp-sourcemaps-1.9.0.tgz#d85c060aa775ec30e9b9fb8c2f38c4f2d5135385"
@@ -2017,7 +2032,7 @@ gulp-uglify@^2.0.0:
     uglify-save-license "^0.4.1"
     vinyl-sourcemaps-apply "^0.2.0"
 
-gulp-util@^3.0.7:
+gulp-util@^3.0.4, gulp-util@^3.0.7:
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/gulp-util/-/gulp-util-3.0.7.tgz#78925c4b8f8b49005ac01a011c557e6218941cbb"
   dependencies:
@@ -2154,6 +2169,10 @@ http-signature@~1.1.0:
 https-browserify@~0.0.0:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-0.0.1.tgz#3f91365cabe60b77ed0ebba24b454e3e09d95a82"
+
+iconv-lite@^0.4.8:
+  version "0.4.13"
+  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.13.tgz#1f88aba4ab0b1508e8312acc39345f36e992e2f2"
 
 ieee754@^1.1.4:
   version "1.1.8"
@@ -4453,7 +4472,7 @@ through2-filter@^2.0.0:
     through2 "~2.0.0"
     xtend "~4.0.0"
 
-through2@^0.6.0, through2@^0.6.1, through2@~0.6.3:
+through2@^0.6.0, through2@^0.6.1, through2@^0.6.5, through2@~0.6.3:
   version "0.6.5"
   resolved "https://registry.yarnpkg.com/through2/-/through2-0.6.5.tgz#41ab9c67b29d57209071410e1d7a7a968cd3ad48"
   dependencies:

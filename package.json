@@ -9,6 +9,7 @@
     "browserify": "^13.1.0",
     "cssnano": "^3.7.6",
     "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-convert-newline": "^0.0.3",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-uglify": "^2.0.0",
     "gulp-util": "^3.0.7",
