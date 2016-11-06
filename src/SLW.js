@@ -249,16 +249,15 @@ export default class SLW {
         }
       }
 
-      str += `
+      ctx.drawImage(Text.write(str), 16, 16)
+    }
 
+    ctx.drawImage(Text.write(`
 Cursor XY   ${this.cursor.map(p => Math.floor(p)).join(' ')}
 Cursor Down ${this.cursorDown.toString()}
 Player XY   ${this.player.x + ' ' + this.player.y}
 Camera XY   ${this.camera.map(p => Math.floor(p)).join(' ')}
-      `
-
-      ctx.drawImage(Text.write(str), 4, 4)
-    }
+    `, 'rgba(0, 0, 0, 0.5)'), 16, 32)
 
     let cursor = new Image
     cursor.src = 'sprites/cursor.png'
