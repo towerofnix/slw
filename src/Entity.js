@@ -1,11 +1,12 @@
 // @flow
 
-const DEBUG = false // show bounding boxes
+const DEBUG = false // lags lots but is helpful
 const GRAVITY = 0.25
 
 import SLW from './SLW'
 import Tile from './Tile'
 import Level from './Level'
+import Text from './Text'
 
 import { sign, levels } from './util'
 
@@ -87,7 +88,7 @@ export class Entity {
 
     // pleasing color for debugging reasons :P
     const c = require('pleasejs').make_color({ format: 'rgb' })[0]
-    this.color = `rgba(${c.r}, ${c.g}, ${c.b}, 0.75)`
+    this.color = `rgb(${c.r}, ${c.g}, ${c.b})`
   }
 
   update(stop: boolean = true) {
@@ -150,6 +151,8 @@ export class Entity {
       // Draw the bounding box (if in DEBUG mode).
       ctx.fillStyle = this.color
       ctx.fillRect(this.left, this.top, this.w + 1, this.h + 1)
+
+      ctx.drawImage(Text.write(this.constructor.name, this.color), this.right, this.bottom)
     }
 
     // Draw the sprite image (if there is one).
