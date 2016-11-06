@@ -2,7 +2,7 @@
 
 import SLW from './SLW'
 import { rnd } from './util'
-import { Entity, Player, Goomba, Mushroom, Sign, Coin } from './Entity'
+import { Entity, Player, Goomba, Mushroom, Sign, Coin, HalfwayFlag } from './Entity'
 
 type Position = [number, number]
 
@@ -27,7 +27,7 @@ export default class Tile {
   dy: number
 
   exists: boolean
-  
+
   levelid: ?number // WorldLevelTile only
 
   constructor(game: SLW, props: Object = {}) {
@@ -468,6 +468,25 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
   }],
 
+  ['$', class HalfwayFlagTile extends Tile {
+    constructor(game) {
+      super(game, {
+        name: 'Halfway Flag',
+        texPosition: [0, 0],
+      })
+    }
+
+    onCreate() {
+      // place a halfway flag here
+      const [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
+      let sign = new HalfwayFlag(this.game, x, y)
+
+      // replace this tile with Air
+      const tile = new (Tile.get('-'))(this.game)
+      this.game.level.replaceTile([this.x, this.y], tile)
+    }
+  }],
+
   ['G', class GoombaTile extends Tile {
     constructor(game) {
       super(game, {
@@ -503,30 +522,30 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       by.destroy()
     }
   }],
-  
+
   // World tiles ///////////////////////////////////////////////////////////////
-  
+
   ['W ~', class WorldWaterTile extends Tile {
     constructor(game) {
       super(game, {
         name: 'Water',
         texPosition: [0, 15],
       })
-      
+
       this.solid = true
     }
   }],
-  
+
   ['W  ', class WorldGroundTile extends Tile {
     constructor(game) {
       super(game, {
         name: 'Ground',
         texPosition: [1, 13],
       })
-      
+
       this.solid = true
     }
-    
+
     onUpdate() {
       let topTile    = this.game.level.tileAt([this.x, this.y - 1])
       let bottomTile = this.game.level.tileAt([this.x, this.y + 1])
@@ -547,35 +566,35 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       let topRight = topRightTile.name !== 'Water'
       let bottomLeft = bottomLeftTile.name !== 'Water'
       let bottomRight = bottomRightTile.name !== 'Water'
-      
+
       if(!left && top && right && bottom) this.texPosition = [0, 13]
       if(left && top && !right && bottom) this.texPosition = [2, 13]
       if(left && !top && right && bottom) this.texPosition = [1, 12]
       if(left && top && right && !bottom) this.texPosition = [1, 14]
-      
+
       if(left && !top && !right && bottom) this.texPosition = [2, 12]
       if(!left && !top && right && bottom) this.texPosition = [0, 12]
       if(left && top && !right && !bottom) this.texPosition = [2, 14]
       if(!left && top && right && !bottom) this.texPosition = [0, 14]
-      
+
       if(left && top && right && bottom && !topRight) {
         this.texPosition = [3, 13]
       }
-      
+
       if(left && top && right && bottom && !topLeft) {
         this.texPosition = [4, 13]
       }
-      
+
       if(left && top && right && bottom && !bottomRight) {
         this.texPosition = [3, 12]
       }
-      
+
       if(left && top && right && bottom && !bottomLeft) {
         this.texPosition = [4, 12]
       }
     }
   }],
-  
+
   ['W @', class WorldPlayerTile extends Tile {
     constructor(game) {
       super(game, {
@@ -589,35 +608,35 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       const [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
       this.game.player.x = x
       this.game.player.y = y// - this.game.player.h + Tile.size
-      
+
       // replace this tile with a pipe
       const tile = new (Tile.get('W P'))(this.game)
       this.game.level.replaceTile([this.x, this.y], tile)
     }
   }],
-  
+
   ['W :', class WorldFenceTile extends Tile {
     constructor(game) {
       super(game, {
         name: 'Fence',
         texPosition: [4, 14],
       })
-      
+
       this.solid = true
     }
   }],
-  
+
   ['W .', class WorldFlowerTile extends Tile {
     constructor(game) {
       super(game, {
         name: 'Flower',
         texPosition: [3, 14],
       })
-      
+
       this.solid = true
     }
   }],
-  
+
   ['W P', class WorldPipeTile extends Tile {
     constructor(game) {
       super(game, {
@@ -626,7 +645,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       })
     }
   }],
-  
+
   ['W H', class WorldHouseTile extends Tile {
     constructor(game) {
       super(game, {
@@ -635,7 +654,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       })
     }
   }],
-  
+
   ['W -', class WorldPathTile extends Tile {
     constructor(game) {
       super(game, {
@@ -643,7 +662,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
         texPosition: [1, 9],
       })
     }
-    
+
     onUpdate() {
       let topTile    = this.game.level.tileAt([this.x, this.y - 1])
       let bottomTile = this.game.level.tileAt([this.x, this.y + 1])
@@ -656,7 +675,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       let bottom = k.includes(bottomTile.name)
       let left   = k.includes(leftTile.name)
       let right  = k.includes(rightTile.name)
-      
+
       if(top && !left && !right && bottom) this.texPosition = [2, 8]
       if(top && left && !right && !bottom) this.texPosition = [3, 9]
       if(top && !left && right && bottom) this.texPosition = [2, 10]
@@ -665,24 +684,24 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       if(!top && left && !right && bottom) this.texPosition = [1, 10]
     }
   }],
-  
+
   ['W lv', class WorldLevelTile extends Tile {
     complete: boolean
-    
+
     constructor(game) {
       super(game, {
         name: 'Level',
         texPosition: [2, 9],
       })
-      
+
       this.complete = false
     }
-    
+
     onUpdate() {
       this.texPosition = this.complete ?  [2, 9] : [3, 10]
     }
   }],
-  
+
   ['W 1', class WorldLevel1Tile extends Tile {
     constructor(game) {
       super(game, {
@@ -698,7 +717,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       this.game.level.replaceTile([this.x, this.y], tile)
     }
   }],
-  
+
   ['W 2', class WorldLevel2Tile extends Tile {
     constructor(game) {
       super(game, {
@@ -714,7 +733,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       this.game.level.replaceTile([this.x, this.y], tile)
     }
   }],
-  
+
   ['W 3', class WorldLevel3Tile extends Tile {
     constructor(game) {
       super(game, {
@@ -730,7 +749,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       this.game.level.replaceTile([this.x, this.y], tile)
     }
   }],
-  
+
   ['W 4', class WorldLevel4Tile extends Tile {
     constructor(game) {
       super(game, {
@@ -746,7 +765,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       this.game.level.replaceTile([this.x, this.y], tile)
     }
   }],
-  
+
   ['W 5', class WorldLevel5Tile extends Tile {
     constructor(game) {
       super(game, {
@@ -762,7 +781,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       this.game.level.replaceTile([this.x, this.y], tile)
     }
   }],
-  
+
   ['W 6', class WorldLevel6Tile extends Tile {
     constructor(game) {
       super(game, {
@@ -778,7 +797,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       this.game.level.replaceTile([this.x, this.y], tile)
     }
   }],
-  
+
   ['W 7', class WorldLevel7Tile extends Tile {
     constructor(game) {
       super(game, {
@@ -794,7 +813,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       this.game.level.replaceTile([this.x, this.y], tile)
     }
   }],
-  
+
   ['W 8', class WorldLevel8Tile extends Tile {
     constructor(game) {
       super(game, {

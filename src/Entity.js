@@ -297,7 +297,7 @@ export class Entity {
 
     return entities
   }
-  
+
   // Get the single tile at the centre of the entity.
   get tileOn(): Tile {
     let t = this.game.level.tileAt([
@@ -350,9 +350,9 @@ export class Player extends Entity {
     oldAnim: string,
     nextFrame: number,
   }
-  
+
   state: number // powerup state
-  
+
   lastOn: ?Tile // world map only.
   wantsInput: ?boolean // world map only.
 
@@ -372,7 +372,7 @@ export class Player extends Entity {
     this.w = 15
     this.h = 15
     this.state = 0
-    
+
     this.jumpSound = new window.Audio('sound/smw_jump.wav')
     this.errorSound = new window.Audio('sound/smw_stomp_koopa_kid.wav')
   }
@@ -393,7 +393,7 @@ export class Player extends Entity {
       this.sprite.width = 16
       this.sprite.height = 16
     }
-    
+
     if (this.game.level.meta.special.includes('world')) {
       this.mapMotion()
     } else {
@@ -402,7 +402,7 @@ export class Player extends Entity {
 
     // actually move:
     super.update(this.wantsInput == true || !this.game.level.meta.special.includes('world'))
-    
+
     if (this.xv !== 0 || this.yv !== 0) this.wantsInput = false
   }
 
@@ -444,32 +444,32 @@ export class Player extends Entity {
 
     if (on && on.name === 'Path' && !this.wantsInput) {
       // we're already moving!
-      
+
       this.spriteAnimation.anim = 'walk'
       if (this.xv > 0) this.spriteAnimation.dir = 'right'
       if (this.xv < 0) this.spriteAnimation.dir = 'left'
       if (this.yv > 0) this.spriteAnimation.dir = 'down'
       if (this.yv < 0) this.spriteAnimation.dir = 'up'
-      
+
       // we need to be on a NEW tile to do anything:
       if (!this.lastOn || on.texPosition !== this.lastOn.texPosition) {
         const [h, v] = on.texPosition
         //console.log([h, v])
-        
+
         if (h == 2 && v == 8) {
           // vertical straight
           console.log('|')
         }
-        
+
         if (h == 1 && v == 9) {
           // horizontal straight
           console.log('-')
         }
-        
+
         if (h == 3 && v == 9) {
           // up/left turn
           console.log('/')
-          
+
           if (this.yv === 0) {
             // from left
             this.xv = 0
@@ -480,11 +480,11 @@ export class Player extends Entity {
             this.yv = 0
           }
         }
-        
+
         if (h == 3 && v == 8) {
           // down/right turn
           console.log('/')
-          
+
           if (this.yv === 0) {
             // from right
             this.xv = 0
@@ -495,11 +495,11 @@ export class Player extends Entity {
             this.yv = 0
           }
         }
-        
+
         if (h == 1 && v == 8) {
           // up/right turn
           console.log('\\')
-          
+
           if (this.yv === 0) {
             // from right
             this.xv = 0
@@ -510,11 +510,11 @@ export class Player extends Entity {
             this.yv = 0
           }
         }
-        
+
         if (h == 1 && v == 10) {
           // down/left turn
           console.log('\\')
-          
+
           if (this.yv === 0) {
             // from left
             this.xv = 0
@@ -525,7 +525,7 @@ export class Player extends Entity {
             this.yv = 0
           }
         }
-        
+
         if (h == 2 && v == 10) {
           // up/down T-junction
           this.xv = 0
@@ -540,28 +540,28 @@ export class Player extends Entity {
       // take input..
       // TODO don't allow passing by [3, 10] tiles (uncompleted levels)
       this.spriteAnimation.anim = 'idle'
-      
+
       if (this.game.keys[39]) {
         this.xv = walkSpeed
         this.spriteAnimation.dir = 'right'
       } else if (this.xv > 0) {
         this.xv = 0
       }
-      
+
       if (this.game.keys[37]) {
         this.xv = -walkSpeed
         this.spriteAnimation.dir = 'left'
       } else if (this.xv < 0) {
         this.xv = 0
       }
-      
+
       if (this.game.keys[40]) {
         this.yv = walkSpeed
         this.spriteAnimation.dir = 'down'
       } else if (this.yv > 0) {
         this.yv = 0
       }
-      
+
       if (this.game.keys[38]) {
         this.yv = -walkSpeed
         this.spriteAnimation.dir = 'up'
@@ -708,17 +708,17 @@ export class Player extends Entity {
 
   destroy() {
     // go back to world map:
-    
+
     const lv = this.game.level.meta.world
     const id = this.game.level.meta.id
-    
+
     this.game.level.destroy() // bye bye current level
     this.game.level = new Level(this.game, lv, this.game.level.tileset)
     this.game.level.create()  // hello world map
-    
+
     this.game.tick = 0
     this.state = 0
-    
+
     // find the last level in the map
     for (let row of this.game.level.tilemap) {
       for (let tile of row) {
@@ -773,13 +773,13 @@ export class Powerup extends Entity {
 
   update() {
     this.yv += GRAVITY * 0.7
-    
+
     let o = this.xv
-    
+
     this.x += this.xv
     if (this.touchingWallRight || this.touchingWallLeft) o = this.xv * -1
     this.x -= this.xv
-    
+
     this.xv = o
 
     super.update()
@@ -796,13 +796,13 @@ export class Mushroom extends Powerup {
 
     this.sprite.position = [0, 2]
   }
-  
+
   onTouch(by: Entity) {
     if (by instanceof Player && by.state === 0) {
       by.state = 1 // small to big
       by.y -= Tile.size
     }
-    
+
     super.onTouch(by)
   }
 }
@@ -868,6 +868,70 @@ export class Coin extends Entity {
     if(by instanceof Player) {
       this.coinSound.play()
       this.destroy()
+    }
+  }
+}
+
+export class HalfwayFlag extends Entity {
+  spriteAnimation: {
+    time: number,
+    nextFrame: number,
+    frame: number,
+  }
+
+  state: number // 0 = bowser, 1 = liam
+
+  constructor(game: SLW, x: number = 0, y: number = 0) {
+    super(game)
+
+    this.x = x
+    this.y = y - 16
+
+    this.w = 16
+    this.h = 16 + 17
+
+    this.state = 0
+    this.game.entities.push(this)
+
+    this.sprite.sheet.src = 'sprites/flag.png'
+    this.sprite.width = 16
+    this.sprite.height = 16
+    this.sprite.positionType = 'absolute'
+
+    this.spriteAnimation = { time: 0, nextFrame: 0, frame: 0 }
+  }
+
+  update() {
+    const anim = this.spriteAnimation
+
+    if (anim.time >= anim.nextFrame) {
+      anim.nextFrame = anim.time + 10
+      anim.frame = (anim.frame + 1) % 4
+    }
+
+    anim.time++
+
+    this.sprite.position[0] = ([ 18, 35, 52, 69 ])[anim.frame]
+    this.sprite.position[1] = ([ 1, 35 ])[this.state]
+  }
+
+  draw() {
+    const ctx = this.game.canvas.getContext('2d')
+    if (!ctx) return
+
+    ctx.drawImage(this.sprite.sheet,
+      // Area on sheet to grab
+      1, 1, 16, 48,
+
+      // Area on screen to draw
+      this.left - 10, this.top - 16, 16, 48)
+    super.draw()
+  }
+
+  onTouch(by: Entity) {
+    if(by instanceof Player) {
+      // TODO play a sound and an animation
+      this.state = 1
     }
   }
 }
