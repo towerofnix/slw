@@ -130,7 +130,8 @@ export class Entity {
       }
     }
 
-    if (this.y >= 400) this.destroy()
+    if (this.y >= 400 && !(this.game.level.meta.special.includes('world')))
+      return this.destroy()
 
     for (let tile of this.pickTiles(0, 0, 0, 1)) {
       tile.onTouch(this)
