@@ -50,6 +50,7 @@ export default class Cursor {
   // position to draw at, which defaults to this.pos[0, 1].
   drawUsingCtx(
     ctx: CanvasRenderingContext2D,
+    // @flow ignore
     x: number = this.pos[0], y: number = this.pos[1]
   ) {
     const centeredX = x - this.image.width / 2

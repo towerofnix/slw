@@ -41,7 +41,7 @@ export default class SLW {
   // Cursor object - see Cursor.js.
   cursor: Cursor
 
-  // Stored separately from the cursor object because the cusror doesn't have
+  // Stored separately from the cursor object because the cursor doesn't have
   // any notion of "ticks".
   lastPlacePos: Position
 
@@ -59,7 +59,7 @@ export default class SLW {
   constructor(levelid: string, tileset: Image) {
     this.keys = {}
     this.cursor = new Cursor([0.5, 0.5])
-    this.lastPlacePos = []
+    this.lastPlacePos = [0, 0]
     this.entities = []
 
     this.canvas = document.createElement('canvas')
