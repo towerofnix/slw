@@ -1,6 +1,6 @@
 // @flow
 
-import type {Position} from './types'
+import type { Position } from './types'
 
 // Generic Cursor class designed to be easy to implement multiple control
 // schemes for. For example, mouse, tablet touch, and gamepad are all possible

@@ -5,13 +5,14 @@
 // this is a fair use of the name as specified
 // in NANALAND RULES NUMBER #99
 
-import type {Position} from './types'
-
 import Tile from './Tile'
 import Text from './Text'
 import Level from './Level'
 import Cursor from './Cursor'
 import { Entity, Player } from './Entity'
+import { arrEqual } from './util'
+
+import type { Position } from './types'
 
 const BG_COLORS = {
   clouds: '#A0D0F8',
@@ -40,6 +41,10 @@ export default class SLW {
   // Cursor object - see Cursor.js.
   cursor: Cursor
 
+  // Stored separately from the cursor object because the cusror doesn't have
+  // any notion of "ticks".
+  lastPlacePos: Position
+
   // Level, to contain information about the currently active level.
   level: Level
 
@@ -54,6 +59,7 @@ export default class SLW {
   constructor(levelid: string, tileset: Image) {
     this.keys = {}
     this.cursor = new Cursor()
+    this.lastPlacePos = []
     this.entities = []
 
     this.canvas = document.createElement('canvas')
@@ -281,9 +287,13 @@ Camera XY   ${this.camera.map(p => Math.floor(p)).join(' ')}
     // Finally draw the cursor.
     this.cursor.drawUsingCtx(ctx, cursorX, cursorY)
 
-    if (this.cursor.down) {
-      const UsedBlockTile = Tile.get('x')
-      this.level.tilemap[cursorTileY][cursorTileX] = new UsedBlockTile(this)
+    const tilePos: Position = [cursorTileX, cursorTileY]
+
+    if (this.cursor.down && !arrEqual(this.lastPlacePos, tilePos)) {
+      const UsedBlockTile = Tile.get('=')
+      const tile = new UsedBlockTile(this)
+      this.level.replaceTile([cursorTileX, cursorTileY], tile)
+      this.lastPlacePos = tilePos
     }
 
     this.tick++

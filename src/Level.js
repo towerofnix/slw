@@ -23,7 +23,7 @@ import SLW from './SLW'
 import Tile from './Tile'
 import { levels } from './util'
 
-import type {Position} from './types'
+import type { Position } from './types'
 
 export default class Level {
   game: SLW
@@ -163,6 +163,16 @@ export default class Level {
 
     this.tilemap[tileY][tileX] = newTile
     newTile.onCreate()
+
+    // Send an onNearbyReplace event to all nearby tiles - see onNearbyReplace
+    for (let y = tileY - 1; y <= tileY + 1; y++) {
+      for (let x = tileX - 1; x <= tileX + 1; x++) {
+        const tile = this.tilemap[y][x]
+        if (tile && tile !== newTile) {
+          tile.onNearbyReplace()
+        }
+      }
+    }
 
     return newTile
   }

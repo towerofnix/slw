@@ -14,6 +14,21 @@ export function rnd(min: number, max: number): number {
   return Math.floor(Math.random() * max) + min
 }
 
+// Compares the contents of two arrays.
+export function arrEqual(arr1: Array<any>, arr2: Array<any>): boolean {
+  if (arr1.length !== arr2.length) {
+    return false
+  }
+
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i] !== arr2[i]) {
+      return false
+    }
+  }
+
+  return true
+}
+
 // Returns an image written over by a colour, taking an operation type and alpha.
 // Default values useful for masking.
 export function tint(img: Image, colour: string, operation: string = 'source-in', alpha: number = 1) {

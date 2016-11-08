@@ -10,7 +10,7 @@ import Text from './Text'
 
 import { sign, levels } from './util'
 
-import type {Position} from './types'
+import type { Position } from './types'
 
 // is [z], [space], or [up arrow] down?
 function isJump(keys): boolean {

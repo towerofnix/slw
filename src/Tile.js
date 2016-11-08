@@ -4,7 +4,7 @@ import SLW from './SLW'
 import { rnd } from './util'
 import { Entity, Player, Goomba, Mushroom, Sign, Coin, HalfwayFlag } from './Entity'
 
-import type {Position} from './types'
+import type { Position } from './types'
 
 export default class Tile {
   game: SLW
@@ -62,6 +62,18 @@ export default class Tile {
   // Called every frame.
   onUpdate() {}
 
+  // Called when a nearby block is set:
+  //
+  // -----
+  // -!!!-
+  // -!X!-
+  // -!!!-
+  // -----
+  //
+  // (! is a tile that sends the event, X is a this tile, - does is a tile not
+  // send the event)
+  onNearbyReplace() {}
+
   // Called if and when this Tile is colliding with an entity.
   // (Won't work if { solid: true }!)
   onTouch(by: Entity) {}
@@ -84,6 +96,14 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
 
     onCreate() {
+      this.updateTexture()
+    }
+
+    onNearbyReplace() {
+      this.updateTexture()
+    }
+
+    updateTexture() {
       // we need to look at our adjacient tiles to figure out
       // how we should be displayed:
 
@@ -165,6 +185,14 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
 
     onCreate() {
+      this.updateTexture()
+    }
+
+    onNearbyReplace() {
+      this.updateTexture()
+    }
+
+    updateTexture() {
       // we need to look at our adjacient tiles to figure out
       // how we should be displayed:
 
