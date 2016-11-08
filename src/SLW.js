@@ -53,12 +53,12 @@ export default class SLW {
 
   constructor(levelid: string, tileset: Image) {
     this.keys = {}
-    this.cursor = new Cursor()
+    this.cursor = new Cursor([0.5, 0.5])
     this.entities = []
 
     this.canvas = document.createElement('canvas')
-    this.canvas.width = 20 * 20
-    this.canvas.height = 20 * 20
+    this.canvas.width = 400
+    this.canvas.height = 400
 
     this.canvas.addEventListener('keydown', (evt: KeyboardEvent) => {
       this.keys[evt.keyCode || evt.which] = true

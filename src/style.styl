@@ -3,18 +3,30 @@
 body {
   background black
   color white
+
+  display flex
+  flex-direction column
+
+  min-height 100vh
 }
 
 canvas {
   image-rendering pixelated
   outline none
 
-  position absolute
-  top 50%
-  left 50%
-  transform translate(-50%, -50%)
-
   cursor none
+  margin auto
+
+  width 400px * 2
+  height 400px * 2
+}
+
+header {
+  display block
+  flex-grow 1
+
+  min-height 64px
+  border-bottom 1px dotted white
 }
 
 button {

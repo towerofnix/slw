@@ -17,7 +17,10 @@ export default class Cursor {
   // cursor.png, loaded from the sprites folder.
   image: Image
 
-  constructor() {
+  scale: [number, number]
+
+  constructor(scale: [number, number] = [1, 1]) {
+    this.scale = scale
     this.pos = [0, 0]
     this.down = false
     this.image = new Image()
@@ -30,8 +33,8 @@ export default class Cursor {
     el.addEventListener('mousemove', (evt: MouseEvent) => {
       // Stored position should be relative to element's rendered bounds.
       let rect = el.getBoundingClientRect()
-      this.pos[0] = evt.clientX - rect.left
-      this.pos[1] = evt.clientY - rect.top
+      this.pos[0] = (evt.clientX - rect.left) * this.scale[0]
+      this.pos[1] = (evt.clientY - rect.top) * this.scale[1]
     })
 
     el.addEventListener('mouseup', () => {
