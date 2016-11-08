@@ -10,6 +10,7 @@ import type {Position} from './types'
 import Tile from './Tile'
 import Text from './Text'
 import Level from './Level'
+import Cursor from './Cursor'
 import { Entity, Player } from './Entity'
 
 const BG_COLORS = {
@@ -36,10 +37,8 @@ export default class SLW {
   // Camera position. Used for scrolling.
   camera: Position
 
-  // Cursor (mouse) position, relative to the canvas.
-  cursor: Position
-  cursorDown: boolean
-  cursorImage: Image
+  // Cursor object - see Cursor.js.
+  cursor: Cursor
 
   // Level, to contain information about the currently active level.
   level: Level
@@ -54,10 +53,7 @@ export default class SLW {
 
   constructor(levelid: string, tileset: Image) {
     this.keys = {}
-    this.cursorDown = false
-    this.cursor = [0, 0]
-    this.cursorImage = new Image()
-    this.cursorImage.src = 'sprites/cursor.png'
+    this.cursor = new Cursor()
     this.entities = []
 
     this.canvas = document.createElement('canvas')
@@ -72,18 +68,7 @@ export default class SLW {
       this.keys[evt.keyCode || evt.which] = false
     })
 
-    this.canvas.addEventListener('mousemove', (evt: MouseEvent) => {
-      let rect = this.canvas.getBoundingClientRect()
-      this.cursor = [evt.clientX - rect.left, evt.clientY - rect.top]
-    })
-
-    this.canvas.addEventListener('mouseup', (evt: MouseEvent) => {
-      this.cursorDown = false
-    })
-
-    this.canvas.addEventListener('mousedown', (evt: MouseEvent) => {
-      this.cursorDown = true
-    })
+    this.cursor.watchMouse(this.canvas)
 
     this.canvas.setAttribute('tabindex', '1')
 
@@ -256,13 +241,13 @@ export default class SLW {
     }
 
     ctx.drawImage(Text.write(`
-Cursor XY   ${this.cursor.map(p => Math.floor(p)).join(' ')}
-Cursor Down ${this.cursorDown.toString()}
+Cursor XY   ${this.cursor.pos.map(p => Math.floor(p)).join(' ')}
+Cursor Down ${this.cursor.down}
 Player XY   ${this.player.x + ' ' + this.player.y}
 Camera XY   ${this.camera.map(p => Math.floor(p)).join(' ')}
     `, 'rgba(0, 0, 0, 0.5)'), 16, 32)
 
-    ctx.drawImage(this.cursorImage, this.cursor[0], this.cursor[1])
+    this.cursor.drawUsingCtx(ctx)
 
     this.tick++
   }
