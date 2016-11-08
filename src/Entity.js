@@ -465,21 +465,17 @@ export class Player extends Entity {
       // we need to be on a NEW tile to do anything:
       if (!this.lastOn || on.texPosition !== this.lastOn.texPosition) {
         const [h, v] = on.texPosition
-        //console.log([h, v])
 
         if (h == 2 && v == 8) {
           // vertical straight
-          console.log('|')
         }
 
         if (h == 1 && v == 9) {
           // horizontal straight
-          console.log('-')
         }
 
         if (h == 3 && v == 9) {
           // up/left turn
-          console.log('/')
 
           if (this.yv === 0) {
             // from left
@@ -494,7 +490,6 @@ export class Player extends Entity {
 
         if (h == 3 && v == 8) {
           // down/right turn
-          console.log('/')
 
           if (this.yv === 0) {
             // from right
@@ -509,7 +504,6 @@ export class Player extends Entity {
 
         if (h == 1 && v == 8) {
           // up/right turn
-          console.log('\\')
 
           if (this.yv === 0) {
             // from right
@@ -524,7 +518,6 @@ export class Player extends Entity {
 
         if (h == 1 && v == 10) {
           // down/left turn
-          console.log('\\')
 
           if (this.yv === 0) {
             // from left
