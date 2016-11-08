@@ -242,7 +242,7 @@ export default class SLW {
 
     ctx.drawImage(Text.write(`
 Cursor XY   ${this.cursor.pos.map(p => Math.floor(p)).join(' ')}
-Cursor Down ${this.cursor.down}
+Cursor Down ${this.cursor.down.toString()}
 Player XY   ${this.player.x + ' ' + this.player.y}
 Camera XY   ${this.camera.map(p => Math.floor(p)).join(' ')}
     `, 'rgba(0, 0, 0, 0.5)'), 16, 32)

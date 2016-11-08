@@ -19,7 +19,7 @@ export default class Cursor {
 
   constructor() {
     this.pos = [0, 0]
-
+    this.down = false
     this.image = new Image()
     this.image.src = 'sprites/cursor.png'
   }
