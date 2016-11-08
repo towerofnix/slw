@@ -359,6 +359,8 @@ export class Player extends Entity {
   lastOn: ?Tile // world map only.
   wantsInput: ?boolean // world map only.
 
+  wasCrouching: boolean
+
   constructor(game: SLW, x: number = 0, y:number = 0) {
     super(game)
 
@@ -640,14 +642,6 @@ export class Player extends Entity {
       this.xv = 0
     }
 
-    if (this.collides) {
-      if (this.touchingWallLeft || this.touchingWallRight) {
-        // go backwards through the wall
-        this.x += this.spriteAnimation.dir === 'right' ? -1 : 1
-        this.xv = 0
-      }
-    }
-
     this.xv = Math.min(this.xv,  4)
     this.xv = Math.max(this.xv, -4)
 
@@ -677,6 +671,20 @@ export class Player extends Entity {
     if (this.xv > 0) this.spriteAnimation.dir = 'right'
     if (this.xv < 0) this.spriteAnimation.dir = 'left'
 
+    // If we just STOPPED crouching, adjust position to account for gained
+    // height.
+    if (!crouch && this.wasCrouching) {
+      this.y -= this.h - 15
+    }
+
+    // If we just STARTED crouching, adjust position to account for lost
+    // height.
+    if (crouch && !this.wasCrouching) {
+      this.y += this.h - 15
+    }
+
+    // Crouching and groundpounding have smaller sprites. If we aren't
+    // crouching or groundpounding, reset height based on state.
     if (crouch || groundpound) {
       this.h = 15
     } else {
@@ -685,6 +693,8 @@ export class Player extends Entity {
 
     this.yv = Math.min(this.yv,  4)
     this.yv += groundpound ? 1 : GRAVITY
+
+    this.wasCrouching = crouch
   }
 
   draw() {
