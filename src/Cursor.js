@@ -43,8 +43,14 @@ export default class Cursor {
     })
   }
 
-  // Draw using an already-created canvas context.
-  drawUsingCtx(ctx: CanvasRenderingContext2D) {
-    ctx.drawImage(this.image, this.pos[0], this.pos[1])
+  // Draw using an already-created canvas context. Optionally takes an X/Y
+  // position to draw at, which defaults to this.pos[0, 1].
+  drawUsingCtx(
+    ctx: CanvasRenderingContext2D,
+    x: number = this.pos[0], y: number = this.pos[1]
+  ) {
+    const centeredX = x - this.image.width / 2
+    const centeredY = y - this.image.height / 2
+    ctx.drawImage(this.image, centeredX, centeredY)
   }
 }

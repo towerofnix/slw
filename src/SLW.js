@@ -247,7 +247,16 @@ Player XY   ${this.player.x + ' ' + this.player.y}
 Camera XY   ${this.camera.map(p => Math.floor(p)).join(' ')}
     `, 'rgba(0, 0, 0, 0.5)'), 16, 32)
 
-    this.cursor.drawUsingCtx(ctx)
+    // Various cursor transforms to snap to a tile.
+    let cursorX = this.cursor.pos[0]
+    let cursorY = this.cursor.pos[1]
+    cursorX -= cursorX % Tile.size
+    cursorY -= cursorY % Tile.size
+    cursorX -= this.camera[0] % Tile.size
+    cursorY -= this.camera[1] % Tile.size
+    cursorX -= Tile.size / 2
+    cursorY -= Tile.size / 2
+    this.cursor.drawUsingCtx(ctx, cursorX, cursorY)
 
     this.tick++
   }
