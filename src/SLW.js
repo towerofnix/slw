@@ -92,11 +92,11 @@ export default class SLW {
       let el = document.getElementById('gamepadEnabled')
       // @flow ignore
       el.disabled = false
-      el.innerText = this.gamepadEnabled ? 'Gamepad is ON' : 'Gamepad is OFF'
+      el.innerText = this.gamepadEnabled ? 'Gamepad ON' : 'Gamepad OFF'
       el.addEventListener('click', (evt: Event) => {
         this.gamepadEnabled = !this.gamepadEnabled
         localStorage['gamepadEnabled'] = this.gamepadEnabled.toString()
-        el.innerText = this.gamepadEnabled ? 'Gamepad is ON' : 'Gamepad is OFF'
+        el.innerText = this.gamepadEnabled ? 'Gamepad ON' : 'Gamepad OFF'
       })
     }
   }
@@ -253,47 +253,49 @@ Player XY   ${this.player.x + ' ' + this.player.y}
 Camera XY   ${this.camera.map(p => Math.floor(p)).join(' ')}
     `, 'rgba(0, 0, 0, 0.5)'), 16, 32)
 
-    // Various cursor transforms to snap to a tile.
+    if (this.level.editorEnabled) {
+      // Various cursor transforms to snap to a tile:
 
-    // Start with the actual position of the cursor.
-    let [cursorX, cursorY] = this.cursor.pos
+      // Start with the actual position of the cursor.
+      let [cursorX, cursorY] = this.cursor.pos
 
-    // Snap the position to a tile size. This is rounded so that grabbing tiles
-    // on the edge of the screen works better, and it also helps the cursor's
-    // rendered position follow the cursor's actual position a bit better.
-    let roundTileX = cursorX % Tile.size
-    if (roundTileX < Tile.size / 2) cursorX -= roundTileX
-    else cursorX += Tile.size - roundTileX
+      // Snap the position to a tile size. This is rounded so that grabbing tiles
+      // on the edge of the screen works better, and it also helps the cursor's
+      // rendered position follow the cursor's actual position a bit better.
+      let roundTileX = cursorX % Tile.size
+      if (roundTileX < Tile.size / 2) cursorX -= roundTileX
+      else cursorX += Tile.size - roundTileX
 
-    let roundTileY = cursorY % Tile.size
-    if (roundTileY < Tile.size / 2) cursorY -= roundTileY
-    else cursorY += Tile.size - roundTileY
+      let roundTileY = cursorY % Tile.size
+      if (roundTileY < Tile.size / 2) cursorY -= roundTileY
+      else cursorY += Tile.size - roundTileY
 
-    // At ths point we can go on a slight tangent to get the absolute tile
-    // position of the cursor.
-    let cursorTileX = cursorX / Tile.size
-    let cursorTileY = cursorY / Tile.size
-    cursorTileX += Math.floor(this.camera[0] / Tile.size)
-    cursorTileY += Math.floor(this.camera[1] / Tile.size)
+      // At ths point we can go on a slight tangent to get the absolute tile
+      // position of the cursor.
+      let cursorTileX = cursorX / Tile.size
+      let cursorTileY = cursorY / Tile.size
+      cursorTileX += Math.floor(this.camera[0] / Tile.size)
+      cursorTileY += Math.floor(this.camera[1] / Tile.size)
 
-    // Move the cursor so that it aligns with the camera's position.
-    cursorX -= this.camera[0] % Tile.size
-    cursorY -= this.camera[1] % Tile.size
+      // Move the cursor so that it aligns with the camera's position.
+      cursorX -= this.camera[0] % Tile.size
+      cursorY -= this.camera[1] % Tile.size
 
-    // Center the cursor on the tile.
-    cursorX += Tile.size / 2
-    cursorY += Tile.size / 2
+      // Center the cursor on the tile.
+      cursorX += Tile.size / 2
+      cursorY += Tile.size / 2
 
-    // Finally draw the cursor.
-    this.cursor.drawUsingCtx(ctx, cursorX, cursorY)
+      // Finally draw the cursor.
+      this.cursor.drawUsingCtx(ctx, cursorX, cursorY)
 
-    const tilePos: Position = [cursorTileX, cursorTileY]
+      const tilePos: Position = [cursorTileX, cursorTileY]
 
-    if (this.cursor.down && !arrEqual(this.lastPlacePos, tilePos)) {
-      const UsedBlockTile = Tile.get('=')
-      const tile = new UsedBlockTile(this)
-      this.level.replaceTile([cursorTileX, cursorTileY], tile)
-      this.lastPlacePos = tilePos
+      if (this.cursor.down && !arrEqual(this.lastPlacePos, tilePos)) {
+        const UsedBlockTile = Tile.get('=')
+        const tile = new UsedBlockTile(this)
+        this.level.replaceTile([cursorTileX, cursorTileY], tile)
+        this.lastPlacePos = tilePos
+      }
     }
 
     this.tick++

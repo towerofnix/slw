@@ -36,7 +36,8 @@ export default class Level {
   h: number // height
 
   music: window.Audio
-  
+  editorEnabled: boolean
+
   static metaOf(levelid) {
     return levels[levelid]
   }
@@ -51,9 +52,27 @@ export default class Level {
     this.tileset = tileset
     this.meta = levels[levelid]
 
-    const leveldata = this.meta.tilemap
+    // Editor mode btn:
+
+    const editorEnabledEl_o = document.getElementById('editorEnabled')
+    const editorEnabledEl = editorEnabledEl_o.cloneNode()
+
+    this.editorEnabled = !this.meta.special.includes('world') && localStorage['editorEnabled'] === 'true'
+    // @flow ignore
+    editorEnabledEl.disabled = this.meta.special.includes('world')
+    editorEnabledEl.innerText = this.editorEnabled ? 'Editor ON' : 'Editor OFF'
+
+    editorEnabledEl.addEventListener('click', (evt: Event) => {
+      this.editorEnabled = !this.editorEnabled
+      localStorage['editorEnabled'] = this.editorEnabled.toString()
+      editorEnabledEl.innerText = this.editorEnabled ? 'Editor ON' : 'Editor OFF'
+    })
+
+    // @flow ignore
+    editorEnabledEl_o.parentNode.replaceChild(editorEnabledEl, editorEnabledEl_o)
 
     // Convert tilemap into a 2D array of Tiles:
+    const leveldata = this.meta.tilemap
     this.tilemap = []
     let rows = leveldata.split('\n')
     for (let y = 0; y < rows.length-1; y++) {
@@ -62,7 +81,7 @@ export default class Level {
       for (let x = 0; x < row.length; x++) {
         let tileid = row[x]
         if(this.meta.special.includes('world')) tileid = 'W ' + tileid
-        
+
         let tile = new (Tile.get(tileid))(this.game)
 
         tile.x = x
@@ -82,7 +101,7 @@ export default class Level {
     this.music.loop = true
     this.music.play() // load automatically
   }
-  
+
   create() {
     // Call create() on the Level Tiles
     for (let row of this.tilemap) {
@@ -91,7 +110,7 @@ export default class Level {
       }
     }
   }
-  
+
   destroy() {
     this.music.pause()
 
