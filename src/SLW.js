@@ -248,14 +248,31 @@ Camera XY   ${this.camera.map(p => Math.floor(p)).join(' ')}
     `, 'rgba(0, 0, 0, 0.5)'), 16, 32)
 
     // Various cursor transforms to snap to a tile.
+
+    // Start with the actual position of the cursor.
     let cursorX = this.cursor.pos[0]
     let cursorY = this.cursor.pos[1]
-    cursorX -= cursorX % Tile.size
-    cursorY -= cursorY % Tile.size
+
+    // Snap the position to a tile size. This is rounded so that grabbing tiles
+    // on the edge of the screen works better, and it also helps the cursor's
+    // rendered position follow the cursor's actual position a bit better.
+    let roundTileX = cursorX % Tile.size
+    if (roundTileX < Tile.size / 2) cursorX -= roundTileX
+    else cursorX += Tile.size - roundTileX
+
+    let roundTileY = cursorY % Tile.size
+    if (roundTileY < Tile.size / 2) cursorY -= roundTileY
+    else cursorY += Tile.size - roundTileY
+
+    // Move the cursor so that it aligns with the camera's position.
     cursorX -= this.camera[0] % Tile.size
     cursorY -= this.camera[1] % Tile.size
-    cursorX -= Tile.size / 2
-    cursorY -= Tile.size / 2
+
+    // Center the cursor on the tile.
+    cursorX += Tile.size / 2
+    cursorY += Tile.size / 2
+
+    // Finally draw the cursor.
     this.cursor.drawUsingCtx(ctx, cursorX, cursorY)
 
     this.tick++
