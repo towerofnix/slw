@@ -4,7 +4,7 @@ import SLW from './SLW'
 import { rnd } from './util'
 import { Entity, Player, Goomba, Mushroom, Sign, Coin, HalfwayFlag } from './Entity'
 
-type Position = [number, number]
+import type {Position} from './types'
 
 export default class Tile {
   game: SLW

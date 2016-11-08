@@ -5,7 +5,7 @@
 // this is a fair use of the name as specified
 // in NANALAND RULES NUMBER #99
 
-type Position = [number, number]
+import type {Position} from './types'
 
 import Tile from './Tile'
 import Text from './Text'
@@ -39,6 +39,7 @@ export default class SLW {
   // Cursor (mouse) position, relative to the canvas.
   cursor: Position
   cursorDown: boolean
+  cursorImage: Image
 
   // Level, to contain information about the currently active level.
   level: Level
@@ -55,6 +56,8 @@ export default class SLW {
     this.keys = {}
     this.cursorDown = false
     this.cursor = [0, 0]
+    this.cursorImage = new Image()
+    this.cursorImage.src = 'sprites/cursor.png'
     this.entities = []
 
     this.canvas = document.createElement('canvas')
@@ -259,9 +262,7 @@ Player XY   ${this.player.x + ' ' + this.player.y}
 Camera XY   ${this.camera.map(p => Math.floor(p)).join(' ')}
     `, 'rgba(0, 0, 0, 0.5)'), 16, 32)
 
-    let cursor = new Image
-    cursor.src = 'sprites/cursor.png'
-    ctx.drawImage(cursor, Math.floor(this.cursor[0] / 16) * 16 - 4, Math.floor(this.cursor[1] / 16) * 16 - 4)
+    ctx.drawImage(this.cursorImage, this.cursor[0], this.cursor[1])
 
     this.tick++
   }

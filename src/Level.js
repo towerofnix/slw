@@ -23,7 +23,7 @@ import SLW from './SLW'
 import Tile from './Tile'
 import { levels } from './util'
 
-type Position = [number, number]
+import type {Position} from './types'
 
 export default class Level {
   game: SLW
