@@ -37,6 +37,7 @@ export default class SLW {
 
   // Camera position. Used for scrolling.
   camera: Position
+  cameraInEditor: Position
 
   // Cursor object - see Cursor.js.
   cursor: Cursor
@@ -80,6 +81,7 @@ export default class SLW {
 
     this.player = new Player(this, 16, 16)
     this.camera = [0, 0]
+    this.cameraInEditor = [0, 0]
     this.level = new Level(this, levelid, tileset)
     this.tick = 0
 
@@ -149,13 +151,31 @@ export default class SLW {
   // Modify the camera position to reflect where the player is.
   // Essentially, this is just scrolling.
   cameraUpdate() {
-    let x = this.player.x
-    let y = this.player.y
-
     let minY = Tile.size + this.canvas.height / 2
     let maxY = (this.level.h - 1) * Tile.size - this.canvas.height / 2
     let minX = Tile.size + this.canvas.width / 2
     let maxX = (this.level.w - 1) * Tile.size - this.canvas.width / 2
+
+    if (this.level.editorEnabled) {
+      const CAM_SPD = 4
+      if (this.keys[38]) this.cameraInEditor[1] -= CAM_SPD
+      if (this.keys[40]) this.cameraInEditor[1] += CAM_SPD
+      if (this.keys[37]) this.cameraInEditor[0] -= CAM_SPD
+      if (this.keys[39]) this.cameraInEditor[0] += CAM_SPD
+
+      this.cameraInEditor[0] = Math.min(
+        maxX,
+        Math.max(minX, this.cameraInEditor[0])
+      )
+
+      this.cameraInEditor[1] = Math.min(
+        maxY,
+        Math.max(minY, this.cameraInEditor[1])
+      )
+    }
+
+    let x = this.level.editorEnabled ? this.cameraInEditor[0] : this.player.x
+    let y = this.level.editorEnabled ? this.cameraInEditor[1] : this.player.y
 
     if(y < minY) y = minY
     if (y > maxY) y = maxY

@@ -63,6 +63,7 @@ export default class Level {
     editorEnabledEl.innerText = this.editorEnabled ? 'Editor ON' : 'Editor OFF'
 
     editorEnabledEl.addEventListener('click', (evt: Event) => {
+      this.game.cameraInEditor = this.game.camera // set camera position
       this.editorEnabled = !this.editorEnabled
       localStorage['editorEnabled'] = this.editorEnabled.toString()
       editorEnabledEl.innerText = this.editorEnabled ? 'Editor ON' : 'Editor OFF'
@@ -186,7 +187,7 @@ export default class Level {
     // Send an onNearbyReplace event to all nearby tiles - see onNearbyReplace
     for (let y = tileY - 1; y <= tileY + 1; y++) {
       for (let x = tileX - 1; x <= tileX + 1; x++) {
-        const tile = this.tilemap[y][x]
+        const tile = this.tileAt([x, y])
         if (tile && tile !== newTile) {
           tile.onNearbyReplace()
         }

@@ -389,6 +389,13 @@ export class Player extends Entity {
   }
 
   update() {
+    if (this.game.level.editorEnabled) {
+      // Camera is scrolled directly in editor mode
+      this.xv = 0
+      this.yv = 0
+      return
+    }
+
     this.sprite.sheet.src = `sprites/liam-${this.state}.png`
     if (this.state > 0) {
       // big/powerupped
