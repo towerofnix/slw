@@ -10,7 +10,7 @@ import Text from './Text'
 import Level from './Level'
 import Cursor from './Cursor'
 import { Entity, Player } from './Entity'
-import { arrEqual } from './util'
+import { arrEqual, EventController } from './util'
 
 import type { Position } from './types'
 
@@ -25,6 +25,9 @@ const BG_REPEATS = {
 }
 
 export default class SLW {
+  // Event controller.
+  events: EventController
+
   // Map to store key-pressed data in.
   keys: Object
 
@@ -58,14 +61,15 @@ export default class SLW {
   entities: Array <Entity>
 
   constructor(levelid: string, tileset: Image) {
+    this.events = new EventController()
+    this.events.registerEvent('levelchanged')
+
     this.keys = {}
-    this.cursor = new Cursor([0.5, 0.5])
-    this.lastPlacePos = [0, 0]
-    this.entities = []
 
     this.canvas = document.createElement('canvas')
     this.canvas.width = 400
     this.canvas.height = 400
+    this.canvas.setAttribute('tabindex', '1')
 
     this.canvas.addEventListener('keydown', (evt: KeyboardEvent) => {
       this.keys[evt.keyCode || evt.which] = true
@@ -75,35 +79,24 @@ export default class SLW {
       this.keys[evt.keyCode || evt.which] = false
     })
 
-    this.cursor.watchMouse(this.canvas)
-
-    this.canvas.setAttribute('tabindex', '1')
-
     this.player = new Player(this, 16, 16)
+
     this.camera = [0, 0]
     this.cameraInEditor = [0, 0]
-    this.level = new Level(this, levelid, tileset)
-    this.tick = 0
 
-    this.level.create()
+    this.cursor = new Cursor([0.5, 0.5])
+    this.cursor.watchMouse(this.canvas)
 
-    this.gamepadSupport = 'GamepadEvent' in window || 'getGamepads' in navigator
+    this.lastPlacePos = [0, 0]
 
-    /*
-    this.gamepadEnabled = localStorage['gamepadEnabled'] == 'true'
+    this.entities = []
 
-    if (this.gamepadSupport) {
-      let el = document.getElementById('gamepadEnabled')
-      // @flow ignore
-      el.disabled = false
-      el.innerText = this.gamepadEnabled ? 'Gamepad ON' : 'Gamepad OFF'
-      el.addEventListener('click', (evt: Event) => {
-        this.gamepadEnabled = !this.gamepadEnabled
-        localStorage['gamepadEnabled'] = this.gamepadEnabled.toString()
-        el.innerText = this.gamepadEnabled ? 'Gamepad ON' : 'Gamepad OFF'
-      })
-    }
-    */
+    this.changeLevel(new Level(this, levelid, tileset))
+
+    this.gamepadSupport = (
+      'GamepadEvent' in window || 'getGamepads' in navigator
+    )
+    this.gamepadEnabled = false
   }
 
   // Clears the game canvas.
@@ -199,6 +192,22 @@ export default class SLW {
   // Update all the entities.
   entityUpdate() {
     this.entities.forEach(e => e.update())
+  }
+
+  changeLevel(newLevel: Level) {
+    const oldLevel = this.level
+
+    if (oldLevel) {
+      oldLevel.destroy()
+    }
+
+    this.tick = 0
+    this.level = newLevel
+    newLevel.create()
+
+    this.events.dispatchEvent('levelchanged', {
+      oldLevel: oldLevel || null, level: newLevel
+    })
   }
 
   // Draw all the things.

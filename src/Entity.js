@@ -590,9 +590,8 @@ export class Player extends Entity {
           this.w = 15
           this.h = 31
 
-          this.game.level.destroy() // bye bye world map
-          this.game.level = new Level(this.game, lv, this.game.level.tileset)
-          this.game.level.create()  // hello level
+          const newLevel = new Level(this.game, lv, this.game.level.tileset)
+          this.game.changeLevel(newLevel)
 
           this.game.tick = 0
           this.startLevelSound.play()
@@ -729,18 +728,15 @@ export class Player extends Entity {
     const lv = this.game.level.meta.world
     const id = this.game.level.meta.id
 
-    this.game.level.destroy() // bye bye current level
-    this.game.level = new Level(this.game, lv, this.game.level.tileset)
-    this.game.level.create()  // hello world map
+    const newLevel = new Level(this.game, lv, this.game.level.tileset)
+    this.game.changeLevel(newLevel)
 
-    this.game.tick = 0
     this.state = 0
 
-    // find the last level in the map
+    // On the world map, go to the position of the level that was just played.
     for (let row of this.game.level.tilemap) {
       for (let tile of row) {
         if (tile.name === 'Level' && tile.levelid == id) {
-          // go there!
           this.x = tile.x * Tile.size
           this.y = tile.y * Tile.size
         }

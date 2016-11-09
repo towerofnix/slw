@@ -13,7 +13,7 @@ export default class BrowserSLW {
     this.header = document.getElementById('header')
 
     // Editor toggle -----------------------
-    this.addToggle(class extends Toggle {
+    const editorToggle = this.addToggle(class extends Toggle {
       onCreate() {
         this.setChecked(false)
         this.setDisabled(true)
@@ -25,6 +25,16 @@ export default class BrowserSLW {
         } else {
           this.setTitle('Editor OFF')
         }
+
+        game.level.editorEnabled = this.checked
+      }
+    })
+
+    game.events.addEventListener('levelchanged', ({ level }) => {
+      if (level.meta.special.includes('world')) {
+        editorToggle.setDisabled(true)
+      } else {
+        editorToggle.setDisabled(false)
       }
     })
 
@@ -56,11 +66,12 @@ export default class BrowserSLW {
 
   // Add a global toggle control.
   addToggle(toggleClass: Class<Toggle>) {
-    const toggles = this.header.querySelector('#toggles')
-
     const toggle = new toggleClass()
 
+    const toggles = this.header.querySelector('#toggles')
     toggles.appendChild(toggle.btn)
+
+    return toggle
   }
 }
 
@@ -99,10 +110,14 @@ class Toggle {
 
   setDisabled(newDisabled: boolean) {
     this.disabled = newDisabled
-    this.btn.setAttribute('disabled', newDisabled.toString())
+    if (newDisabled) {
+      this.btn.setAttribute('disabled', 'true')
+    } else {
+      this.btn.removeAttribute('disabled')
+    }
   }
 
-  setTitle(newTitle) {
+  setTitle(newTitle: string) {
     while (this.btn.firstChild) {
       this.btn.removeChild(this.btn.firstChild)
     }
@@ -110,7 +125,7 @@ class Toggle {
     this.btn.appendChild(document.createTextNode(newTitle))
   }
 
-  load(key) {
+  load(key: string) {
     if (localStorage['toggle-' + key] === 'true') {
       this.setChecked(true)
     } else {
@@ -118,7 +133,7 @@ class Toggle {
     }
   }
 
-  save(key) {
+  save(key: string) {
     localStorage['toggle-' + key] = this.checked.toString()
   }
 
