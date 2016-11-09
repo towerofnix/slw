@@ -22,6 +22,7 @@ const MUSIC_VOLUMES = {
 import SLW from './SLW'
 import Tile from './Tile'
 import { levels } from './util'
+import { Sound } from './SoundManager'
 
 import type { Position } from './types'
 
@@ -35,7 +36,7 @@ export default class Level {
   w: number // width
   h: number // height
 
-  music: window.Audio
+  music: Sound
   editorEnabled: boolean
 
   static metaOf(levelid) {
@@ -99,10 +100,15 @@ export default class Level {
     this.h = this.tilemap.length
     this.w = this.tilemap[0].length
 
-    this.music = new window.Audio('sound/music/' + this.meta.music + '.mp3')
-    this.music.volume = MUSIC_VOLUMES[this.meta.music] || 0.5 // to normalize
-    this.music.loop = true
-    this.music.play() // load automatically
+    this.music = this.game.sounds.getSound(`music/${this.meta.music}.mp3`)
+
+    // Normalize music. TODO
+    // this.music.volume = MUSIC_VOLUMES[this.meta.music] || 0.5
+
+    // Background music should loop.
+    this.music.loops = true
+
+    this.music.playNew()
   }
 
   create() {
@@ -115,7 +121,7 @@ export default class Level {
   }
 
   destroy() {
-    this.music.pause()
+    this.music.stop()
 
     // TODO Entity destroying? Might not be a bad idea, e.g. if entities have
     // set event listeners that reference themselves... they wouldn't be GC'd.

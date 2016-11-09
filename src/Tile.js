@@ -227,6 +227,8 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
   ['?', class QBlockTile extends Tile {
     i: number
 
+    punchSound: Sound
+
     constructor(game) {
       super(game, {
         name: '? Block',
@@ -237,6 +239,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
 
     onCreate() {
       this.i = 0
+      this.punchSound = this.game.sounds.getSound('smw_shell_ricochet')
     }
 
     onUpdate() {
@@ -246,7 +249,7 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
 
     onAirPunch() {
-      new window.Audio('sound/smw_shell_ricochet.wav').play()
+      this.punchSound.playNew()
 
       if (this.game && this.x && this.y) {
         const tile = new (Tile.get('x'))(this.game)

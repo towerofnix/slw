@@ -9,7 +9,9 @@ import Tile from './Tile'
 import Text from './Text'
 import Level from './Level'
 import Cursor from './Cursor'
+import SoundManager from './SoundManager'
 import { Entity, Player } from './Entity'
+
 import {
   arrEqual, EventController,
   isLeft, isRight, isUp, isDown
@@ -31,8 +33,14 @@ export default class SLW {
   // Event controller.
   events: EventController
 
+  // Sound system.
+  sounds: SoundManager
+
   // Map to store key-pressed data in.
   keys: Object
+
+  // Keys that were pressed this tick.
+  newKeys: Object
 
   // Canvas used to display the game on.
   canvas: HTMLCanvasElement
@@ -70,7 +78,10 @@ export default class SLW {
     this.events = new EventController()
     this.events.registerEvent('levelchanged')
 
+    this.sounds = new SoundManager()
+
     this.keys = {}
+    this.newKeys = {}
 
     this.canvas = document.createElement('canvas')
     this.canvas.width = 400
@@ -79,6 +90,7 @@ export default class SLW {
 
     window.addEventListener('keydown', (evt: KeyboardEvent) => {
       this.keys[evt.keyCode || evt.which] = true
+      this.newKeys[evt.keyCode || evt.which] = true
     })
 
     window.addEventListener('keyup', (evt: KeyboardEvent) => {
@@ -335,6 +347,7 @@ Camera XY   ${this.camera.map(p => Math.floor(p)).join(' ')}
       }
     }
 
+    this.newKeys = {}
     this.tick++
   }
 }

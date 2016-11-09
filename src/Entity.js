@@ -7,6 +7,7 @@ import SLW from './SLW'
 import Tile from './Tile'
 import Level from './Level'
 import Text from './Text'
+import { Sound } from './SoundManager'
 
 import {
   sign, levels,
@@ -337,10 +338,10 @@ export class Entity {
 }
 
 export class Player extends Entity {
-  jumpSound: window.Audio
-  errorSound: window.Audio
-  startLevelSound: window.Audio
-  moveLevelSound: window.Audio
+  errorSound: Sound
+  startLevelSound: Sound
+  moveLevelSound: Sound
+  jumpSound: Sound
 
   lastJump: number
   mayJump: boolean
@@ -375,10 +376,10 @@ export class Player extends Entity {
     this.h = 15
     this.state = 0
 
-    this.jumpSound = new window.Audio('sound/smw_jump.wav')
-    this.errorSound = new window.Audio('sound/smw_stomp_koopa_kid.wav')
-    this.startLevelSound = new window.Audio('sound/begin_level.wav')
-    this.moveLevelSound = new window.Audio('sound/move_level.wav')
+    this.errorSound = this.game.sounds.getSound('smw_stomp_koopa_kid.wav')
+    this.startLevelSound = this.game.sounds.getSound('begin_level')
+    this.moveLevelSound = this.game.sounds.getSound('move_level')
+    this.jumpSound = this.game.sounds.getSound('smw_jump')
   }
 
   update() {
@@ -414,7 +415,19 @@ export class Player extends Entity {
     // actually move:
     super.update(this.wantsInput == true || !this.game.level.meta.special.includes('world'))
 
-    if (this.xv !== 0 || this.yv !== 0) this.wantsInput = false
+
+    // If the player moved in the world map..
+    if (
+      this.game.level.meta.special.includes('world') && (this.xv || this.yv)
+    ) {
+      // If the player wanted input, make a sound.
+      if (this.wantsInput) {
+        this.moveLevelSound.playNew()
+      }
+
+      // Now it's moving so it shouldn't take input anymore.
+      this.wantsInput = false
+    }
   }
 
   mapMotion() {
@@ -573,7 +586,7 @@ export class Player extends Entity {
         this.yv = 0
       }
 
-      if (on && on.name === 'Level' && isYes(this.game.keys)) {
+      if (on && on.name === 'Level' && isYes(this.game.newKeys)) {
         // open level!
         // TODO some animation?
 
@@ -587,15 +600,10 @@ export class Player extends Entity {
           this.game.changeLevel(newLevel)
 
           this.game.tick = 0
-          this.startLevelSound.play()
+          this.startLevelSound.playNew()
         } else {
-          this.errorSound.play()
+          this.errorSound.playNew()
         }
-      }
-
-      if (this.xv !== 0 || this.yv !== 0) {
-        // we moved :O
-        this.moveLevelSound.play()
       }
     }
 
@@ -638,7 +646,7 @@ export class Player extends Entity {
       this.yv = -3.5
       this.lastJump = Date.now()
 
-      this.jumpSound.play()
+      this.jumpSound.playNew()
       this.spriteAnimation.anim = 'jump'
       this.mayJump = false
     } else if(isJump(this.game.keys) && this.yv < -3 && Date.now() - this.lastJump < 100 + Math.abs(this.xv) * 50) {
@@ -779,10 +787,7 @@ export class Powerup extends Entity {
     this.xv = xv
     this.sprite.position = [0, 0]
 
-    this.getSound = new window.Audio('sound/powerup_get.wav')
-    this.initSound = new window.Audio('sound/powerup_init.wav')
-
-    this.initSound.play()
+    this.game.sounds.getSound('powerup_init').playNew()
   }
 
   update() {
@@ -802,7 +807,7 @@ export class Powerup extends Entity {
   onTouch(by: Entity) {
     if (by instanceof Player) {
       this.destroy()
-      this.getSound.play()
+      this.game.sounds.getSound('powerup_get').playNew()
     }
   }
 }
@@ -845,7 +850,7 @@ export class Sign extends Entity {
 }
 
 export class Coin extends Entity {
-  coinSound: window.Audio
+  coinSound: Sound
 
   spriteAnimation: {
     time: number,
@@ -867,7 +872,7 @@ export class Coin extends Entity {
 
     this.spriteAnimation = {time: 0, nextFrame: 0}
 
-    this.coinSound = new window.Audio('sound/smw_coin.wav')
+    this.coinSound = this.game.sounds.getSound('smw_coin')
   }
 
   update() {
@@ -883,7 +888,7 @@ export class Coin extends Entity {
 
   onTouch(by: Entity) {
     if(by instanceof Player) {
-      this.coinSound.play()
+      this.coinSound.playNew()
       this.destroy()
     }
   }
