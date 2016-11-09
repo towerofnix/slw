@@ -1,13 +1,16 @@
 @import 'normalize.css'
 
 body {
-  background black
   color white
 
   display flex
   flex-direction column
 
   min-height 100vh
+  user-select none
+
+  background #121212
+  color rgba(white, 84%)
 }
 
 canvas {
@@ -24,48 +27,87 @@ canvas {
 
 header {
   display block
-  height 64px
 
-  border-bottom 1px solid #124BFF
-  background linear-gradient(#25B1FF, #1084FF)
-  
-  font-family 'Helvetica Neue'
-}
+  min-height 64px
 
-button {
-  margin 2px
-  min-height 30px
+  z-index 1
+  box-shadow 0 2px 2px rgba(black, 0.2)
+  color white
+  background #3f51b5 //linear-gradient(#3d3d3d, #242424)
 
-  color black
+  font-family 'Lato', 'Roboto', 'Helvetica Neue', 'Fira Sans', sans-serif
 
-  border 2px solid red
-  border-radius 8px
-  box-shadow 0 1px 1px rgba(0, 0, 0, 0.3)
-}
+  > div {
+    width 400px * 2
+    max-width 100vw
 
-button:not([disabled]).checked {
-  background linear-gradient(#5DE844, #52D13D)
-  border-color #3A942C
-}
+    margin auto
 
-button:not([disabled]).unchecked {
-  background linear-gradient(#F0332C, #D72E28)
-  border-color #9D241F
-}
+    display flex
+    flex-direction row
+  }
 
-button[disabled] {
-  background linear-gradient(#CFCFCF, #B1B1B1)
-  border-color #9E9E9E
-  color #7C7C7C
-}
+  button {
+    margin 4px
+    padding 4px 8px
+    min-height 30px
+    min-width 132px
 
-#toggles {
-  display flex
-  flex-direction column
-  max-width 150px
-  overflow-y scroll
-  height 100%
-  background rgba(0, 0, 0, 0.25)
-  padding 2px 8px
-  box-sizing border-box
+    color rgba(black, 0.6)
+
+    //border 2px solid red
+    border-radius 2px
+    border none
+    outline none
+    box-shadow 0 1px 2px rgba(black, 0.2)
+
+    &:not([disabled]).checked {
+      background linear-gradient(#5ae151, #41c837)
+    }
+
+    &:not([disabled]).unchecked {
+      background linear-gradient(#f25454, #d93b3b)
+    }
+
+    &[disabled] {
+      background linear-gradient(#CFCFCF, #B1B1B1)
+      color rgba(black, 0.4)
+    }
+  }
+
+  #toggles {
+    display flex
+    flex-direction column
+
+    max-width 150px
+    overflow-y auto
+
+    background #303f9f
+    padding 16px
+    //box-sizing border-box
+  }
+
+  #toolbar {
+    flex-grow 1
+    overflow-y auto
+
+    padding 8px
+    margin 8px
+    cursor default
+
+    .tile {
+      width 32px
+      height 32px
+      
+      margin 2px
+      padding 2px
+
+      image-rendering pixelated
+      background #303f9f
+
+      &.selected {
+        background rgba(white, 0.25)
+      }
+    }
+  }
 }

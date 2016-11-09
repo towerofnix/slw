@@ -31,7 +31,7 @@ export function arrEqual(arr1: Array<any>, arr2: Array<any>): boolean {
 
 // Returns an image written over by a colour, taking an operation type and alpha.
 // Default values useful for masking.
-export function tint(img: Image, colour: string, operation: string = 'source-in', alpha: number = 1) {
+export function tint(img: Image, colour: string, operation: string = 'source-in', alpha: number = 1): Image {
   // create hidden canvas (using image dimensions)
   let canvas = document.createElement('canvas')
   canvas.width = img.width
@@ -46,6 +46,25 @@ export function tint(img: Image, colour: string, operation: string = 'source-in'
   ctx.globalAlpha = alpha
   ctx.fillStyle = colour
   ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+  // return a new image
+  let res = new Image
+  res.src = canvas.toDataURL()
+  return res
+}
+
+// Returns an image, taking a width, height, and optional offset values.
+export function crop(img: Image, w: number, h: number, ox: number = 0, oy: number = 0): Image {
+  // create hidden canvas (using image dimensions)
+  let canvas = document.createElement('canvas')
+  canvas.width = w
+  canvas.height = h
+
+  let ctx = canvas.getContext('2d')
+  if (!ctx) throw new TypeError('Failed to get new canvas context.')
+
+  // perfrom actual 'crop' operation
+  ctx.drawImage(img, ox, oy, w, h, 0, 0, w, h)
 
   // return a new image
   let res = new Image

@@ -1,6 +1,8 @@
 // @flow
 
 import SLW from './SLW'
+import Tile from './Tile'
+import { crop } from './util'
 
 // Browser editor for SLW levels.
 export default class BrowserSLW {
@@ -15,15 +17,38 @@ export default class BrowserSLW {
     // Editor toggle -----------------------
     const editorToggle = this.addToggle(class extends Toggle {
       onCreate() {
+        this.setTitle('Editor Mode')
         this.setChecked(false)
         this.setDisabled(true)
       }
 
       onCheckedChanged() {
+        const el = document.getElementById('toolbar')
         if (this.checked) {
-          this.setTitle('Editor ON')
+          let tiles = [ '=', '-', '?', 'x', '~', 'C', 'P', '0' ]
+          let tileEls: Array <Image> = []
+
+          for (let tileid of tiles) {
+            const tile = new (Tile.get(tileid))(game)
+
+            let img = crop(game.level.tileset, Tile.size, Tile.size, tile.texPosition[0] * Tile.size, tile.texPosition[1] * Tile.size)
+            img.classList.add('tile')
+
+            img.addEventListener('click', evt => {
+              for (let tileEl of tileEls) tileEl.classList.remove('selected')
+
+              img.classList.add('selected')
+              game.tileToPaint = Tile.get(tileid)
+            })
+
+            tileEls.push(img)
+            el.appendChild(img)
+          }
+
+          tileEls[0].click()
+
         } else {
-          this.setTitle('Editor OFF')
+          el.innerHTML = ''
         }
 
         game.level.editorEnabled = this.checked
@@ -41,6 +66,7 @@ export default class BrowserSLW {
     // Gamepad toggle ----------------------
     this.addToggle(class extends Toggle {
       onCreate() {
+        this.setTitle('Gamepad')
         this.load('gamepad-support')
 
         if (!game.gamepadSupport) {
@@ -53,12 +79,6 @@ export default class BrowserSLW {
       }
 
       onCheckedChanged() {
-        if (this.checked) {
-          this.setTitle('Gamepad ON')
-        } else {
-          this.setTitle('Gamepad OFF')
-        }
-
         game.gamepadEnabled = this.checked
       }
     })

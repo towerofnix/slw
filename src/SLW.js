@@ -42,6 +42,9 @@ export default class SLW {
   camera: Position
   cameraInEditor: Position
 
+  // Tile that will be painted, for level editor.
+  tileToPaint: any
+
   // Cursor object - see Cursor.js.
   cursor: Cursor
 
@@ -71,11 +74,11 @@ export default class SLW {
     this.canvas.height = 400
     this.canvas.setAttribute('tabindex', '1')
 
-    this.canvas.addEventListener('keydown', (evt: KeyboardEvent) => {
+    window.addEventListener('keydown', (evt: KeyboardEvent) => {
       this.keys[evt.keyCode || evt.which] = true
     })
 
-    this.canvas.addEventListener('keyup', (evt: KeyboardEvent) => {
+    window.addEventListener('keyup', (evt: KeyboardEvent) => {
       this.keys[evt.keyCode || evt.which] = false
     })
 
@@ -323,8 +326,7 @@ Camera XY   ${this.camera.map(p => Math.floor(p)).join(' ')}
       const tilePos: Position = [cursorTileX, cursorTileY]
 
       if (this.cursor.down && !arrEqual(this.lastPlacePos, tilePos)) {
-        const UsedBlockTile = Tile.get('=')
-        const tile = new UsedBlockTile(this)
+        const tile = new (this.tileToPaint)(this)
         this.level.replaceTile([cursorTileX, cursorTileY], tile)
         this.lastPlacePos = tilePos
       }

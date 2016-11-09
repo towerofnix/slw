@@ -70,8 +70,8 @@ export default class Tile {
   // -!!!-
   // -----
   //
-  // (! is a tile that sends the event, X is a this tile, - does is a tile not
-  // send the event)
+  // (! is a tile that sends the event, X is a this tile, - is a tile not
+  // sent the event)
   onNearbyReplace() {}
 
   // Called if and when this Tile is colliding with an entity.
