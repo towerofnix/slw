@@ -8,7 +8,8 @@ export default class BrowserSLW {
 
   game: SLW
 
-  constructor() {
+  constructor(game: SLW) {
+    this.game = game
     this.header = document.getElementById('header')
 
     // Editor toggle -----------------------
@@ -30,7 +31,15 @@ export default class BrowserSLW {
     // Gamepad toggle ----------------------
     this.addToggle(class extends Toggle {
       onCreate() {
-        this.setChecked(false)
+        this.load('gamepad-support')
+
+        if (!game.gamepadSupport) {
+          this.setDisabled(true)
+        }
+      }
+
+      onDestroy() {
+        this.save('gamepad-support')
       }
 
       onCheckedChanged() {
@@ -39,6 +48,8 @@ export default class BrowserSLW {
         } else {
           this.setTitle('Gamepad OFF')
         }
+
+        game.gamepadEnabled = this.checked
       }
     })
   }
@@ -67,6 +78,10 @@ class Toggle {
     })
 
     this.onCreate()
+
+    window.addEventListener('beforeunload', () => {
+      this.onDestroy()
+    })
   }
 
   setChecked(newChecked: boolean) {
@@ -95,6 +110,19 @@ class Toggle {
     this.btn.appendChild(document.createTextNode(newTitle))
   }
 
+  load(key) {
+    if (localStorage['toggle-' + key] === 'true') {
+      this.setChecked(true)
+    } else {
+      this.setChecked(false)
+    }
+  }
+
+  save(key) {
+    localStorage['toggle-' + key] = this.checked.toString()
+  }
+
   onCreate() {}
   onCheckedChanged() {}
+  onDestroy() {}
 }

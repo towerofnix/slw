@@ -88,9 +88,10 @@ export default class SLW {
     this.level.create()
 
     this.gamepadSupport = 'GamepadEvent' in window || 'getGamepads' in navigator
-    this.gamepadEnabled = localStorage['gamepadEnabled'] == 'true'
 
     /*
+    this.gamepadEnabled = localStorage['gamepadEnabled'] == 'true'
+
     if (this.gamepadSupport) {
       let el = document.getElementById('gamepadEnabled')
       // @flow ignore

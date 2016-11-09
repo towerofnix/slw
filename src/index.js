@@ -2,14 +2,16 @@ import SLW from './SLW'
 import BrowserSLW from './BrowserSLW'
 
 window.addEventListener('load', e => {
-  const browser = new BrowserSLW()
-
   let tileset = new Image
 
   tileset.onload = () => {
     const game = new SLW('F', tileset)
+    const browser = new BrowserSLW(game)
 
-    window.game = game // debug only pls
+    // For debugging only
+    window.game = game
+    window.browser = browser
+
     document.body.appendChild(game.canvas)
 
     game.tileset = tileset
