@@ -10,7 +10,10 @@ import Text from './Text'
 import Level from './Level'
 import Cursor from './Cursor'
 import { Entity, Player } from './Entity'
-import { arrEqual, EventController } from './util'
+import {
+  arrEqual, EventController,
+  isLeft, isRight, isUp, isDown
+} from './util'
 
 import type { Position } from './types'
 
@@ -157,10 +160,10 @@ export default class SLW {
 
     if (this.level.editorEnabled) {
       const CAM_SPD = 4
-      if (this.keys[38]) this.cameraInEditor[1] -= CAM_SPD
-      if (this.keys[40]) this.cameraInEditor[1] += CAM_SPD
-      if (this.keys[37]) this.cameraInEditor[0] -= CAM_SPD
-      if (this.keys[39]) this.cameraInEditor[0] += CAM_SPD
+      if (isUp(this.keys)) this.cameraInEditor[1] -= CAM_SPD
+      if (isDown(this.keys)) this.cameraInEditor[1] += CAM_SPD
+      if (isLeft(this.keys)) this.cameraInEditor[0] -= CAM_SPD
+      if (isRight(this.keys)) this.cameraInEditor[0] += CAM_SPD
 
       this.cameraInEditor[0] = Math.min(
         maxX,

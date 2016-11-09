@@ -8,19 +8,12 @@ import Tile from './Tile'
 import Level from './Level'
 import Text from './Text'
 
-import { sign, levels } from './util'
+import {
+  sign, levels,
+  isJump, isYes, isLeft, isRight, isUp, isDown
+} from './util'
 
 import type { Position } from './types'
-
-// is [z], [space], or [up arrow] down?
-function isJump(keys): boolean {
-  return keys[32] || keys[38] || keys[90]
-}
-
-// is [z], [space], or [enter] down?
-function isYes(keys): boolean {
-  return keys[32] || keys[13] || keys[90]
-}
 
 export class Entity {
   game: SLW
@@ -552,28 +545,28 @@ export class Player extends Entity {
       // TODO don't allow passing by [3, 10] tiles (uncompleted levels)
       this.spriteAnimation.anim = 'idle'
 
-      if (this.game.keys[39]) {
+      if (isRight(this.game.keys)) {
         this.xv = walkSpeed
         this.spriteAnimation.dir = 'right'
       } else if (this.xv > 0) {
         this.xv = 0
       }
 
-      if (this.game.keys[37]) {
+      if (isLeft(this.game.keys)) {
         this.xv = -walkSpeed
         this.spriteAnimation.dir = 'left'
       } else if (this.xv < 0) {
         this.xv = 0
       }
 
-      if (this.game.keys[40]) {
+      if (isDown(this.game.keys)) {
         this.yv = walkSpeed
         this.spriteAnimation.dir = 'down'
       } else if (this.yv > 0) {
         this.yv = 0
       }
 
-      if (this.game.keys[38]) {
+      if (isUp(this.game.keys)) {
         this.yv = -walkSpeed
         this.spriteAnimation.dir = 'up'
       } else if (this.yv < 0) {
@@ -616,14 +609,14 @@ export class Player extends Entity {
       this.spriteAnimation.anim = 'idle'
     }
 
-    if (this.game.keys[39]) {
+    if (isRight(this.game.keys)) {
       this.xv += 0.2
       if (this.grounded) this.spriteAnimation.anim = 'walk'
     } else if(this.xv > 0) {
       this.xv = Math.max(0, this.xv - 0.4)
     }
 
-    if (this.game.keys[37]) {
+    if (isLeft(this.game.keys)) {
       // xv
       this.xv -= 0.2
       if (this.grounded) this.spriteAnimation.anim = 'walk'

@@ -150,5 +150,35 @@ export class EventController {
   }
 }
 
+// is [z], [space], or any up-key down?
+export function isJump(keys: Object): boolean {
+  return keys[90] || keys[32] || isUp(keys)
+}
+
+// is [z], [space], or [enter] down?
+export function isYes(keys: Object): boolean {
+  return keys[32] || keys[13] || keys[90]
+}
+
+// is [a] or [left arrow] down?
+export function isLeft(keys: Object): boolean {
+  return keys[65] || keys[37]
+}
+
+// is [d] or [right arrow] down?
+export function isRight(keys: Object): boolean {
+  return keys[68] || keys[39]
+}
+
+// is [w] or [up arrow] down?
+export function isUp(keys: Object): boolean {
+  return keys[87] || keys[38]
+}
+
+// is [s] or [down arrow] down?
+export function isDown(keys: Object): boolean {
+  return keys[83] || keys[40]
+}
+
 const toml = require('toml')
 export const levels = toml.parse(require('./levels.toml'))
