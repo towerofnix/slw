@@ -90,6 +90,7 @@ export default class SLW {
     this.gamepadSupport = 'GamepadEvent' in window || 'getGamepads' in navigator
     this.gamepadEnabled = localStorage['gamepadEnabled'] == 'true'
 
+    /*
     if (this.gamepadSupport) {
       let el = document.getElementById('gamepadEnabled')
       // @flow ignore
@@ -101,6 +102,7 @@ export default class SLW {
         el.innerText = this.gamepadEnabled ? 'Gamepad ON' : 'Gamepad OFF'
       })
     }
+    */
   }
 
   // Clears the game canvas.

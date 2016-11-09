@@ -19,16 +19,53 @@ canvas {
 
   width 400px * 2
   height 400px * 2
+  flex-shrink 1
 }
 
 header {
   display block
-  flex-grow 1
+  height 64px
 
-  min-height 64px
-  border-bottom 1px dotted white
+  border-bottom 1px solid #124BFF
+  background linear-gradient(#25B1FF, #1084FF)
+  
+  font-family 'Helvetica Neue'
 }
 
 button {
-  margin 4px
+  margin 2px
+  min-height 30px
+
+  color black
+
+  border 2px solid red
+  border-radius 8px
+  box-shadow 0 1px 1px rgba(0, 0, 0, 0.3)
+}
+
+button:not([disabled]).checked {
+  background linear-gradient(#5DE844, #52D13D)
+  border-color #3A942C
+}
+
+button:not([disabled]).unchecked {
+  background linear-gradient(#F0332C, #D72E28)
+  border-color #9D241F
+}
+
+button[disabled] {
+  background linear-gradient(#CFCFCF, #B1B1B1)
+  border-color #9E9E9E
+  color #7C7C7C
+}
+
+#toggles {
+  display flex
+  flex-direction column
+  max-width 150px
+  overflow-y scroll
+  height 100%
+  background rgba(0, 0, 0, 0.25)
+  padding 2px 8px
+  box-sizing border-box
 }

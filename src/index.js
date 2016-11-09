@@ -1,6 +1,9 @@
 import SLW from './SLW'
+import BrowserSLW from './BrowserSLW'
 
 window.addEventListener('load', e => {
+  const browser = new BrowserSLW()
+
   let tileset = new Image
 
   tileset.onload = () => {

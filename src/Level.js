@@ -54,6 +54,7 @@ export default class Level {
 
     // Editor mode btn:
 
+    /*
     const editorEnabledEl_o = document.getElementById('editorEnabled')
     const editorEnabledEl = editorEnabledEl_o.cloneNode()
 
@@ -71,6 +72,7 @@ export default class Level {
 
     // @flow ignore
     editorEnabledEl_o.parentNode.replaceChild(editorEnabledEl, editorEnabledEl_o)
+    */
 
     // Convert tilemap into a 2D array of Tiles:
     const leveldata = this.meta.tilemap
