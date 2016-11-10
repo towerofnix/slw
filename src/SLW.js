@@ -9,7 +9,7 @@ import Tile from './Tile'
 import Text from './Text'
 import Level from './Level'
 import Cursor from './Cursor'
-import SoundManager from './SoundManager'
+import SoundManager, { Sound } from './SoundManager'
 import { Entity, Player } from './Entity'
 
 import {
@@ -74,6 +74,9 @@ export default class SLW {
 
   entities: Array <Entity>
 
+  // Random sounds.
+  genericTilePlaceSound: Sound
+
   constructor(levelid: string, tileset: Image) {
     this.events = new EventController()
     this.events.registerEvent('levelchanged')
@@ -115,6 +118,8 @@ export default class SLW {
       'GamepadEvent' in window || 'getGamepads' in navigator
     )
     this.gamepadEnabled = false
+
+    this.genericTilePlaceSound = this.sounds.getSound('smw_fireball')
   }
 
   // Clears the game canvas.
@@ -344,6 +349,7 @@ Camera XY   ${this.camera.map(p => Math.floor(p)).join(' ')}
         const tile = new (this.tileToPaint)(this)
         this.level.replaceTile([cursorTileX, cursorTileY], tile)
         this.lastPlacePos = tilePos
+        this.genericTilePlaceSound.playNew()
       }
     }
 
