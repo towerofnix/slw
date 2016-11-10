@@ -1,7 +1,5 @@
 // @flow
 
-const toml = require('toml')
-
 const MUSIC_VOLUMES = {
   airship: 0.25,
   athletic: 0.25,
@@ -21,17 +19,23 @@ const MUSIC_VOLUMES = {
 
 import SLW from './SLW'
 import Tile from './Tile'
+import { Entity } from './Entity'
 import { levels } from './util'
 import { Sound } from './SoundManager'
 
 import type { Position } from './types'
 
+import * as entities from './Entity'
+import * as tiles from './Tile'
+
 export default class Level {
   game: SLW
 
-  meta: Object // see levels.toml
+  meta: Object // see levels.hjson
   tileset: Image
-  tilemap: Array <Array <Tile>>
+
+  tiles: Array <Tile>
+  entities: Array <Entity>
 
   w: number // width
   h: number // height
@@ -51,6 +55,7 @@ export default class Level {
     this.game = game
 
     this.tileset = tileset
+    this.entities = []
     this.meta = levels[levelid]
 
     // Editor mode btn:
@@ -75,30 +80,29 @@ export default class Level {
     editorEnabledEl_o.parentNode.replaceChild(editorEnabledEl, editorEnabledEl_o)
     */
 
-    // Convert tilemap into a 2D array of Tiles:
-    const leveldata = this.meta.tilemap
-    this.tilemap = []
-    let rows = leveldata.split('\n')
-    for (let y = 0; y < rows.length-1; y++) {
-      this.tilemap[y] = []
-      let row = rows[y]
-      for (let x = 0; x < row.length; x++) {
-        let tileid = row[x]
-        if(this.meta.special.includes('world')) tileid = 'W ' + tileid
+    const tilemap = this.meta.tiles
+    this.tiles = []
 
-        let tile = new (Tile.get(tileid))(this.game)
+    for (let k of tilemap) {
+      const id = k[0]
+      const x = k[1]
+      const y = k[2]
+      const layer = k[3]
+      const opts = k[4]
 
-        tile.x = x
-        tile.y = y
-        tile.game = game
-        tile.exists = true
+      let tile = new (tiles[id])(this.game, opts)
 
-        this.tilemap[y].push(tile)
-      }
+      tile.x = x
+      tile.y = y
+      tile.layer = layer
+      tile.game = game
+      tile.exists = true
+
+      this.tiles.push(tile)
     }
 
-    this.h = this.tilemap.length
-    this.w = this.tilemap[0].length
+    this.h = this.meta.height
+    this.w = this.meta.width
 
     this.music = this.game.sounds.getSound(`music/${this.meta.music}.mp3`)
 
@@ -113,10 +117,16 @@ export default class Level {
 
   create() {
     // Call create() on the Level Tiles
-    for (let row of this.tilemap) {
-      for (let tile of row) {
-        tile.onCreate()
-      }
+    for (let tile of this.tiles) {
+      tile.onCreate()
+    }
+
+    // Create all entities
+    for (let def of this.meta.entities) {
+      const constructor = entities[def.shift()]
+
+      let ent = new constructor(this.game, ...def)
+      this.entities.push(ent)
     }
   }
 
@@ -130,10 +140,8 @@ export default class Level {
 
   update() {
     // Call update() on the tilemap's Tiles
-    for (let row of this.tilemap) {
-      for (let tile of row) {
-        tile.onUpdate()
-      }
+    for (let tile of this.tiles) {
+      tile.onUpdate()
     }
   }
 
@@ -149,53 +157,74 @@ export default class Level {
 
     for (let y = viewStartY; y < viewEndY; y++) {
       for (let x = viewStartX; x < viewEndX; x++) {
-        const tile = this.tileAt([x, y])
+        const tiles = this.tilesAt([x, y])
         const [rendX, rendY] = this.getAbsolutePosition([x, y])
-        const [tileX, tileY] = tile.texPosition
 
-        ctx.drawImage(
-          this.tileset,
-          tileX * Tile.size, tileY * Tile.size,
-          Tile.size, Tile.size,
+        for (let tile of tiles) {
+          const [tileX, tileY] = tile.texPosition
 
-          rendX + tile.dx, rendY + tile.dy, Tile.size, Tile.size)
+          ctx.drawImage(
+            this.tileset,
+            tileX * Tile.size, tileY * Tile.size,
+            Tile.size, Tile.size,
+
+            rendX + tile.dx, rendY + tile.dy, Tile.size, Tile.size)
+        }
       }
     }
   }
 
-  // Get a Tile from its Position in the tilemap.
-  tileAt([tileX: number, tileY: number]: Position): Tile {
+  // DEPRECATED
+  // Get a Tile from its Position and layer in the tilemap.
+  tileAt([tileX: number, tileY: number]: Position, layer: number = 0): Tile {
     tileX = Math.floor(tileX)
     tileY = Math.floor(tileY)
+    layer = Math.floor(layer)
 
     try {
-      let r = this.tilemap[tileY][tileX]
+      let r = this.tiles.filter(tile =>
+        tile.layer === layer &&
+        tile.x === tileX &&
+        tile.y === tileY)[0]
       if(typeof r === 'undefined') throw 'nope'
       return r
     } catch(e) {
       // fallback to Air tile
       //console.warn(`Level.tileAt([${tileX}, ${tileY}]): Failed to retrieve Tile`)
-      return new (Tile.get('-'))(this.game)
+      return new (tiles.Air)(this.game)
     }
   }
 
-  replaceTile([tileX: number, tileY: number]: Position, newTile: Tile): Tile {
+  // Get some Tiles from their Position in the tilemap.
+  tilesAt([tileX: number, tileY: number]: Position): Array <Tile> {
+    tileX = Math.floor(tileX)
+    tileY = Math.floor(tileY)
+
+    return this.tiles.filter(tile =>
+      tile.x === tileX &&
+      tile.y === tileY)
+  }
+
+  replaceTile([
+    tileX: number, tileY: number
+  ]: Position, newTile: Tile, layer: number = 0): Tile {
     newTile.x = tileX
     newTile.y = tileY
+    newTile.layer = layer
     newTile.game = this.game
     newTile.exists = true
 
-    let oldTile = this.tileAt([tileX, tileY])
+    let oldTile = this.tileAt([tileX, tileY], layer)
     oldTile.exists = false
     oldTile.onDestroy()
 
-    this.tilemap[tileY][tileX] = newTile
+    this.tiles.push(newTile)
     newTile.onCreate()
 
     // Send an onNearbyReplace event to all nearby tiles - see onNearbyReplace
     for (let y = tileY - 1; y <= tileY + 1; y++) {
       for (let x = tileX - 1; x <= tileX + 1; x++) {
-        const tile = this.tileAt([x, y])
+        const tile = this.tileAt([x, y], layer)
         if (tile && tile !== newTile) {
           tile.onNearbyReplace()
         }

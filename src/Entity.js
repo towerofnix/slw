@@ -735,6 +735,7 @@ export class Player extends Entity {
     this.state = 0
 
     // On the world map, go to the position of the level that was just played.
+    /*
     for (let row of this.game.level.tilemap) {
       for (let tile of row) {
         if (tile.name === 'Level' && tile.levelid == id) {
@@ -743,6 +744,7 @@ export class Player extends Entity {
         }
       }
     }
+    */
   }
 }
 

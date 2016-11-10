@@ -22,9 +22,10 @@ export default class BrowserSLW {
         this.setDisabled(true)
       }
 
-      onCheckedChanged() {
+      onCheckedChsfddanged() {
         const el = document.getElementById('toolbar')
         if (this.checked) {
+          /*
           let tiles = [ '=', '-', '?', 'x', '~', 'C', 'P', '0' ]
           let tileEls: Array <Image> = []
 
@@ -46,7 +47,7 @@ export default class BrowserSLW {
           }
 
           tileEls[0].click()
-
+          */
         } else {
           el.innerHTML = ''
         }

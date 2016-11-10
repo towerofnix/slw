@@ -1,10 +1,12 @@
 // @flow
 
 import SLW from './SLW'
-import { rnd } from './util'
-import { Entity, Player, Goomba, Mushroom, Sign, Coin, HalfwayFlag } from './Entity'
+import { rnd, Empty } from './util'
+import { Entity } from './Entity'
+import * as entities from './Entity'
 
 import type { Position } from './types'
+import type { Sound } from './SoundManager'
 
 export default class Tile {
   game: SLW
@@ -23,6 +25,8 @@ export default class Tile {
 
   x: number // static
   y: number // static
+  layer: number // static
+  
   dx: number
   dy: number
 
@@ -44,14 +48,6 @@ export default class Tile {
   }
 
   static size: number
-
-  // Get a Tile class from its String representation.
-  static get(str: string): Class<Tile> {
-    let tile = tilemap.get(str)
-
-    if(tile) return tile
-    else throw new RangeError('Tile ' + str + ' not found.')
-  }
 
   // Called when this Tile comes into existence, e.g. the level loads.
   onCreate() {}
@@ -85,6 +81,7 @@ export default class Tile {
   onAirPunch() {}
 }
 
+/* // TODO convert this
 export const tilemap: Map <string, Class<Tile>> = new Map([
   ['=', class GroundTile extends Tile {
     constructor(game) {
@@ -416,129 +413,6 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
   }],
 
-  ['0', class CoinTile extends Tile {
-    i: number
-
-    constructor(game) {
-      super(game, {
-        name: 'Coin',
-        texPosition: [0, 3],
-      })
-
-      this.coinSound = this.game.sounds.getSound('smw_coin')
-    }
-
-    onCreate() {
-      this.i = 0
-
-      const tile = new (Tile.get('-'))(this.game)
-      const coin = new Coin(this.game)
-      const [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
-      coin.x = x
-      coin.y = y - coin.h + Tile.size - 1 // directly on top
-
-      this.game.level.replaceTile([this.x, this.y], tile)
-      this.game.entities.push(coin)
-    }
-  }],
-
-  ['@', class PlayerTile extends Tile {
-    constructor(game) {
-      super(game, {
-        name: 'Player',
-        texPosition: [0, 0],
-      })
-    }
-
-    onCreate() {
-      // place the player here
-      const [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
-      this.game.player.x = x
-      this.game.player.y = y - this.game.player.h + Tile.size - 1 // directly
-                                                                  // on top
-
-      // replace this tile with Air
-      const tile = new (Tile.get('-'))(this.game)
-      this.game.level.replaceTile([this.x, this.y], tile)
-    }
-  }],
-
-  ['>', class SignTile extends Tile {
-    constructor(game) {
-      super(game, {
-        name: 'Sign',
-        texPosition: [0, 0],
-      })
-    }
-
-    onCreate() {
-      // place a sign here
-      let sign = new Sign(this.game)
-      const [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
-      sign.x = x
-      sign.y = y - sign.h + Tile.size - 2 // 1 block above top
-
-      // replace this tile with Air
-      const tile = new (Tile.get('-'))(this.game)
-      this.game.level.replaceTile([this.x, this.y], tile)
-    }
-  }],
-
-  ['$', class HalfwayFlagTile extends Tile {
-    constructor(game) {
-      super(game, {
-        name: 'Halfway Flag',
-        texPosition: [0, 0],
-      })
-    }
-
-    onCreate() {
-      // place a halfway flag here
-      const [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
-      let sign = new HalfwayFlag(this.game, x, y)
-
-      // replace this tile with Air
-      const tile = new (Tile.get('-'))(this.game)
-      this.game.level.replaceTile([this.x, this.y], tile)
-    }
-  }],
-
-  ['G', class GoombaTile extends Tile {
-    constructor(game) {
-      super(game, {
-        name: 'Goomba',
-        texPosition: [0, 0],
-      })
-    }
-
-    onCreate() {
-      // place a goomba here
-      let goomba = new Goomba(this.game)
-      const [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
-      goomba.x = x
-      goomba.y = y - goomba.h + Tile.size - 1 // directly on top
-
-      this.game.entities.push(goomba)
-
-      // replace this tile with Air
-      const tile = new (Tile.get('-'))(this.game)
-      this.game.level.replaceTile([this.x, this.y], tile)
-    }
-  }],
-
-  ['#', class DeathZoneTile extends Tile {
-    constructor(game) {
-      super(game, {
-        name: 'Death Zone',
-        texPosition: [0, 0],
-      })
-    }
-
-    onTouch(by: Entity) {
-      by.destroy()
-    }
-  }],
-
   // World tiles ///////////////////////////////////////////////////////////////
 
   ['W ~', class WorldWaterTile extends Tile {
@@ -846,5 +720,126 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
     }
   }],
 ])
+*/
 
 Tile.size = 16
+
+export class Air extends Tile {
+  constructor(game: SLW) {
+    super(game, {
+      name: 'Air',
+      texPosition: [0, 0],
+    })
+  }
+
+  onCreate() {
+    this.updateTexture()
+  }
+
+  onNearbyReplace() {
+    this.updateTexture()
+  }
+
+  updateTexture() {
+    let topTile    = this.game.level.tileAt([this.x, this.y - 1])
+    let bottomTile = this.game.level.tileAt([this.x, this.y + 1])
+    let leftTile   = this.game.level.tileAt([this.x - 1, this.y])
+    let rightTile  = this.game.level.tileAt([this.x + 1, this.y])
+
+    let topLeftTile = this.game.level.tileAt([this.x - 1, this.y - 1])
+    let topRightTile = this.game.level.tileAt([this.x + 1, this.y - 1])
+    let bottomLeftTile = this.game.level.tileAt([this.x - 1, this.y + 1])
+    let bottomRightTile = this.game.level.tileAt([this.x + 1, this.y + 1])
+
+    // if below us is the [centre, top] of ground, randomly place foliage
+    if(bottomTile.name === 'Ground' && bottomLeftTile.name === 'Ground' && bottomRightTile.name === 'Ground') {
+      let foliage = rnd(0, 4) // 1 in 5 chance of any at all
+
+      if(foliage === 0) {
+        let what = rnd(0, 4) // random piece
+
+        if(what === 0) {
+          if(topTile.name !== this.name) return
+
+          // tree!
+          this.texPosition = [0, 1]
+          topTile.texPosition = [1, 0]
+
+        } else {
+          this.texPosition = [what, 1]
+        }
+      }
+    }
+  }
+}
+
+export class QuestionBlock extends Tile {
+  i: number
+  punchSound: Sound
+  output: any
+
+  constructor(game: SLW, opts: Object) {
+    super(game, {
+      name: '? Block',
+      texPosition: [0, 4],
+      solid: true
+    })
+
+    this.output = opts.output
+  }
+
+  onCreate() {
+    this.i = 0
+    this.punchSound = this.game.sounds.getSound('smw_shell_ricochet')
+  }
+
+  onUpdate() {
+    this.i += 0.1
+    if(this.i >= 4) this.i = 0
+    this.texPosition[0] = Math.max(Math.floor(this.i), 0)
+  }
+
+  onAirPunch() {
+    this.punchSound.playNew()
+
+    if (this.game && this.x && this.y) {
+      const tile = new UsedBlock(this.game)
+      const usedBlock = this.game.level.replaceTile([this.x, this.y], tile)
+      usedBlock.dy = -0.5 * Tile.size
+
+      if (this.output) {
+        let [x, y] = this.game.level.getAbsolutePosition([this.x, this.y])
+        let out = new (this.output)(this.game, x, 0)
+        out.y = y - out.h - 1
+        out.yv = -1.5
+        this.game.entities.push(out)
+      }
+    }
+  }
+}
+
+export class UsedBlock extends Tile {
+  punchSound: Sound
+
+  constructor(game: SLW) {
+    super(game, {
+      name: 'Used Block',
+      texPosition: [4, 4],
+      solid: true,
+    })
+  }
+
+  onCreate() {
+    // TODO 50% volume
+    this.punchSound = this.game.sounds.getSound('smw_shell_ricochet')
+  }
+
+  onAirPunch() {
+    this.punchSound.playNew()
+  }
+
+  onUpdate() {
+    if(this.dy < 0) this.dy = Math.ceil(this.dy * 0.9)
+    else this.dy = 0
+  }
+}

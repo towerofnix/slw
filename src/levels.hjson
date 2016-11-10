@@ -1,0 +1,34 @@
+{
+  K: {
+    id: K
+    name: Kapper Kanyon
+
+    music: kapper-kanyon
+    background: clouds
+
+    special: [
+      world
+    ]
+
+    entities: [
+      [
+        HalfwayFlag
+        2, 2, 1
+      ]
+    ]
+
+    tiles: [
+      [
+        QuestionBlock
+        1, 2, 0
+
+        {
+          output: Coin
+        }
+      ]
+    ]
+
+    width:  100
+    height: 100
+  }
+}

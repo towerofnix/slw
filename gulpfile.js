@@ -122,7 +122,7 @@ function buildJs(resolve, watch=false) {
   if(watch) var b = watchify(browserify(opts))
   else      var b = browserify(opts)
 
-  b.transform(require('stringify')(['.toml']))
+  b.transform(require('stringify')(['.hjson']))
 
   b.transform(require('babelify').configure({
     presets: 'latest',

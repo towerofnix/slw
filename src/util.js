@@ -180,5 +180,10 @@ export function isDown(keys: Object): boolean {
   return keys[83] || keys[40]
 }
 
-const toml = require('toml')
-export const levels = toml.parse(require('./levels.toml'))
+const hjson = require('hjson')
+export const levels = hjson.parse(require('./levels.hjson'))
+
+// Empty class used as null.
+export class Empty {
+  constructor() {}
+}
