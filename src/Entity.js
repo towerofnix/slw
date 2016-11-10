@@ -788,6 +788,8 @@ export class Powerup extends Entity {
     this.sprite.position = [0, 0]
 
     this.game.sounds.getSound('powerup_init').playNew()
+
+    this.getSound = this.game.sounds.getSound('powerup_get')
   }
 
   update() {
@@ -807,7 +809,7 @@ export class Powerup extends Entity {
   onTouch(by: Entity) {
     if (by instanceof Player) {
       this.destroy()
-      this.game.sounds.getSound('powerup_get').playNew()
+      this.getSound.playNew()
     }
   }
 }

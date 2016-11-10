@@ -1,6 +1,6 @@
 // @flow
 
-// Super quick sound system that uses web audio.
+// Super quick sound system that uses the Web Audio API.
 //
 // Basic usage:
 //
@@ -98,6 +98,7 @@ export class Sound {
       const source = this.manager.ctx.createBufferSource()
       source.connect(this.manager.ctx.destination)
       source.buffer = this.dataBuffer
+      source.loop = this.loops
       source.start(0)
       this.sources.push(source)
     } else {

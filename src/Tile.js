@@ -266,6 +266,8 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
   }],
 
   ['x', class UsedBlockTile extends Tile {
+    punchSound: Sound
+
     constructor(game) {
       super(game, {
         name: 'Used Block',
@@ -274,10 +276,13 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
       })
     }
 
+    onCreate() {
+      // TODO 50% volume
+      this.punchSound = this.game.sounds.getSound('smw_shell_ricochet')
+    }
+
     onAirPunch() {
-      let snd = new window.Audio('sound/smw_shell_ricochet.wav')
-      snd.volume = 0.5
-      snd.play()
+      this.punchSound.playNew()
     }
 
     onUpdate() {
@@ -414,15 +419,13 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
   ['0', class CoinTile extends Tile {
     i: number
 
-    coinSound: window.Audio
-
     constructor(game) {
       super(game, {
         name: 'Coin',
         texPosition: [0, 3],
       })
 
-      this.coinSound = new window.Audio('sound/smw_coin.wav')
+      this.coinSound = this.game.sounds.getSound('smw_coin')
     }
 
     onCreate() {
@@ -436,24 +439,6 @@ export const tilemap: Map <string, Class<Tile>> = new Map([
 
       this.game.level.replaceTile([this.x, this.y], tile)
       this.game.entities.push(coin)
-    }
-
-    onUpdate() {
-      this.i += 0.1
-      if (this.i >= 4) this.i = 0
-
-      this.texPosition[0] = Math.max(Math.floor(this.i), 0)
-    }
-
-    onTouch(by: Entity) {
-      if(by instanceof Player) {
-        // TODO add 1 to coins
-
-        // replace this tile with Air
-        const tile = new (Tile.get('-'))(this.game)
-        this.game.level.replaceTile([this.x, this.y], tile)
-        this.coinSound.play()
-      }
     }
   }],
 
