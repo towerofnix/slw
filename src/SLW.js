@@ -349,7 +349,11 @@ Camera XY   ${this.camera.map(p => Math.floor(p)).join(' ')}
         const tile = new (this.tileToPaint)(this)
         this.level.replaceTile([cursorTileX, cursorTileY], tile)
         this.lastPlacePos = tilePos
-        this.genericTilePlaceSound.playNew()
+        this.genericTilePlaceSound.makeNew().then(sound => {
+          sound.rate = 0.9 + Math.random() * 0.2
+          sound.start()
+          console.log('Okay!!!!')
+        })
       }
     }
 

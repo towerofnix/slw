@@ -176,4 +176,12 @@ export class SoundSource {
   get volume(): number {
     return this.gainNode.gain.value
   }
+
+  set rate(value: number) {
+    this.source.playbackRate.value = value
+  }
+
+  get rate(): number {
+    return this.source.playbackRate.value
+  }
 }
