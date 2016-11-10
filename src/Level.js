@@ -84,11 +84,7 @@ export default class Level {
     this.tiles = []
 
     for (let k of tilemap) {
-      const id = k[0]
-      const x = k[1]
-      const y = k[2]
-      const layer = k[3]
-      const opts = k[4]
+      const [ id, x, y, layer, opts ] = k
 
       let tile = new (tiles[id])(this.game, opts)
 
