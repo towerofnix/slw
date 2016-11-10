@@ -22,7 +22,7 @@ export default class BrowserSLW {
         this.setDisabled(true)
       }
 
-      onCheckedChsfddanged() {
+      onCheckedCanged() {
         const el = document.getElementById('toolbar')
         if (this.checked) {
           /*
