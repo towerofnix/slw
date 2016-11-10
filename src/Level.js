@@ -102,8 +102,8 @@ export default class Level {
 
     this.music = this.game.sounds.getSound(`music/${this.meta.music}.mp3`)
 
-    // Normalize music. TODO
-    // this.music.volume = MUSIC_VOLUMES[this.meta.music] || 0.5
+    // Normalize music.
+    this.music.volume = MUSIC_VOLUMES[this.meta.music] || 0.5
 
     // Background music should loop.
     this.music.loops = true

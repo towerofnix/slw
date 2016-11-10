@@ -54,6 +54,7 @@ export default class SoundManager {
   }
 }
 
+// A sound container. It may have multiple sounds playing at once.
 export class Sound {
   manager: SoundManager
 
@@ -65,8 +66,9 @@ export class Sound {
   loadingPromise: Promise<*>
 
   loops: boolean
+  volume: number
 
-  sources: Array<AudioBufferSourceNode>
+  sources: Array<SoundSource>
 
   constructor(manager: SoundManager, srcURL: string) {
     this.manager = manager
@@ -74,6 +76,9 @@ export class Sound {
     this.srcURL = srcURL
 
     this.dataBufferLoaded = false
+
+    this.loops = false
+    this.volume = 1
 
     this.sources = []
   }
@@ -94,15 +99,18 @@ export class Sound {
   }
 
   playNew() {
+    this.makeNew().then(sound => {
+      sound.start()
+    })
+  }
+
+  makeNew(): Promise<SoundSource> {
     if (this.dataBufferLoaded) {
-      const source = this.manager.ctx.createBufferSource()
-      source.connect(this.manager.ctx.destination)
-      source.buffer = this.dataBuffer
-      source.loop = this.loops
-      source.start(0)
+      const source = new SoundSource(this, this.dataBuffer)
       this.sources.push(source)
+      return Promise.resolve(source)
     } else {
-      this.load().then(() => this.playNew())
+      return this.load().then(() => this.makeNew())
     }
   }
 
@@ -112,5 +120,60 @@ export class Sound {
     }
 
     this.sources.splice(0, this.sources.length)
+  }
+}
+
+// A single sound source. Only has one sound source, and is used for
+// manipulating that one sound source. Example usage - how to double the
+// volume of *one* sound's output:
+//
+//   const sound = sounds.getSound('click')
+//   sound.makeNew().then(sound => {
+//     sound.volume = 2
+//     sound.start()
+//   })
+//
+// Note if you'd like to set the volume on all sound sources created by
+// default, you can just do this:
+//
+//   const sound = sounds.getSound('click')
+//   sound.volume = 2
+//   sound.playNew()
+//
+export class SoundSource {
+  manager: SoundManager
+
+  source: AudioBufferSourceNode
+  gainNode: GainNode
+
+  constructor(sound: Sound, buffer: AudioBuffer) {
+    this.manager = sound.manager
+
+    this.source = this.manager.ctx.createBufferSource()
+    this.source.buffer = buffer
+    this.source.loop = sound.loops
+
+    this.gainNode = this.manager.ctx.createGain()
+
+    this.source.connect(this.gainNode)
+    this.gainNode.connect(this.manager.ctx.destination)
+
+    this.volume = sound.volume
+  }
+
+  start() {
+    this.source.start(0)
+  }
+
+  stop() {
+    this.source.stop()
+  }
+
+  set volume(value: number) {
+    this.gainNode.gain.value = value
+  }
+
+  get volume(): number {
+    return this.gainNode.gain.value
   }
 }
