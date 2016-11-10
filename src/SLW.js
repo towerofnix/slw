@@ -352,7 +352,6 @@ Camera XY   ${this.camera.map(p => Math.floor(p)).join(' ')}
         this.genericTilePlaceSound.makeNew().then(sound => {
           sound.rate = 0.9 + Math.random() * 0.2
           sound.start()
-          console.log('Okay!!!!')
         })
       }
     }
