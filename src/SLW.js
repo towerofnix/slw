@@ -76,6 +76,7 @@ export default class SLW {
 
   // Random sounds.
   genericTilePlaceSound: Sound
+  airPlaceSound: Sound
 
   constructor(levelid: string, tileset: Image) {
     this.events = new EventController()
@@ -120,6 +121,7 @@ export default class SLW {
     this.gamepadEnabled = false
 
     this.genericTilePlaceSound = this.sounds.getSound('smw_fireball')
+    this.airPlaceSound = this.sounds.getSound('smw_thud')
   }
 
   // Clears the game canvas.
@@ -343,16 +345,34 @@ Camera XY   ${this.camera.map(p => Math.floor(p)).join(' ')}
       // Finally draw the cursor.
       this.cursor.drawUsingCtx(ctx, cursorX, cursorY)
 
-      const tilePos: Position = [cursorTileX, cursorTileY]
-
-      if (this.cursor.down && !arrEqual(this.lastPlacePos, tilePos)) {
+      // If the cursor is down, (attempt to) place a block.
+      if (this.cursor.down) {
         const tile = new (this.tileToPaint)(this)
-        this.level.replaceTile([cursorTileX, cursorTileY], tile)
-        this.lastPlacePos = tilePos
-        this.genericTilePlaceSound.makeNew().then(sound => {
-          sound.rate = 0.9 + Math.random() * 0.2
-          sound.start()
-        })
+        const pos = [cursorTileX, cursorTileY]
+
+        // Only if the tile where we're placing the new tile is different
+        // should we do anything.
+        if (tile.name !== this.level.tileAt(pos).name) {
+
+          // Actually place the tile!
+          this.level.replaceTile(pos, tile)
+
+          // Air makes a different sound than other tiles.
+          let sound
+          if (tile.name === 'Air') {
+            sound = this.airPlaceSound
+          } else {
+            sound = this.genericTilePlaceSound
+          }
+
+          // Play the decided sound with a random pitch shift for a pleasing
+          // effect.
+          sound.makeNew().then(sound => {
+            sound.rate = 0.9 + Math.random() * 0.2
+            sound.start()
+          })
+
+        }
       }
     }
 
