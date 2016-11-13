@@ -182,6 +182,7 @@ export function isDown(keys: Object): boolean {
 
 const hjson = require('hjson')
 export const levels = hjson.parse(require('./levels.hjson'))
+export const editor = hjson.parse(require('./editor.hjson'))
 
 // Empty class used as null.
 export class Empty {

@@ -26,7 +26,7 @@ export default class Tile {
   x: number // static
   y: number // static
   layer: number // static
-  
+
   dx: number
   dy: number
 
@@ -774,7 +774,6 @@ export class Air extends Tile {
 }
 
 export class QuestionBlock extends Tile {
-  i: number
   punchSound: Sound
   output: any
 
@@ -785,18 +784,15 @@ export class QuestionBlock extends Tile {
       solid: true
     })
 
-    this.output = opts.output
+    this.output = entities[opts.output]
   }
 
   onCreate() {
-    this.i = 0
     this.punchSound = this.game.sounds.getSound('smw_shell_ricochet')
   }
 
   onUpdate() {
-    this.i += 0.1
-    if(this.i >= 4) this.i = 0
-    this.texPosition[0] = Math.max(Math.floor(this.i), 0)
+    this.texPosition[0] = Math.floor(this.game.tick / 10) % 4
   }
 
   onAirPunch() {

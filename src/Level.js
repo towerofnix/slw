@@ -170,25 +170,34 @@ export default class Level {
     }
   }
 
-  // DEPRECATED
   // Get a Tile from its Position and layer in the tilemap.
   tileAt([tileX: number, tileY: number]: Position, layer: number = 0): Tile {
     tileX = Math.floor(tileX)
     tileY = Math.floor(tileY)
     layer = Math.floor(layer)
 
-    try {
-      let r = this.tiles.filter(tile =>
-        tile.layer === layer &&
-        tile.x === tileX &&
-        tile.y === tileY)[0]
-      if(typeof r === 'undefined') throw 'nope'
-      return r
-    } catch(e) {
-      // fallback to Air tile
-      //console.warn(`Level.tileAt([${tileX}, ${tileY}]): Failed to retrieve Tile`)
-      return new (tiles.Air)(this.game)
-    }
+    let ts = this.tiles.filter(tile =>
+      tile.layer === layer &&
+      tile.x === tileX &&
+      tile.y === tileY)
+
+    return ts.length ? ts[0] : new (tiles.Air)(this.game)
+  }
+
+  // Remove all Tiles at a Position and layer in the tilemap
+  // Does not call onDestroy()
+  tileRemove([tileX: number, tileY: number]: Position, layer: number = 0) {
+    tileX = Math.floor(tileX)
+    tileY = Math.floor(tileY)
+    layer = Math.floor(layer)
+
+    const o = this.tiles
+    const n = o.filter(tile =>
+      !(tile.layer === layer &&
+      tile.x === tileX &&
+      tile.y === tileY))
+
+    this.tiles = n
   }
 
   // Get some Tiles from their Position in the tilemap.
@@ -213,6 +222,7 @@ export default class Level {
     let oldTile = this.tileAt([tileX, tileY], layer)
     oldTile.exists = false
     oldTile.onDestroy()
+    this.tileRemove([tileX, tileY], layer)
 
     this.tiles.push(newTile)
     newTile.onCreate()

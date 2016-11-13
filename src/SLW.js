@@ -55,6 +55,7 @@ export default class SLW {
 
   // Tile that will be painted, for level editor.
   tileToPaint: any
+  lastPlaced: Position // where we last painted something
 
   // Cursor object - see Cursor.js.
   cursor: Cursor
@@ -346,16 +347,29 @@ Camera XY   ${this.camera.map(p => Math.floor(p)).join(' ')}
       this.cursor.drawUsingCtx(ctx, cursorX, cursorY)
 
       // If the cursor is down, (attempt to) place a block.
-      if (this.cursor.down) {
-        const tile = new (this.tileToPaint)(this)
+      if (this.cursor.down && this.tileToPaint) {
+        const tile = new (this.tileToPaint[0])(this, this.tileToPaint[1])
+        const layer = this.tileToPaint[2]
+        const isEntity = this.tileToPaint[3]
         const pos = [cursorTileX, cursorTileY]
 
         // Only if the tile where we're placing the new tile is different
         // should we do anything.
-        if (tile.name !== this.level.tileAt(pos).name) {
+        if (tile.name !== this.level.tileAt(pos, layer).name && (
+          // If we're an entity, we need to wait until we've moved the
+          // cursor since last time.
+          !arrEqual(this.lastPlaced || [], pos)
+        )) {
+          this.lastPlaced = pos
 
-          // Actually place the tile!
-          this.level.replaceTile(pos, tile)
+          if (isEntity) {
+            // We've already placed it. Oops
+            tile.x = pos[0] * Tile.size
+            tile.y = pos[1] * Tile.size
+          } else {
+            // Actually place the tile!
+            this.level.replaceTile(pos, tile, layer)
+          }
 
           // Air makes a different sound than other tiles.
           let sound

@@ -5,7 +5,7 @@ window.addEventListener('load', e => {
   let tileset = new Image
 
   tileset.onload = () => {
-    const game = new SLW('K', tileset)
+    const game = new SLW('F-1', tileset)
     const browser = new BrowserSLW(game)
 
     // For debugging only

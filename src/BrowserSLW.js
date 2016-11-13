@@ -2,7 +2,9 @@
 
 import SLW from './SLW'
 import Tile from './Tile'
-import { crop } from './util'
+import * as Tiles from './Tile'
+import * as Entities from './Entity'
+import { crop, editor } from './util'
 
 // Browser editor for SLW levels.
 export default class BrowserSLW {
@@ -19,18 +21,17 @@ export default class BrowserSLW {
       onCreate() {
         this.setTitle('Editor Mode')
         this.setChecked(false)
-        this.setDisabled(true)
+        //this.setDisabled(true)
       }
 
       onCheckedChanged() {
         const el = document.getElementById('toolbar')
         if (this.checked) {
-          /*
-          let tiles = [ '=', '-', '?', 'x', '~', 'C', 'P', '0' ]
+          let tiles = editor.tiles
           let tileEls: Array <Image> = []
 
-          for (let tileid of tiles) {
-            const tile = new (Tile.get(tileid))(game)
+          for (let t of tiles) {
+            const tile = new (Tiles[t[0]])(game, t[1])
 
             let img = crop(game.level.tileset, Tile.size, Tile.size, tile.texPosition[0] * Tile.size, tile.texPosition[1] * Tile.size)
             img.classList.add('tile')
@@ -39,15 +40,40 @@ export default class BrowserSLW {
               for (let tileEl of tileEls) tileEl.classList.remove('selected')
 
               img.classList.add('selected')
-              game.tileToPaint = Tile.get(tileid)
+              game.tileToPaint = [Tiles[t[0]], t[1], 0, false]
             })
 
             tileEls.push(img)
             el.appendChild(img)
           }
 
+          let entities = editor.entities
+
+          for (let t of entities) {
+            const tile = new (Entities[t[0]])(game, t[1])
+
+            const k = tile.sprite.positionType === 'absolute' ? 1 : Tile.size
+            let img = crop(
+              tile.sprite.sheet,
+              tile.w, tile.h,
+              tile.sprite.position[0] * k,
+              tile.sprite.position[1] * k)
+            img.classList.add('tile')
+
+            img.addEventListener('click', evt => {
+              for (let tileEl of tileEls) tileEl.classList.remove('selected')
+
+              img.classList.add('selected')
+              game.tileToPaint = [Entities[t[0]], t[1], 0, true]
+            })
+
+            tile.destroy()
+
+            tileEls.push(img)
+            el.appendChild(img)
+          }
+
           tileEls[0].click()
-          */
         } else {
           el.innerHTML = ''
         }

@@ -1,9 +1,9 @@
 {
-  K: {
-    id: K
-    name: Kapper Kanyon
+  F: {
+    id: F
+    name: Flower Gardens
 
-    music: kapper-kanyon
+    music: flower-gardens
     background: clouds
 
     special: [
@@ -30,5 +30,37 @@
 
     width:  100
     height: 100
+  }
+
+  F-1: {
+    world: F
+    id: 1
+    name: Garden Plains
+
+    music: grassland
+    background: hills
+
+    special: []
+
+    entities: [
+      [
+        HalfwayFlag
+        2, 2, 1
+      ]
+    ]
+
+    tiles: [
+      [
+        QuestionBlock
+        1, 2, 0
+
+        {
+          output: Coin
+        }
+      ]
+    ]
+
+    width:  200
+    height: 32
   }
 }

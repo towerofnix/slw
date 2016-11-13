@@ -857,7 +857,6 @@ export class Coin extends Entity {
   coinSound: Sound
 
   spriteAnimation: {
-    time: number,
     nextFrame: number
   }
 
@@ -882,19 +881,21 @@ export class Coin extends Entity {
   update() {
     const anim = this.spriteAnimation
 
-    if (anim.time >= anim.nextFrame) {
-      anim.nextFrame = anim.time + 10
+    if (this.game.tick >= anim.nextFrame) {
+      anim.nextFrame = this.game.tick + 10
       this.sprite.position[0] = (this.sprite.position[0] + 1) % 4
     }
-
-    anim.time++
   }
 
   onTouch(by: Entity) {
     if(by instanceof Player) {
-      this.coinSound.playNew()
-      this.destroy()
+      this.get()
     }
+  }
+
+  get() {
+    this.coinSound.playNew()
+    this.destroy()
   }
 }
 

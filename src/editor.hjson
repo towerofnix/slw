@@ -1,0 +1,29 @@
+{
+  tiles: [
+    [
+      Air
+    ]
+
+    [
+      QuestionBlock
+
+      {
+        output: Mushroom
+      }
+    ]
+  ]
+
+  entities: [
+    [
+      Coin
+    ]
+
+    [
+      Mushroom
+    ]
+
+    [
+      Sign
+    ]
+  ]
+}
