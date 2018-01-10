@@ -24,12 +24,14 @@ $ gulp build    # once
 $ gulp watch    # for changes
 ```
 
-(With `watch`, Whenever you make changes to the `src` folder, everything will be rebuilt.
+(With `watch`, whenever you make changes to the `src` folder, everything will automatically be rebuilt.)
 
-You also need to run a webserver because of browser security rules:
+You also need to run a webserver because of browser security rules. Any of these might work:
 
 ```bash
-$ python -m SimpleHTTPServer
+$ python2 -m SimpleHTTPServer
+$ python3 -m http.server
+# or try node-http-server: https://www.npmjs.com/package/node-http-server
 ```
 
 Also please run `flow` decently frequently because it might help you with issues and stuff. (Also it would be nice if no errors came from `flow`!) (Also you should really just get a flow linter or whatever for your favorite text editor. It hopefully exists.)
